@@ -6,14 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="5e10eb22-1a8d-40bd-beaf-14b9978a30ff" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/dto/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/dto/AuthResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/dto/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/dto/LoginRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/dto/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/dto/RegisterRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Cliente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/ClienteRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/ClienteRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ClienteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ClienteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/ServicioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/ServicioController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Servicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Servicio.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/ServicioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/ServicioRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ServicioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ServicioService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,19 +40,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Backend - Spa Sentirse Bien.executor": "Coverage",
-    "Application.Main.executor": "Run",
-    "Application.SpaBackendApplication.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "jdk.selected.JAVA_MODULE": "23",
-    "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.importing"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Backend - Spa Sentirse Bien.executor&quot;: &quot;Coverage&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SpaBackendApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;23&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.importing&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Backend - Spa Sentirse Bien" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.spa.SpaBackendApplication " />
