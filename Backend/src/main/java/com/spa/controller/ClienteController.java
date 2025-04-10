@@ -1,6 +1,7 @@
 package com.spa.controller;
 
 import com.spa.model.Cliente;
+import java.util.List;
 import com.spa.service.ClienteService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,4 +25,10 @@ public class ClienteController {
     public Cliente login(@RequestBody Cliente cliente) {
         return clienteService.login(cliente.getEmail(), cliente.getContrasena());
     }
+
+    @GetMapping
+    public List<Cliente> obtenerTodos() {
+        return clienteService.obtenerTodosLosClientes();
+    }
+
 }

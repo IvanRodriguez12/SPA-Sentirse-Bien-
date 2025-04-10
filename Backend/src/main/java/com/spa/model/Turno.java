@@ -1,5 +1,6 @@
 package com.spa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,9 +15,13 @@ public class Turno {
     private LocalDateTime fechaHora;
 
     @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    @JsonIgnoreProperties({"telefono", "contrasena"})
     private Cliente cliente;
 
     @ManyToOne
+    @JoinColumn(name = "servicio_id")
+    @JsonIgnoreProperties({"descripcion"})
     private Servicio servicio;
 
     // Getters y setters
@@ -32,3 +37,6 @@ public class Turno {
     public Servicio getServicio() { return servicio; }
     public void setServicio(Servicio servicio) { this.servicio = servicio; }
 }
+
+
+

@@ -2,6 +2,8 @@ package com.spa.service;
 
 import com.spa.model.Cliente;
 import com.spa.repository.ClienteRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,6 +22,10 @@ public class ClienteService {
     }
 
     public Optional<Cliente> buscarPorEmail(String email) { return clienteRepository.findByEmail(email);
+    }
+
+    public List<Cliente> obtenerTodosLosClientes() {
+        return clienteRepository.findAll();
     }
 
     public Cliente login(String email, String password) {
