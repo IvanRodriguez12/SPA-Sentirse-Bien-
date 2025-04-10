@@ -1,14 +1,20 @@
 package com.spa.dto;
 
 public class AuthResponse {
-    private String token;
+    private String mensaje;
 
-    public AuthResponse(String token) {
-        this.token = token;
+    public AuthResponse(String mensaje) {
+        this.mensaje = mensaje;
     }
 
-    public String getToken() {
-        return token;
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
     }
 }
+
+
 

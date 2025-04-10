@@ -1,13 +1,12 @@
 package com.spa.service;
 
+import com.spa.dto.AuthResponse;
+import com.spa.dto.LoginRequest;
+import com.spa.dto.RegisterRequest;
 import com.spa.model.Cliente;
 import com.spa.repository.ClienteRepository;
-import com.spa.dto.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -15,26 +14,28 @@ public class AuthService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthResponse register(RegisterRequest request) {
+        if (clienteRepository.existsByEmail(request.getEmail())) {
+            return new AuthResponse("Email ya registrado");
+        }
 
-    public Cliente registrar(RegisterRequest request) {
         Cliente cliente = new Cliente();
         cliente.setNombre(request.getNombre());
         cliente.setEmail(request.getEmail());
-        cliente.setContrasena(passwordEncoder.encode(request.getPassword()));
-        return clienteRepository.save(cliente);
+        cliente.setContrasena(request.getContrasena());
+
+        clienteRepository.save(cliente);
+
+        return new AuthResponse("Registro exitoso");
     }
 
-    public Optional<Cliente> buscarPorEmail(String email) {
-        return clienteRepository.findByEmail(email);
-    }
-
-    public boolean verificarCredenciales(String email, String password) {
-        Optional<Cliente> clienteOpt = clienteRepository.findByEmail(email);
-        return clienteOpt.isPresent() &&
-                passwordEncoder.matches(password, clienteOpt.get().getContrasena());
+    public AuthResponse login(LoginRequest request) {
+        return clienteRepository.findByEmail(request.getEmail())
+                .filter(c -> c.getContrasena().equals(request.getContrasena()))
+                .map(c -> new AuthResponse("Inicio de sesión exitoso"))
+                .orElse(new AuthResponse("Credenciales inválidas"));
     }
 }
+
 
 

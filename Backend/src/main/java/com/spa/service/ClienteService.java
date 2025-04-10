@@ -19,13 +19,13 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    public Optional<Cliente> buscarPorEmail(String email) {
-        return clienteRepository.findByEmail(email);
+    public Optional<Cliente> buscarPorEmail(String email) { return clienteRepository.findByEmail(email);
     }
 
-    public Cliente login(String email, String contrasena) {
+    public Cliente login(String email, String password) {
         return clienteRepository.findByEmail(email)
-                .filter(c -> c.getContrasena().equals(contrasena))
+                .filter(c -> c.getContrasena().equals(password))
                 .orElse(null);
     }
 }
+
