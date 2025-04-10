@@ -5,26 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e10eb22-1a8d-40bd-beaf-14b9978a30ff" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/SpaBackendApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/SpaBackendApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/ClienteController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/ServicioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/ServicioController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Cliente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Servicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Servicio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Turno.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Turno.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/ClienteRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/ClienteRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/ServicioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/ServicioRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/TurnoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/repository/TurnoRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ClienteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ClienteService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ServicioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ServicioService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/TurnoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/TurnoService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SPA - Sentirse Bien.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SPA - Sentirse Bien.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/AuthService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
