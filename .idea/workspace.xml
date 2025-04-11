@@ -6,6 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="5e10eb22-1a8d-40bd-beaf-14b9978a30ff" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/config/SecurityConfig$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/config/SecurityConfig$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/controller/ClienteController.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/controller/ClienteController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/controller/ServicioController.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/controller/ServicioController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/model/Servicio.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/model/Servicio.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/model/Turno.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/model/Turno.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/service/ClienteService.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/service/ClienteService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/service/ServicioService.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/service/ServicioService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/target/classes/com/spa/service/TurnoService.class" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/target/classes/com/spa/service/TurnoService.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,6 +26,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -23,11 +35,11 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="QODANA_PROBLEMS_VIEW_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 2
-}</component>
+        &quot;associatedIndex&quot;: 2
+        }</component>
   <component name="ProjectId" id="2vVmE8PfDufqUeUEOH2t5znhJg2" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
@@ -36,19 +48,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Backend - Spa Sentirse Bien.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Application.SpaBackendApplication.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;23&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.importing&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Backend - Spa Sentirse Bien.executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.SpaBackendApplication.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "Merging main",
+    "jdk.selected.JAVA_MODULE": "23",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.importing"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Application.Backend - Spa Sentirse Bien">
     <configuration name="Backend - Spa Sentirse Bien" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.spa.SpaBackendApplication " />
