@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="5e10eb22-1a8d-40bd-beaf-14b9978a30ff" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/controller/ClienteController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Turno.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/model/Turno.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ClienteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/ClienteService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/TurnoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/src/main/java/com/spa/service/TurnoService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,20 +36,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Backend - Spa Sentirse Bien.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.SpaBackendApplication.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "jdk.selected.JAVA_MODULE": "23",
-    "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.importing"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Backend - Spa Sentirse Bien.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SpaBackendApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;23&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.importing&quot;
   }
-}]]></component>
-  <component name="RunManager">
+}</component>
+  <component name="RunManager" selected="Application.Backend - Spa Sentirse Bien">
     <configuration name="Backend - Spa Sentirse Bien" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.spa.SpaBackendApplication " />
       <module name="SPA - Sentirse Bien" />
