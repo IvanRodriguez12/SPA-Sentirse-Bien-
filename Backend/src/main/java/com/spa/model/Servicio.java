@@ -9,10 +9,20 @@ public class Servicio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String nombre;
+
+    @Column(nullable = false)
     private String categoria;
+
+    @Column(nullable = false)
     private String descripcion;
+
+    @Column(nullable = false)
     private Double precio;
+
+    @Column(nullable = false)
+    private String tipo;
 
     // Getters y Setters
 
@@ -55,5 +65,9 @@ public class Servicio {
     public void setPrecio(Double precio) {
         this.precio = precio;
     }
+
+    public String getTipo() {return tipo;}
+
+    public void setTipo(String tipo) {this.tipo = tipo;}
 }
 
