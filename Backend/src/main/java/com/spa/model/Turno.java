@@ -12,14 +12,16 @@ public class Turno {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Column(nullable = false)
     private LocalDateTime fechaHora;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "cliente_id")
     @JsonIgnoreProperties({"telefono", "contrasena"})
     private Cliente cliente;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "servicio_id")
     @JsonIgnoreProperties({"descripcion"})
     private Servicio servicio;
