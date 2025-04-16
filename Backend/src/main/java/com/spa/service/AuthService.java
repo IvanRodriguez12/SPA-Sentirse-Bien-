@@ -35,7 +35,7 @@ public class AuthService {
             return new AuthResponse("Error interno del servidor");
         }
     }
-    
+
     public AuthResponse login(LoginRequest request) {
         return clienteRepository.findByEmail(request.getEmail())
                 .filter(c -> c.getContrasena().equals(request.getContrasena()))

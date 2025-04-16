@@ -21,7 +21,7 @@ export const registerUser = async (userData) => {
       nombre: userData.nombre,
       email: userData.email,
       telefono: userData.telefono, 
-      contraseña: userData.contraseña
+      contrasena: userData.contrasena
     });
     return response.data;
   } catch (error) {
