@@ -3,17 +3,19 @@ import axios from 'axios';
 const API_URL = 'http://localhost:8080/api/auth'; // Cambiar por tu endpoint real
 
 export const loginUser = async (credentials) => {
-    try {
-      const response = await axios.post(`${API_URL}/login`, credentials);
-      return response.data;
-    } catch (error) {
-      if (error.response && error.response.data) {
-        throw error.response.data; // Error del servidor
-      } else {
-        throw new Error('Error de red o servidor no disponible'); // Error de red
-      }
+  try {
+    const response = await axios.post(`${API_URL}/login`, credentials);
+
+    // 👇 Nos aseguramos que haya token en la respuesta
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw new Error(error.response.data.mensaje || 'Error al iniciar sesión');
+    } else {
+      throw new Error('Error de red o servidor no disponible');
     }
-  };
+  }
+};
 
 export const registerUser = async (userData) => {
   try {

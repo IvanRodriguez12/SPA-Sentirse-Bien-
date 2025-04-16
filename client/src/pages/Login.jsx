@@ -20,7 +20,18 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await loginUser(data);
+      const payload = {
+        email: data.email,
+        contrasena: data.password,
+      };
+
+      const response = await loginUser(payload);
+
+      if (!response.token) {
+        toast.error(response.mensaje || 'Credenciales inválidas');
+        return;
+      }
+
       localStorage.setItem('authToken', response.token);
       toast.success('¡Bienvenido!');
       navigate('/');
@@ -28,6 +39,7 @@ const Login = () => {
       toast.error(error.message || 'Error al iniciar sesión');
     }
   };
+
 
   return (
     <div className="auth-container">
