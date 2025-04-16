@@ -24,6 +24,7 @@ public class TurnoService {
         this.servicioRepository = servicioRepository;
     }
 
+    // Crear turno
     public Turno guardarTurno(Turno turno) {
         Optional<Cliente> cliente = clienteRepository.findById(turno.getCliente().getId());
         Optional<Servicio> servicio = servicioRepository.findById(turno.getServicio().getId());
@@ -37,8 +38,42 @@ public class TurnoService {
         throw new RuntimeException("Cliente o Servicio no encontrado");
     }
 
+    // Listar todos los turnos
     public List<Turno> listarTurnos() {
         return turnoRepository.findAll();
     }
+
+    // Obtener turno por ID
+    public Turno obtenerTurnoPorId(Long id) {
+        return turnoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Turno no encontrado con ID: " + id));
+    }
+
+    // Eliminar turno
+    public void eliminarTurno(Long id) {
+        if (!turnoRepository.existsById(id)) {
+            throw new RuntimeException("No se encontró el turno con ID: " + id);
+        }
+        turnoRepository.deleteById(id);
+    }
+
+    // Actualizar turno
+    public Turno actualizarTurno(Long id, Turno turnoActualizado) {
+        Turno turnoExistente = turnoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Turno no encontrado con ID: " + id));
+
+        Optional<Cliente> cliente = clienteRepository.findById(turnoActualizado.getCliente().getId());
+        Optional<Servicio> servicio = servicioRepository.findById(turnoActualizado.getServicio().getId());
+
+        if (cliente.isPresent() && servicio.isPresent()) {
+            turnoExistente.setCliente(cliente.get());
+            turnoExistente.setServicio(servicio.get());
+            turnoExistente.setFechaHora(turnoActualizado.getFechaHora());
+            return turnoRepository.save(turnoExistente);
+        }
+
+        throw new RuntimeException("Cliente o Servicio no encontrado para la actualización");
+    }
 }
+
 

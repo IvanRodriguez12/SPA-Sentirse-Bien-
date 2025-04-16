@@ -26,7 +26,7 @@ public class ClienteController {
         return clienteService.login(cliente.getEmail(), cliente.getContrasena());
     }
 
-    @GetMapping
+    @GetMapping("/listar")
     public List<Cliente> obtenerTodos() {
         return clienteService.obtenerTodosLosClientes();
     }
