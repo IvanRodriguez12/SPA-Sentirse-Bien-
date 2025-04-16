@@ -15,20 +15,27 @@ public class AuthService {
     private ClienteRepository clienteRepository;
 
     public AuthResponse register(RegisterRequest request) {
-        if (clienteRepository.existsByEmail(request.getEmail())) {
-            return new AuthResponse("Email ya registrado");
+        try {
+            if (clienteRepository.existsByEmail(request.getEmail())) {
+                return new AuthResponse("Email ya registrado");
+            }
+    
+            Cliente cliente = new Cliente();
+            cliente.setNombre(request.getNombre());
+            cliente.setEmail(request.getEmail());
+            cliente.setTelefono(request.getTelefono());
+            cliente.setContrasena(request.getContrasena());
+    
+            clienteRepository.save(cliente);
+    
+            return new AuthResponse("Registro exitoso");
+        } catch (Exception e) {
+            // Log del error para depuración
+            e.printStackTrace();
+            return new AuthResponse("Error interno del servidor");
         }
-
-        Cliente cliente = new Cliente();
-        cliente.setNombre(request.getNombre());
-        cliente.setEmail(request.getEmail());
-        cliente.setContrasena(request.getContrasena());
-
-        clienteRepository.save(cliente);
-
-        return new AuthResponse("Registro exitoso");
     }
-
+    
     public AuthResponse login(LoginRequest request) {
         return clienteRepository.findByEmail(request.getEmail())
                 .filter(c -> c.getContrasena().equals(request.getContrasena()))
