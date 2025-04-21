@@ -12,8 +12,8 @@ public class Servicio {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
-    private String categoria;
+    @ManyToOne
+    private Categoria categoria;
 
     @Column(nullable = false)
     private String descripcion;
@@ -42,11 +42,9 @@ public class Servicio {
         this.nombre = nombre;
     }
 
-    public String getCategoria() {
-        return categoria;
-    }
+    public Categoria getCategoria() {return categoria; }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
 

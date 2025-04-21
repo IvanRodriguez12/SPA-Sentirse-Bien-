@@ -3,6 +3,8 @@ package com.spa.controller;
 import com.spa.model.Servicio;
 import com.spa.service.ServicioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,31 +19,46 @@ public class ServicioController {
     private ServicioService servicioService;
 
     @GetMapping("/listar")
-    public List<Servicio> listarServicios() {
-        return servicioService.obtenerTodos();
+    public ResponseEntity<List<Servicio>> listarServicios() {
+        List<Servicio> servicios = servicioService.obtenerTodos();
+        return ResponseEntity.ok(servicios);
     }
 
     @PostMapping("/crear")
-    public Servicio crearServicio(@RequestBody Servicio servicio) {
-        return servicioService.crearServicio(servicio);
+    public ResponseEntity<Servicio> crearServicio(@RequestBody Servicio servicio) {
+        Servicio nuevoServicio = servicioService.crearServicio(servicio);
+        if (nuevoServicio != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
 
     @GetMapping("/detalle/{id}")
-    public Optional<Servicio> obtenerServicio(@PathVariable Long id) {
-        return servicioService.obtenerPorId(id);
+    public ResponseEntity<Servicio> obtenerServicio(@PathVariable Long id) {
+        Optional<Servicio> servicio = servicioService.obtenerPorId(id);
+        if (servicio.isPresent()) {
+            return ResponseEntity.ok(servicio.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
-
 
     @PutMapping("/editar/{id}")
-    public Servicio actualizarServicio(@PathVariable Long id, @RequestBody Servicio servicio) {
-        return servicioService.actualizarServicio(id, servicio);
+    public ResponseEntity<Servicio> actualizarServicio(@PathVariable Long id, @RequestBody Servicio servicio) {
+        Servicio servicioActualizado = servicioService.actualizarServicio(id, servicio);
+        if (servicioActualizado != null) {
+            return ResponseEntity.ok(servicioActualizado);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
-
 
     @DeleteMapping("/eliminar/{id}")
-    public void eliminarServicio(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarServicio(@PathVariable Long id) {
         servicioService.eliminarServicio(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
+
 
 
