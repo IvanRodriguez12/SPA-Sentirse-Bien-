@@ -1,45 +1,26 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Asegurate que el path sea correcto
 import { toast } from 'react-hot-toast';
-import { loginUser } from '../api/Auth';
 
 const loginSchema = yup.object().shape({
   email: yup.string().email('Email inválido').required('El email es requerido'),
-  password: yup.string().min(6, 'Mínimo 6 caracteres').required('Requerido')
+  password: yup.string().min(6, 'Mínimo 6 caracteres').required('La contraseña es requerida')
 });
 
 const Login = () => {
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm({ resolver: yupResolver(loginSchema) });
 
+  const { login } = useAuth(); // ✅ Usamos el contexto
+
   const onSubmit = async (data) => {
-    try {
-      const payload = {
-        email: data.email,
-        contrasena: data.password,
-      };
-
-      const response = await loginUser(payload);
-
-      if (!response.token) {
-        toast.error(response.mensaje || 'Credenciales inválidas');
-        return;
-      }
-
-      localStorage.setItem('authToken', response.token);
-      toast.success('¡Bienvenido!');
-      navigate('/');
-    } catch (error) {
-      toast.error(error.message || 'Error al iniciar sesión');
-    }
+    await login(data.email, data.password); // ✅ Llama al login del contexto
   };
-
 
   return (
     <div className="auth-container">
@@ -66,8 +47,8 @@ const Login = () => {
           {errors.password && <span className="error-message">{errors.password.message}</span>}
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="auth-button"
           disabled={isSubmitting}
         >
@@ -86,3 +67,4 @@ const Login = () => {
 };
 
 export default Login;
+

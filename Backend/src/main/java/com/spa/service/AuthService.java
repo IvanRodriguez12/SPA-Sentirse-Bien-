@@ -25,7 +25,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         try {
             if (clienteRepository.existsByEmail(request.getEmail())) {
-                return new AuthResponse("Email ya registrado", null);
+                return new AuthResponse("Email ya registrado", null, null);
             }
 
             Cliente cliente = new Cliente();
@@ -33,28 +33,39 @@ public class AuthService {
             cliente.setEmail(request.getEmail());
             cliente.setTelefono(request.getTelefono());
 
-            // 🔒 Encriptar contraseña antes de guardar
+            // Encriptar contraseña
             cliente.setContrasena(passwordEncoder.encode(request.getContrasena()));
 
             clienteRepository.save(cliente);
 
-            return new AuthResponse("Registro exitoso", null);
+            // Generar token
+            String token = JwtUtil.generarToken(cliente.getEmail());
+
+            return new AuthResponse("Registro exitoso", token, cliente);
         } catch (Exception e) {
             e.printStackTrace();
-            return new AuthResponse("Error interno del servidor", null);
+            return new AuthResponse("Error interno del servidor", null, null);
         }
     }
 
     public AuthResponse login(LoginRequest request) {
+        System.out.println("Email recibido: " + request.getEmail());
+        System.out.println("Contraseña recibida: " + request.getContrasena());
+
+        clienteRepository.findByEmail(request.getEmail()).ifPresent(c -> {
+            System.out.println("Contraseña en base de datos: " + c.getContrasena());
+            System.out.println("PasswordEncoder match: " + passwordEncoder.matches(request.getContrasena(), c.getContrasena()));
+        });
         return clienteRepository.findByEmail(request.getEmail())
-                .filter(cliente -> passwordEncoder.matches(request.getContrasena(), cliente.getContrasena())) // ✅ Validación segura
+                .filter(cliente -> passwordEncoder.matches(request.getContrasena(), cliente.getContrasena()))
                 .map(cliente -> {
-                    String token = jwtUtil.generarToken(cliente.getEmail());
-                    return new AuthResponse("Inicio de sesión exitoso", token);
+                    String token = JwtUtil.generarToken(cliente.getEmail());
+                    return new AuthResponse("Inicio de sesión exitoso", token, cliente);
                 })
-                .orElse(new AuthResponse("Credenciales inválidas", null));
+                .orElse(new AuthResponse("Credenciales inválidas", null, null));
     }
 }
+
 
 
 

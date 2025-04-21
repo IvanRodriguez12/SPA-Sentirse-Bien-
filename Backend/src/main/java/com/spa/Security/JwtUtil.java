@@ -11,18 +11,18 @@ import java.util.Date;
 public class JwtUtil {
     public static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    public String generarToken(String email) {
+    public static String generarToken(String email) {
         return Jwts.builder()
-                .setSubject(email) // El email del usuario, asegúrate de que esté bien formateado.
-                .setIssuedAt(new Date()) // Fecha de emisión del token
+                .setSubject(email)
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // Expiración de 1 día
-                .signWith(key) // Usamos 'key' que es un SecretKey generado automáticamente
+                .signWith(key)
                 .compact();
     }
 
-    public String extraerEmail(String token) {
+    public static String extraerEmail(String token) {
         return Jwts.parser()
-                .setSigningKey(key) // Usamos 'key' aquí también
+                .setSigningKey(key.getEncoded()) // 💡 Usa getEncoded()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -30,7 +30,7 @@ public class JwtUtil {
 
     public boolean validarToken(String token) {
         try {
-            Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(key.getEncoded()).parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
