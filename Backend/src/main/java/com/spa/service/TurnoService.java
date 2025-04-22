@@ -8,6 +8,7 @@ import com.spa.repository.ServicioRepository;
 import com.spa.repository.TurnoRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,21 +60,34 @@ public class TurnoService {
 
     // Actualizar turno
     public Turno actualizarTurno(Long id, Turno turnoActualizado) {
-        Turno turnoExistente = turnoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Turno no encontrado con ID: " + id));
+    Turno turnoExistente = turnoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Turno no encontrado con ID: " + id));
 
-        Optional<Cliente> cliente = clienteRepository.findById(turnoActualizado.getCliente().getId());
-        Optional<Servicio> servicio = servicioRepository.findById(turnoActualizado.getServicio().getId());
+    // Validar fecha/hora
+    LocalDateTime fecha = turnoActualizado.getFechaHora();
+    if (fecha.isBefore(LocalDateTime.now())) {
+        throw new IllegalArgumentException("No se puede reservar en fechas pasadas");
+    }
+    int hora = fecha.getHour();
+    if (hora < 8 || hora >= 20) {
+        throw new IllegalArgumentException("Horario no válido (8:00 - 20:00)");
+    }
 
-        if (cliente.isPresent() && servicio.isPresent()) {
-            turnoExistente.setCliente(cliente.get());
-            turnoExistente.setServicio(servicio.get());
-            turnoExistente.setFechaHora(turnoActualizado.getFechaHora());
-            return turnoRepository.save(turnoExistente);
-        }
+    // Validar existencia de Cliente y Servicio
+    Optional<Cliente> cliente = clienteRepository.findById(turnoActualizado.getCliente().getId());
+    Optional<Servicio> servicio = servicioRepository.findById(turnoActualizado.getServicio().getId());
 
+    if (cliente.isEmpty() || servicio.isEmpty()) {
         throw new RuntimeException("Cliente o Servicio no encontrado para la actualización");
     }
+
+    // Actualizar campos
+    turnoExistente.setCliente(cliente.get());
+    turnoExistente.setServicio(servicio.get());
+    turnoExistente.setFechaHora(fecha);
+
+    return turnoRepository.save(turnoExistente);
+}
 }
 
 

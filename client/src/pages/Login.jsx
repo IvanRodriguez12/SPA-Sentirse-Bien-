@@ -2,7 +2,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useAuth } from '../context/AuthContext'; // Asegurate que el path sea correcto
-import { toast } from 'react-hot-toast';
 
 const loginSchema = yup.object().shape({
   email: yup.string().email('Email inválido').required('El email es requerido'),
@@ -31,8 +30,10 @@ const Login = () => {
           <label>Email</label>
           <input
             type="email"
+            placeholder="Ingresa tu email"
             {...register('email')}
             className={`form-input ${errors.email ? 'input-error' : ''}`}
+            style={{ border: '1px solid var(--verde-oscuro)', borderRadius: '5px' }}
           />
           {errors.email && <span className="error-message">{errors.email.message}</span>}
         </div>
@@ -41,8 +42,10 @@ const Login = () => {
           <label>Contraseña</label>
           <input
             type="password"
+            placeholder="Ingresa tu contraseña"
             {...register('password')}
             className={`form-input ${errors.password ? 'input-error' : ''}`}
+            style={{ border: '1px solid var(--verde-oscuro)', borderRadius: '5px' }}
           />
           {errors.password && <span className="error-message">{errors.password.message}</span>}
         </div>
@@ -67,4 +70,3 @@ const Login = () => {
 };
 
 export default Login;
-

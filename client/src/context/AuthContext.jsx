@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('authToken');
     setUser(null);
     setIsAuthenticated(false);
-    navigate('/auth/login');
+    navigate('/login');
     toast.success('Sesión cerrada correctamente');
   };
 

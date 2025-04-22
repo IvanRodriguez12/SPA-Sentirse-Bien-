@@ -6,10 +6,14 @@ import jakarta.persistence.*;
 public class Categoria {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nombre;  // Nombre de la categoría
-    private String descripcion;  // Descripción opcional de la categoría
 
+    @Column(nullable=false)
+    private String nombre;  // Nombre de la categoría
+
+    @Column(nullable=false)
+    private String descripcion;  // Descripción opcional de la categoría
     // Getters y Setters
     public Long getId() {
         return id;

@@ -54,8 +54,10 @@ const Register = () => {
           <label>Nombre Completo</label>
           <input
             type="text"
+            placeholder="Ingresa tu nombre completo"
             {...register('name')}
             className={`form-input ${errors.name ? 'input-error' : ''}`}
+            style={{ border: '1px solid var(--verde-oscuro)', borderRadius: '5px' }}
           />
           {errors.name && <span className="error-message">{errors.name.message}</span>}
         </div>
@@ -64,31 +66,36 @@ const Register = () => {
           <label>Email</label>
           <input
             type="email"
+            placeholder="Ingresa tu email"
             {...register('email')}
             className={`form-input ${errors.email ? 'input-error' : ''}`}
+            style={{ border: '1px solid var(--verde-oscuro)', borderRadius: '5px' }}
           />
           {errors.email && <span className="error-message">{errors.email.message}</span>}
         </div>
 
         <div className="form-group">
-        <label>Teléfono</label>
-        <input
+          <label>Teléfono</label>
+          <input
             type="tel"
+            placeholder="Ej: +54 11 1234-5678"
             {...register('phone')}
             className={`form-input ${errors.phone ? 'input-error' : ''}`}
-            placeholder="Ej: +54 11 1234-5678"
-        />
-        {errors.phone && (
+            style={{ border: '1px solid var(--verde-oscuro)', borderRadius: '5px' }}
+          />
+          {errors.phone && (
             <span className="error-message">{errors.phone.message}</span>
-        )}
+          )}
         </div>
 
         <div className="form-group">
           <label>Contraseña</label>
           <input
             type="password"
+            placeholder="Crea una contraseña"
             {...register('password')}
             className={`form-input ${errors.password ? 'input-error' : ''}`}
+            style={{ border: '1px solid var(--verde-oscuro)', borderRadius: '5px' }}
           />
           {errors.password && <span className="error-message">{errors.password.message}</span>}
         </div>
@@ -97,8 +104,10 @@ const Register = () => {
           <label>Confirmar Contraseña</label>
           <input
             type="password"
+            placeholder="Confirma tu contraseña"
             {...register('confirmPassword')}
             className={`form-input ${errors.confirmPassword ? 'input-error' : ''}`}
+            style={{ border: '1px solid var(--verde-oscuro)', borderRadius: '5px' }}
           />
           {errors.confirmPassword && (
             <span className="error-message">{errors.confirmPassword.message}</span>

@@ -8,11 +8,30 @@
   --texto-oscuro: #2e7d32;
 }
 
+/* Asegura que el contenedor principal ocupe toda la altura de la ventana */
+.spa-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ocupa toda la altura de la ventana */
+}
+
+main {
+  flex: 1; /* Permite que el contenido principal ocupe el espacio restante */
+}
+
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
   background-color: var(--verde-claro);
   color: var(--texto-oscuro);
+}
+
+/* Ajusta el footer para que siempre esté al final */
+footer {
+  background-color: var(--verde-medio);
+  padding: 2rem;
+  text-align: center;
+  margin-top: auto; /* Empuja el footer al final del contenedor */
 }
 
 /* Animaciones */
@@ -53,7 +72,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to bottom right, var(--verde-claro), var(--rosa-claro));
+  background: linear-gradient(to bottom right, var(--verde-claro), var(--rosa-claro));  
 }
 
 .auth-form {
@@ -63,18 +82,6 @@ a:hover {
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   width: 100%;
   max-width: 400px;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid var(--verde-medio);
-  border-radius: 8px;
-  margin-top: 0.5rem;
 }
 
 .input-error {
@@ -130,13 +137,6 @@ a:hover {
   margin-bottom: 2rem;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: var(--texto-oscuro);
-  font-weight: 500;
-}
-
 .form-input:focus {
   outline: none;
   border-color: var(--rosa-medio);
@@ -147,8 +147,31 @@ input[type="tel"] {
   direction: ltr; /* Para mejor soporte de números */
 }
 
-/* Estilo para placeholder */
+.form-input {
+  width: 100%; /* Asegura que el input ocupe todo el ancho disponible */
+  padding: 0.8rem; /* Espaciado interno para centrar el texto */
+  font-size: 1rem; /* Tamaño de fuente consistente */
+  border: 1px solid var(--verde-oscuro); /* Borde del input */
+  border-radius: 5px; /* Bordes redondeados */
+  box-sizing: border-box; /* Incluye el padding en el tamaño total */
+  outline: none; /* Elimina el borde azul al hacer clic */
+}
+
 .form-input::placeholder {
-  color: #999;
-  font-size: 0.9em;
+  color: #aaa; /* Color del placeholder */
+  font-size: 0.9rem; /* Tamaño del texto del placeholder */
+  vertical-align: middle; /* Alineación vertical */
+}
+
+.form-group {
+  margin-bottom: 1.5rem; /* Espaciado entre los campos */
+  display: flex;
+  flex-direction: column; /* Asegura que el label y el input estén en columna */
+  align-items: flex-start; /* Alinea el contenido al inicio */
+}
+
+label {
+  margin-bottom: 0.5rem; /* Espaciado entre el label y el input */
+  font-weight: bold; /* Hace que el texto del label sea más visible */
+  color: var(--texto-oscuro); /* Color del texto del label */
 }
