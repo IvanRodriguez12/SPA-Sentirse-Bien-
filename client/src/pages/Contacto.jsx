@@ -5,9 +5,22 @@ const Contacto = () => {
   const emailAddress = 'info@SPA “Sentirse bien” .com'; // Correo electrónico del spa
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
-      <h2>Contacto</h2>
-      <p>¿Tienes alguna consulta? ¡Contáctanos!</p>
+    <div
+      style={{
+        padding: '2rem',
+        textAlign: 'center',
+        background: 'linear-gradient(to bottom right, var(--verde-claro), var(--rosa-claro))',
+        minHeight: '100vh', // Asegura que el fondo cubra toda la pantalla
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <h2 style={{ color: 'var(--texto-oscuro)', marginBottom: '1rem' }}>Contacto</h2>
+      <p style={{ color: 'var(--texto-oscuro)', marginBottom: '2rem' }}>
+        ¿Tienes alguna consulta? ¡Contáctanos!
+      </p>
 
       {/* Botón de WhatsApp */}
       <a
@@ -16,32 +29,32 @@ const Contacto = () => {
         rel="noopener noreferrer"
         style={{
           display: 'inline-block',
-          backgroundColor: '#25D366',
+          backgroundColor: 'var(--verde-oscuro)',
           color: 'white',
           padding: '0.8rem 1.5rem',
           borderRadius: '25px',
           textDecoration: 'none',
           fontWeight: 'bold',
           margin: '1rem 0',
+          transition: 'all 0.3s ease',
         }}
       >
         Enviar mensaje por WhatsApp
       </a>
-
-      <br />
 
       {/* Enlace de correo */}
       <a
         href={`mailto:${emailAddress}`}
         style={{
           display: 'inline-block',
-          backgroundColor: '#0078D4',
+          backgroundColor: 'var(--rosa-medio)',
           color: 'white',
           padding: '0.8rem 1.5rem',
           borderRadius: '25px',
           textDecoration: 'none',
           fontWeight: 'bold',
           margin: '1rem 0',
+          transition: 'all 0.3s ease',
         }}
       >
         Enviar correo electrónico

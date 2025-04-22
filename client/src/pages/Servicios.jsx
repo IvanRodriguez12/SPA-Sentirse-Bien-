@@ -34,7 +34,16 @@ const Servicio = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+    <div
+      style={{
+        padding: '2rem',
+        maxWidth: '800px',
+        margin: '0 auto',
+        background: 'linear-gradient(to bottom right, var(--verde-claro), var(--rosa-claro))',
+        borderRadius: '15px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+      }}
+    >
       <h2 style={{ color: 'var(--verde-oscuro)', marginBottom: '1rem' }}>{service.nombre}</h2>
       <img
         src={service.imagen || 'https://via.placeholder.com/800x400'} // Imagen del servicio o un placeholder

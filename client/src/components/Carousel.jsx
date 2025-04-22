@@ -22,20 +22,48 @@ const Carousel = ({ items, onItemClick }) => {
               overflow: 'hidden',
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
               flex: '0 0 auto',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             <img
-              src={item.image}
-              alt={item.name}
+              src={item.image || 'https://via.placeholder.com/300x200'} // Imagen del servicio o un placeholder
+              alt={item.nombre}
               style={{
                 width: '100%',
                 height: '200px',
                 objectFit: 'cover',
+                flexShrink: 0,
               }}
             />
-            <div style={{ padding: '1rem' }}>
-              <h4>{item.name}</h4>
-              <p style={{ color: 'var(--verde-oscuro)' }}>{item.category}</p>
+            <div
+              style={{
+                padding: '1rem',
+                flexGrow: 1,
+                backgroundColor: 'white',
+              }}
+            >
+              <h4
+                style={{
+                  color: 'var(--texto-oscuro)',
+                  margin: '0 0 0.5rem 0',
+                  fontSize: '1.2rem',
+                  fontWeight: '600',
+                }}
+              >
+                {item.nombre || 'Nombre no disponible'}
+              </h4>
+              <p
+                style={{
+                  color: 'var(--verde-oscuro)',
+                  margin: 0,
+                  fontSize: '0.9rem',
+                  fontWeight: '500',
+                }}
+              >
+                {item.categoryName || 'Categoría no disponible'}
+              </p>
             </div>
           </div>
         ))}
@@ -43,4 +71,4 @@ const Carousel = ({ items, onItemClick }) => {
     );
   };
   
-  export default Carousel; // Exportación por defecto
+  export default Carousel;
