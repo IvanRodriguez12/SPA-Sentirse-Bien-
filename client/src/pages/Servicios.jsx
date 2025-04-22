@@ -1,122 +1,84 @@
-import React, { useEffect, useState } from 'react';
-import { getCategories, getServicesByCategory } from '../api/ListServicios';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Importar el contexto de autenticación
 
-const Servicios = () => {
-  const [categories, setCategories] = useState([]);
-  const [services, setServices] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const Servicio = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth(); // Obtener el usuario autenticado
 
-  useEffect(() => {
-    const fetchCategoriesAndServices = async () => {
-      try {
-        setLoading(true);
-        const categoriesData = await getCategories();
-        setCategories(categoriesData);
+  const service = location.state?.service; // Obtener el servicio desde el estado de navegación
 
-        // Fetch services for all categories concurrently
-        const servicesData = await Promise.all(
-          categoriesData.map(async (category) => {
-            const categoryServices = await getServicesByCategory(category.id);
-            return { [category.nombre]: categoryServices };
-          })
-        );
+  if (!service) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h2>No se encontró el servicio</h2>
+        <button
+          onClick={() => navigate('/categorias')}
+          style={buttonStyle}
+        >
+          Volver a Categorías
+        </button>
+      </div>
+    );
+  }
 
-        // Combine all services into a single object
-        const combinedServices = servicesData.reduce((acc, curr) => {
-          return { ...acc, ...curr };
-        }, {});
-
-        setServices(combinedServices);
-      } catch (error) {
-        console.error('Error fetching categories or services:', error);
-        setError('Hubo un problema al cargar los servicios. Inténtalo más tarde.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategoriesAndServices();
-  }, []);
-
-  const handleReserve = (service) => {
-    navigate('/reservas', { state: { service } });
+  const handleReserve = () => {
+    if (!user) {
+      // Si el usuario no está autenticado, redirigir a la página de login
+      navigate('/login');
+    } else {
+      // Si el usuario está autenticado, redirigir a la página de reservas
+      navigate('/reservas', { state: { service } });
+    }
   };
 
-  if (loading) {
-    return <div style={{ padding: '2rem' }}>Cargando servicios...</div>;
-  }
-
-  if (error) {
-    return <div style={{ padding: '2rem', color: 'red' }}>{error}</div>;
-  }
-
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2 style={{ animation: 'fadeIn 0.6s ease' }}>Nuestros Servicios</h2>
-
-      {categories.map((category) => (
-        <div key={category.id} className="service-card" style={{ margin: '3rem 0' }}>
-          <h3 style={categoryStyle}>{category.nombre}</h3>
-          <ul style={listStyle}>
-            {services[category.nombre]?.map((service) => (
-              <li key={service.id} className="hover-effect" style={serviceItemStyle}>
-                <div style={{ flex: 1 }}>
-                  <h4 style={{ margin: 0 }}>{service.nombre}</h4>
-                  <p>{service.descripcion}</p>
-                  <p><strong>Precio:</strong> ${service.precio}</p>
-                </div>
-                <button
-                  style={buttonStyle}
-                  onClick={() => handleReserve(service)}
-                >
-                  Reservar
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <h2 style={{ color: 'var(--verde-oscuro)', marginBottom: '1rem' }}>{service.nombre}</h2>
+      <img
+        src={service.imagen || 'https://via.placeholder.com/800x400'} // Imagen del servicio o un placeholder
+        alt={service.nombre}
+        style={{
+          width: '100%',
+          height: 'auto',
+          borderRadius: '10px',
+          marginBottom: '1rem',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        }}
+      />
+      <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>{service.descripcion}</p>
+      <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--rosa-medio)' }}>
+        Precio: ${service.precio}
+      </p>
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+        <button
+          onClick={() => navigate('/categorias')}
+          style={buttonStyle}
+        >
+          Volver a Categorías
+        </button>
+        <button
+          onClick={handleReserve}
+          style={{ ...buttonStyle, backgroundColor: 'var(--verde-oscuro)' }}
+        >
+          Reservar
+        </button>
+      </div>
     </div>
   );
 };
 
-// Estilos separados para mejor lectura
-const categoryStyle = {
-  color: 'var(--verde-oscuro)',
-  borderBottom: '2px solid var(--rosa-medio)',
-  paddingBottom: '0.5rem',
-  fontSize: '1.8rem',
-};
-
-const listStyle = {
-  listStyle: 'none',
-  padding: 0,
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-  gap: '1.5rem',
-};
-
-const serviceItemStyle = {
-  backgroundColor: 'white',
-  padding: '1.5rem',
-  borderRadius: '10px',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-};
-
+// Estilo para los botones
 const buttonStyle = {
   backgroundColor: 'var(--rosa-medio)',
-  border: 'none',
-  padding: '0.8rem 1.5rem',
-  borderRadius: '25px',
   color: 'white',
+  padding: '0.8rem 1.5rem',
+  border: 'none',
+  borderRadius: '25px',
   cursor: 'pointer',
+  fontSize: '1rem',
   transition: 'all 0.3s ease',
 };
 
-export default Servicios;
+export default Servicio;

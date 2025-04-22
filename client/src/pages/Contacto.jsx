@@ -2,7 +2,7 @@ import React from 'react';
 
 const Contacto = () => {
   const whatsappNumber = '+5491234567890'; // Número de WhatsApp del spa
-  const emailAddress = 'info@bamboo-spa.com'; // Correo electrónico del spa
+  const emailAddress = 'info@SPA “Sentirse bien” .com'; // Correo electrónico del spa
 
   return (
     <div style={{ padding: '2rem', textAlign: 'center' }}>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import bambooIcon from '../assets/bamboo-icon.png'; // Asegúrate de que la ruta sea correcta
+import Icon from '../assets/Spa-icon.png'; // Asegúrate de que la ruta sea correcta
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -17,14 +17,14 @@ const Navbar = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <Link to="/" style={logoStyle}>
           <img
-            src={bambooIcon}
-            alt="Bamboo Icon"
+            src={Icon}
+            alt="Spa Icon"
             style={{ width: '40px', height: '40px', marginRight: '0.5rem' }}
           />
-          <h1 style={{ margin: 0, display: 'inline-block' }}>Bamboo Spa</h1>
+          <h1 style={{ margin: 0, display: 'inline-block' }}>SPA “Sentirse bien” </h1>
         </Link>
         <Link to="/" style={linkStyle}>Inicio</Link>
-        <Link to="/servicios" style={linkStyle}>Servicios</Link>
+        <Link to="/categorias" style={linkStyle}>Servicios</Link>
         <Link to="/contacto" style={linkStyle}>Contacto</Link>
         <Link to="/sobre-nosotros" style={linkStyle}>Sobre Nosotros</Link>
       </div>

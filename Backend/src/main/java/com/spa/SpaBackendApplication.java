@@ -9,4 +9,3 @@ public class SpaBackendApplication {
         SpringApplication.run(SpaBackendApplication.class, args);
     }
 }
-

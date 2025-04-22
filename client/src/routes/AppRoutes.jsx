@@ -11,6 +11,7 @@ const Login = lazy(() => import('../pages/Login'));
 const Registrar = lazy(() => import('../pages/Registrar'));
 const Turnos = lazy(() => import('../pages/Turnos'));
 const Contacto = lazy(() => import('../pages/Contacto'));
+const Categorias = lazy(() => import('../pages/Categorias'));
 
 const AppRoutes = () => {
   return (
@@ -24,6 +25,7 @@ const AppRoutes = () => {
           <Route path="/reservas" element={<Reserva />} />
           <Route path="/turnos" element={<Turnos />} /> 
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/categorias" element={<Categorias />} />
           <Route path="/servicios" element={<Servicios/>} />
         </Route>
       </Routes>

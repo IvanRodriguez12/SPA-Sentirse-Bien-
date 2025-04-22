@@ -24,8 +24,8 @@ const Layout = () => {
 
 const Footer = () => (
   <footer className="spa-footer">
-    <p>Contacto: info@bamboo-spa.com | Tel: +54 9 1234-567890</p>
-    <p>© 2024 Bamboo Spa - Todos los derechos reservados</p>
+    <p>Contacto: info@SPA “Sentirse bien” .com | Tel: +54 9 1234-567890</p>
+    <p>© 2024 SPA “Sentirse bien”  - Todos los derechos reservados</p>
   </footer>
 );
 
