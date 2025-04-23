@@ -6,19 +6,16 @@ import { toast } from 'react-hot-toast';
 import { registerUser } from '../api/Auth';
 
 const registerSchema = yup.object().shape({
-    name: yup.string().required('Nombre requerido'),
-    email: yup.string().email('Email inválido').required('Requerido'),
-    phone: yup.string()
-      .matches(
-        /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{6,}$/,
-        'Número de teléfono inválido'
-      )
-      .required('Teléfono requerido'),
-    password: yup.string().min(6, 'Mínimo 6 caracteres').required('Requerido'),
-    confirmPassword: yup.string()
-      .oneOf([yup.ref('password'), null], 'Las contraseñas no coinciden')
-      .required('Confirma tu contraseña')
-  });
+  name: yup.string().required('Nombre requerido'),
+  email: yup.string().email('Email inválido').required('Requerido'),
+  phone: yup.string()
+    .matches(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{6,}$/, 'Número de teléfono inválido')
+    .required('Teléfono requerido'),
+  password: yup.string().min(6, 'Mínimo 6 caracteres').required('Requerido'),
+  confirmPassword: yup.string()
+    .oneOf([yup.ref('password'), null], 'Las contraseñas no coinciden')
+    .required('Confirma tu contraseña')
+});
 
 const Register = () => {
   const navigate = useNavigate();
@@ -32,12 +29,18 @@ const Register = () => {
     try {
       const formattedData = {
         nombre: data.name,
-        email: data.email,
-        telefono: data.phone.replace(/\s/g, ''), // Limpiar espacios en teléfono
+        email: data.email.trim().toLowerCase(),
+        telefono: data.phone.replace(/\s/g, ''),
         contrasena: data.password
       };
-      
-      await registerUser(formattedData);
+
+      const result = await registerUser(formattedData);
+
+      if (result.mensaje === 'Email ya registrado') {
+        toast.error('Este correo ya está registrado. Usa otro.');
+        return;
+      }
+
       toast.success('¡Registro exitoso!');
       navigate('/login');
     } catch (error) {
@@ -114,8 +117,8 @@ const Register = () => {
           )}
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="auth-button"
           disabled={isSubmitting}
         >
