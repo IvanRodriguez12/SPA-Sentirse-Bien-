@@ -5,6 +5,7 @@ import com.spa.dto.AuthResponse;
 import com.spa.dto.LoginRequest;
 import com.spa.dto.RegisterRequest;
 import com.spa.model.Cliente;
+import com.spa.model.Rol;
 import com.spa.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,10 +37,13 @@ public class AuthService {
             // Encriptar contraseña
             cliente.setContrasena(passwordEncoder.encode(request.getContrasena()));
 
+            // Rol por defecto
+            cliente.setRol(Rol.CLIENTE);
+
             clienteRepository.save(cliente);
 
-            // Generar token
-            String token = JwtUtil.generarToken(cliente.getEmail());
+            // ✅ Token con email y rol
+            String token = JwtUtil.generarToken(cliente.getEmail(), cliente.getRol().name());
 
             return new AuthResponse("Registro exitoso", token, cliente);
         } catch (Exception e) {
@@ -56,17 +60,14 @@ public class AuthService {
             System.out.println("Contraseña en base de datos: " + c.getContrasena());
             System.out.println("PasswordEncoder match: " + passwordEncoder.matches(request.getContrasena(), c.getContrasena()));
         });
+
         return clienteRepository.findByEmail(request.getEmail())
                 .filter(cliente -> passwordEncoder.matches(request.getContrasena(), cliente.getContrasena()))
                 .map(cliente -> {
-                    String token = JwtUtil.generarToken(cliente.getEmail());
+                    // ✅ Token con email y rol
+                    String token = JwtUtil.generarToken(cliente.getEmail(), cliente.getRol().name());
                     return new AuthResponse("Inicio de sesión exitoso", token, cliente);
                 })
                 .orElse(new AuthResponse("Credenciales inválidas", null, null));
     }
 }
-
-
-
-
-
