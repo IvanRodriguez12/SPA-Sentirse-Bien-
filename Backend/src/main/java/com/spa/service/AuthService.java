@@ -36,10 +36,11 @@ public class AuthService {
             // Encriptar contraseña
             cliente.setContrasena(passwordEncoder.encode(request.getContrasena()));
 
+            cliente.setRol("CLIENTE");
             clienteRepository.save(cliente);
 
             // Generar token
-            String token = JwtUtil.generarToken(cliente.getEmail());
+            String token = JwtUtil.generarToken(cliente.getEmail(), cliente.getRol());
 
             return new AuthResponse("Registro exitoso", token, cliente);
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class AuthService {
         return clienteRepository.findByEmail(request.getEmail())
                 .filter(cliente -> passwordEncoder.matches(request.getContrasena(), cliente.getContrasena()))
                 .map(cliente -> {
-                    String token = JwtUtil.generarToken(cliente.getEmail());
+                    String token = JwtUtil.generarToken(cliente.getEmail(), cliente.getRol());
                     return new AuthResponse("Inicio de sesión exitoso", token, cliente);
                 })
                 .orElse(new AuthResponse("Credenciales inválidas", null, null));

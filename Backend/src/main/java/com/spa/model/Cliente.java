@@ -19,9 +19,11 @@ public class Cliente {
     @Column(nullable = false)
     private String telefono;
 
-
     @Column(nullable = false)
     private String contrasena;
+
+    @Column(nullable = false)
+    private String rol = "CLIENTE";
 
     // Getters y setters
     public Long getId() { return id; }
@@ -38,5 +40,9 @@ public class Cliente {
 
     public String getContrasena() { return contrasena; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
 }
+
 

@@ -5,6 +5,7 @@ import com.spa.service.ServicioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,45 +21,41 @@ public class ServicioController {
 
     @GetMapping("/listar")
     public ResponseEntity<List<Servicio>> listarServicios() {
-        List<Servicio> servicios = servicioService.obtenerTodos();
-        return ResponseEntity.ok(servicios);
-    }
-
-    @PostMapping("/crear")
-    public ResponseEntity<Servicio> crearServicio(@RequestBody Servicio servicio) {
-        Servicio nuevoServicio = servicioService.crearServicio(servicio);
-        if (nuevoServicio != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        return ResponseEntity.ok(servicioService.obtenerTodos());
     }
 
     @GetMapping("/detalle/{id}")
     public ResponseEntity<Servicio> obtenerServicio(@PathVariable Long id) {
-        Optional<Servicio> servicio = servicioService.obtenerPorId(id);
-        if (servicio.isPresent()) {
-            return ResponseEntity.ok(servicio.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        return servicioService.obtenerPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    // Solo ADMIN
+    @PostMapping("/crear")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Servicio> crearServicio(@RequestBody Servicio servicio) {
+        Servicio nuevoServicio = servicioService.crearServicio(servicio);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
     }
 
     @PutMapping("/editar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Servicio> actualizarServicio(@PathVariable Long id, @RequestBody Servicio servicio) {
         Servicio servicioActualizado = servicioService.actualizarServicio(id, servicio);
-        if (servicioActualizado != null) {
-            return ResponseEntity.ok(servicioActualizado);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        return servicioActualizado != null ?
+                ResponseEntity.ok(servicioActualizado) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminarServicio(@PathVariable Long id) {
         servicioService.eliminarServicio(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
+
 
 
 

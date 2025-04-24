@@ -3,7 +3,6 @@ package com.spa.Security;
 import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.security.Keys;
-
 import javax.crypto.SecretKey;
 import java.util.Date;
 
@@ -11,13 +10,22 @@ import java.util.Date;
 public class JwtUtil {
     public static SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    public static String generarToken(String email) {
+    public static String generarToken(String email, String rol) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("rol", rol)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // Expiración de 1 día
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(key)
                 .compact();
+    }
+
+    public static String extraerRol(String token) {
+        return Jwts.parser()
+                .setSigningKey(key.getEncoded())
+                .parseClaimsJws(token)
+                .getBody()
+                .get("rol", String.class);
     }
 
     public static String extraerEmail(String token) {

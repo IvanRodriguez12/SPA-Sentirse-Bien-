@@ -46,11 +46,11 @@ public class ClienteService implements UserDetailsService {
         Cliente cliente = clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Cliente no encontrado con email: " + email));
 
-        return new User(
-                cliente.getEmail(),
-                cliente.getContrasena(),
-                Collections.emptyList()
-        );
+        return User.builder()
+                .username(cliente.getEmail())
+                .password(cliente.getContrasena())
+                .roles(cliente.getRol())
+                .build();
     }
 }
 
