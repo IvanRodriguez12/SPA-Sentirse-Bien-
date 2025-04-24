@@ -19,14 +19,11 @@ public class Cliente {
     @Column(nullable = false)
     private String telefono;
 
-
     @Column(nullable = false)
     private String contrasena;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Rol rol;
-
+    private String rol = "CLIENTE";
 
     // Getters y setters
     public Long getId() { return id; }
@@ -44,8 +41,8 @@ public class Cliente {
     public String getContrasena() { return contrasena; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
-    public Rol getRol() { return rol; }
-    public void setRol(Rol rol) { this.rol = rol; }
-    
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
 }
+
 

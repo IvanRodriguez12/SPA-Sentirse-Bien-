@@ -9,13 +9,14 @@ import com.spa.service.AuthService;
 import com.spa.service.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/clientes")
-@CrossOrigin(origins = "*")
+@CrossOrigin("*")
 public class ClienteController {
 
     private final ClienteService clienteService;
@@ -29,26 +30,21 @@ public class ClienteController {
     @PostMapping("/registro")
     public ResponseEntity<AuthResponse> registrar(@RequestBody RegisterRequest request) {
         AuthResponse response = authService.register(request);
-
-        if (response.getToken() == null) {
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        return ResponseEntity.ok(response);
+        return response.getToken() == null ?
+                ResponseEntity.badRequest().body(response) :
+                ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
-
-        if (response.getToken() == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
-
-        return ResponseEntity.ok(response);
+        return response.getToken() == null ?
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response) :
+                ResponseEntity.ok(response);
     }
 
     @GetMapping("/listar")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Cliente> obtenerTodos() {
         return clienteService.obtenerTodosLosClientes();
     }
@@ -66,4 +62,5 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido o expirado");
     }
 }
+
 

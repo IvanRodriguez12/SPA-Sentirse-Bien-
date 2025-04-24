@@ -39,10 +39,23 @@ public class SecurityConfig {
                 }))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/clientes/**", "/api/auth/**",
-                        "/api/categorias/**","/api/servicios/**","/api/turnos/**").permitAll()
+                        // Rutas públicas
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // Rutas accesibles por cualquier cliente autenticado
+                        .requestMatchers("/api/servicios/**", "/api/categorias/**").permitAll()
+                        .requestMatchers("/api/turnos/**").hasRole("CLIENTE")
+
+                        // Rutas solo para ADMIN
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/clientes/**").hasRole("ADMIN")
+                        .requestMatchers("/api/servicios/**/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/turnos/**/admin/**").hasRole("ADMIN")
+
+                        // Cualquier otra cosa, requiere autenticación
                         .anyRequest().authenticated()
                 )
+
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

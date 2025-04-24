@@ -27,9 +27,7 @@ const Carousel = ({ items, onItemClick }) => {
               flexDirection: 'column',
             }}
           >
-            <img
-              src={item.image || 'https://via.placeholder.com/300x200'} // Imagen del servicio o un placeholder
-              alt={item.nombre}
+            <img src={`/${item.imagen}`} alt={item.nombre}
               style={{
                 width: '100%',
                 height: '200px',

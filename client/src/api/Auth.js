@@ -25,8 +25,11 @@ export const registerUser = async (userData) => {
       telefono: userData.telefono, 
       contrasena: userData.contrasena
     });
-    return response.data;
+
+    return response.data; // contiene { mensaje, token, cliente }
   } catch (error) {
-    throw error.response.data;
+    const mensaje =
+      error.response?.data?.mensaje || 'Error desconocido al registrarse';
+    throw new Error(mensaje);
   }
 };

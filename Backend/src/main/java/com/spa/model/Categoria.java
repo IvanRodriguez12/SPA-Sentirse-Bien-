@@ -10,10 +10,14 @@ public class Categoria {
     private Long id;
 
     @Column(nullable=false)
-    private String nombre;  // Nombre de la categoría
+    private String nombre;
 
     @Column(nullable=false)
-    private String descripcion;  // Descripción opcional de la categoría
+    private String descripcion;
+
+    @Column(nullable = false)
+    private String imagen;
+
     // Getters y Setters
     public Long getId() {
         return id;
@@ -38,5 +42,9 @@ public class Categoria {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    public String getImagen() {return imagen;}
+
+    public void setImagen(String imagen) {this.imagen = imagen;}
 }
 
