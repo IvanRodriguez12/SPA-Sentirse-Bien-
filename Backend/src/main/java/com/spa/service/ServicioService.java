@@ -1,10 +1,10 @@
 package com.spa.service;
 
+import com.spa.model.Cliente;
 import com.spa.model.Servicio;
-import com.spa.model.Categoria;  // Asegúrate de importar la clase Categoria
+import com.spa.model.Categoria;
 import com.spa.repository.ServicioRepository;
-import com.spa.repository.CategoriaRepository;  // Necesitarás este repositorio para acceder a las categorías
-import org.springframework.beans.factory.annotation.Autowired;
+import com.spa.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,12 +13,14 @@ import java.util.Optional;
 @Service
 public class ServicioService {
 
-    @Autowired
-    private ServicioRepository servicioRepository;
+    private final ServicioRepository servicioRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;  // Este repositorio te permitirá manejar categorías
-
+    public ServicioService(ServicioRepository servicioRepository,
+                           CategoriaRepository categoriaRepository) {
+        this.servicioRepository = servicioRepository;
+        this.categoriaRepository = categoriaRepository;
+    }
 
     public List<Servicio> obtenerTodos() {
         return servicioRepository.findAll();
@@ -26,8 +28,7 @@ public class ServicioService {
 
     public Servicio crearServicio(Servicio servicio) {
         Categoria categoria = categoriaRepository.findById(servicio.getCategoria().getId())
-                .orElseThrow(() -> new RuntimeException("Categoría no válida"));
-
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         servicio.setCategoria(categoria);
         return servicioRepository.save(servicio);
     }
@@ -36,27 +37,40 @@ public class ServicioService {
         return servicioRepository.findById(id);
     }
 
-    public Servicio actualizarServicio(Long id, Servicio datosActualizados) {
-        return servicioRepository.findById(id).map(servicio -> {
-            // Si la categoría es válida, asignarla
-            Categoria categoria = categoriaRepository.findById(datosActualizados.getCategoria().getId())
-                    .orElseThrow(() -> new RuntimeException("Categoría no válida"));
+    public Servicio actualizarServicio(Long id, Servicio servicioActualizado) {
+        return servicioRepository.findById(id)
+                .map(servicio -> {
+                    Categoria categoria = categoriaRepository.findById(servicioActualizado.getCategoria().getId())
+                            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
-            servicio.setNombre(datosActualizados.getNombre());
-            servicio.setCategoria(categoria);  // Asignar la categoría
-            servicio.setDescripcion(datosActualizados.getDescripcion());
-            servicio.setPrecio(datosActualizados.getPrecio());
-            return servicioRepository.save(servicio);
-        }).orElse(null);
+                    servicio.setNombre(servicioActualizado.getNombre());
+                    servicio.setCategoria(categoria);
+                    servicio.setDescripcion(servicioActualizado.getDescripcion());
+                    servicio.setPrecio(servicioActualizado.getPrecio());
+                    servicio.setTipo(servicioActualizado.getTipo());
+                    servicio.setImagen(servicioActualizado.getImagen());
+
+                    return servicioRepository.save(servicio);
+                })
+                .orElseThrow(() -> new RuntimeException("Servicio no encontrado con ID: " + id));
     }
 
     public void eliminarServicio(Long id) {
+        if (!servicioRepository.existsById(id)) {
+            throw new RuntimeException("Servicio no encontrado con ID: " + id);
+        }
         servicioRepository.deleteById(id);
     }
 
     public List<Servicio> obtenerServiciosPorCategoria(Long categoriaId) {
+        if (!categoriaRepository.existsById(categoriaId)) {
+            throw new RuntimeException("Categoría no encontrada con ID: " + categoriaId);
+        }
         return servicioRepository.findByCategoriaId(categoriaId);
     }
+
+    public Servicio obtenerServicioPorId(Long id) {
+        return servicioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Servicio no encontrado con ID: " + id));
+    }
 }
-
-

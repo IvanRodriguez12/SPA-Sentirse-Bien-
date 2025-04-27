@@ -32,14 +32,12 @@ public class AuthService {
             cliente.setNombre(request.getNombre());
             cliente.setEmail(request.getEmail());
             cliente.setTelefono(request.getTelefono());
-
-            // Encriptar contraseña
             cliente.setContrasena(passwordEncoder.encode(request.getContrasena()));
 
             clienteRepository.save(cliente);
 
-            // Generar token
-            String token = JwtUtil.generarToken(cliente.getEmail());
+            // Generate token with CLIENT role
+            String token = jwtUtil.generarToken(cliente.getEmail(), "CLIENTE");
 
             return new AuthResponse("Registro exitoso", token, cliente);
         } catch (Exception e) {
@@ -49,24 +47,13 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        System.out.println("Email recibido: " + request.getEmail());
-        System.out.println("Contraseña recibida: " + request.getContrasena());
-
-        clienteRepository.findByEmail(request.getEmail()).ifPresent(c -> {
-            System.out.println("Contraseña en base de datos: " + c.getContrasena());
-            System.out.println("PasswordEncoder match: " + passwordEncoder.matches(request.getContrasena(), c.getContrasena()));
-        });
         return clienteRepository.findByEmail(request.getEmail())
                 .filter(cliente -> passwordEncoder.matches(request.getContrasena(), cliente.getContrasena()))
                 .map(cliente -> {
-                    String token = JwtUtil.generarToken(cliente.getEmail());
+                    // Generate token with CLIENT role
+                    String token = jwtUtil.generarToken(cliente.getEmail(), "CLIENTE");
                     return new AuthResponse("Inicio de sesión exitoso", token, cliente);
                 })
                 .orElse(new AuthResponse("Credenciales inválidas", null, null));
     }
 }
-
-
-
-
-

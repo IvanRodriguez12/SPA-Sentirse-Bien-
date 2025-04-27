@@ -17,13 +17,13 @@ public class Turno {
     private LocalDateTime fechaHora;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "cliente_id")
-    @JsonIgnoreProperties({"telefono", "contrasena"})
+    @JoinColumn(name = "cliente_id", nullable = false)
+    @JsonIgnoreProperties({"telefono", "contrasena","hibernateLazyInitializer", "handler"})
     private Cliente cliente;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "servicio_id")
-    @JsonIgnoreProperties({"descripcion"})
+    @JoinColumn(name = "servicio_id", nullable = false)
+    @JsonIgnoreProperties({"descripcion" ,"hibernateLazyInitializer", "handler"})
     private Servicio servicio;
 
     // Getters y setters

@@ -11,25 +11,39 @@ const Turnos = () => {
 
     useEffect(() => {
         const fetchTurnos = async () => {
+            const token = localStorage.getItem("authToken");  // Cambié "token" por "authToken"
+            if (!user || !user.id || !token) return; // Evita llamadas sin usuario autenticado o sin token
+
             try {
-                const response = await axios.get(`http://localhost:8080/api/turnos/listar`);
-                const userTurnos = response.data.filter((turno) =>
-                    turno.cliente.id === user.id
-                );
+                const response = await axios.get(`http://localhost:8080/api/turnos/listar`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Token correcto
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                console.log("Respuesta del servidor:", response.data);
+                const userTurnos = response.data.filter((turno) => turno.cliente.id === user.id);
                 setTurnos(userTurnos);
             } catch (error) {
-                console.error('Error al cargar los turnos:', error);
-                toast.error('Hubo un problema al cargar tus turnos.');
+                console.error("Error al cargar los turnos:", error.response?.data || error.message);
+                toast.error("Hubo un problema al cargar tus turnos.");
             }
         };
 
         fetchTurnos();
-    }, [user.id, navigate]);
+    }, [user, navigate]);
 
     const handleDelete = async (id) => {
         if (window.confirm('¿Estás seguro de que deseas eliminar este turno?')) {
             try {
-                await axios.delete(`http://localhost:8080/api/turnos/eliminar/${id}`);
+                await axios.delete(`http://localhost:8080/api/turnos/eliminar/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, // Token para eliminación
+                        "Content-Type": "application/json"
+                    }
+                });
+
                 setTurnos(turnos.filter((turno) => turno.id !== id));
                 toast.success('Turno eliminado exitosamente.');
             } catch (error) {
@@ -46,7 +60,7 @@ const Turnos = () => {
                 editingTurno: turno
             }
         });
-    }
+    };
 
     const handleNewReservation = () => {
         navigate('/servicios');
@@ -87,36 +101,35 @@ const Turnos = () => {
                             <p><strong>Hora:</strong> {new Date(turno.fechaHora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                         </div>
                         <div>
-                        <button
-                            onClick={() => handleEdit(turno)}
-                            style={{
-                                backgroundColor: 'var(--verde-oscuro)',
-                                color: 'white',
-                                padding: '0.5rem 1rem',
-                                border: 'none',
-                                borderRadius: '25px',
-                                cursor: 'pointer',
-                                marginRight: '0.5rem', // Aseguramos un margen a la derecha del botón Editar
-                            }}
-                        >
-                            Editar
-                        </button>
-                        <button
-                            onClick={() => handleDelete(turno.id)}
-                            style={{
-                                backgroundColor: 'var(--verde-oscuro)', // Asegúrate de que este color sea visible
-                                color: 'white', // Contraste con el fondo
-                                padding: '0.5rem 1rem',
-                                border: 'none',
-                                borderRadius: '25px',
-                                cursor: 'pointer',
-                                marginLeft: '0.5rem', // Agrega un margen a la izquierda para separarlo del botón de editar
-                                display: 'inline-block', // Asegúrate de que el botón se muestre correctamente
-                            }}
-                        >
-                            Eliminar
-                        </button>
-                    </div>
+                            <button
+                                onClick={() => handleEdit(turno)}
+                                style={{
+                                    backgroundColor: 'var(--verde-oscuro)',
+                                    color: 'white',
+                                    padding: '0.5rem 1rem',
+                                    border: 'none',
+                                    borderRadius: '25px',
+                                    cursor: 'pointer',
+                                    marginRight: '0.5rem',
+                                }}
+                            >
+                                Editar
+                            </button>
+                            <button
+                                onClick={() => handleDelete(turno.id)}
+                                style={{
+                                    backgroundColor: 'var(--verde-oscuro)',
+                                    color: 'white',
+                                    padding: '0.5rem 1rem',
+                                    border: 'none',
+                                    borderRadius: '25px',
+                                    cursor: 'pointer',
+                                    marginLeft: '0.5rem',
+                                }}
+                            >
+                                Eliminar
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>

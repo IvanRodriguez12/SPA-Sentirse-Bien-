@@ -30,17 +30,19 @@ const Reserva = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const token = localStorage.getItem("authToken"); // Usa el mismo token de AuthContext
+
         const year = new Date().getFullYear();
         const selectedDate = new Date(`${year}-${mes}-${dia}T${hora}:00`);
         const now = new Date();
 
         if (selectedDate < now) {
-            toast.error('No puedes seleccionar una fecha pasada.');
+            toast.error("No puedes seleccionar una fecha pasada.");
             return;
         }
 
         if (selectedDate.getDay() === 0) {
-            toast.error('No puedes reservar turnos los domingos.');
+            toast.error("No puedes reservar turnos los domingos.");
             return;
         }
 
@@ -51,19 +53,32 @@ const Reserva = () => {
         };
 
         try {
-            if (editingTurno) {
-                // Si estamos editando, hacer una petición PUT
-                await axios.put(`http://localhost:8080/api/turnos/editar/${editingTurno.id}`, turnoData);
-                toast.success('Turno actualizado exitosamente.');
-            } else {
-                // Si no estamos editando, crear un nuevo turno con POST
-                await axios.post('http://localhost:8080/api/turnos/crear', turnoData);
-                toast.success('Turno reservado exitosamente.');
+            if (!token) {
+                throw new Error("Token no encontrado, inicia sesión nuevamente.");
             }
-            navigate('/turnos'); // Redirigir a la lista de turnos
+
+            if (editingTurno) {
+                await axios.put(`http://localhost:8080/api/turnos/editar/${editingTurno.id}`, turnoData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Agregado el token JWT
+                        "Content-Type": "application/json"
+                    }
+                });
+                toast.success("Turno actualizado exitosamente.");
+            } else {
+                await axios.post("http://localhost:8080/api/turnos/crear", turnoData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Agregado el token JWT
+                        "Content-Type": "application/json"
+                    }
+                });
+                toast.success("Turno reservado exitosamente.");
+            }
+
+            navigate("/turnos");
         } catch (error) {
-            console.error('Error al reservar/editar el turno:', error);
-            toast.error('Hubo un problema al reservar/editar el turno. Inténtalo nuevamente.');
+            console.error("Error al reservar/editar el turno:", error.response?.data || error.message);
+            toast.error("Hubo un problema al reservar/editar el turno. Inténtalo nuevamente.");
         }
     };
 
