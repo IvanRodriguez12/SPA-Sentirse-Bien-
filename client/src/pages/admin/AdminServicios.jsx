@@ -17,7 +17,8 @@ const AdminServicios = () => {
     precio: '',
     categoria: { id: '' },
     tipo: '',
-    imagen: ''
+    imagen: '',
+    duracion: 30 // Valor por defecto añadido
   });
   const [editingId, setEditingId] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -33,7 +34,7 @@ const AdminServicios = () => {
         axios.get('http://localhost:8080/api/servicios/listar'),
         axios.get('http://localhost:8080/api/categorias/listar')
       ]);
-      
+
       setServicios(serviciosRes.data);
       setCategorias(categoriasRes.data);
     } catch {
@@ -44,7 +45,7 @@ const AdminServicios = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const endpoint = editingId 
+      const endpoint = editingId
         ? `http://localhost:8080/api/servicios/editar/${editingId}`
         : 'http://localhost:8080/api/servicios/crear';
 
@@ -87,15 +88,15 @@ const AdminServicios = () => {
       precio: '',
       categoria: { id: '' },
       tipo: '',
-      imagen: ''
+      imagen: '',
+      duracion: 30 // Reset al valor por defecto
     });
     setEditingId(null);
     setShowForm(false);
   };
 
   const openImageModal = (imagenUrl) => {
-    // Modificar esta función
-    const fullImageUrl = `/${imagenUrl}`; // Las imágenes están en la raíz de /public
+    const fullImageUrl = `/${imagenUrl}`;
     setSelectedImage(fullImageUrl);
     setModalIsOpen(true);
   };
@@ -109,7 +110,7 @@ const AdminServicios = () => {
     <div className="admin-panel">
       <AdminHeader title="Gestión de Servicios" />
         <div className="header-container">
-          <button 
+          <button
             className="admin-button"
             onClick={() => setShowForm(!showForm)}
           >
@@ -152,12 +153,23 @@ const AdminServicios = () => {
             </div>
 
             <div className="form-group">
+              <label>Duración (minutos):</label>
+              <input
+                type="number"
+                min="1"
+                value={formData.duracion}
+                onChange={(e) => setFormData({ ...formData, duracion: parseInt(e.target.value) || 0 })}
+                required
+              />
+            </div>
+
+            <div className="form-group">
               <label>Categoría:</label>
               <select
                 value={formData.categoria.id}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  categoria: { id: e.target.value } 
+                onChange={(e) => setFormData({
+                  ...formData,
+                  categoria: { id: e.target.value }
                 })}
                 required
               >
@@ -195,8 +207,8 @@ const AdminServicios = () => {
               <button type="submit" className="admin-button">
                 {editingId ? 'Actualizar' : 'Crear'}
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="admin-button cancel-button"
                 onClick={resetForm}
               >
@@ -207,7 +219,7 @@ const AdminServicios = () => {
         </div>
       )}
 
-<div className="admin-card">
+      <div className="admin-card">
         <h3>Servicios Existentes</h3>
         <div className="table-container">
           <table>
@@ -216,6 +228,7 @@ const AdminServicios = () => {
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio</th>
+                <th>Duración</th>
                 <th>Categoría</th>
                 <th>Acciones</th>
               </tr>
@@ -226,16 +239,17 @@ const AdminServicios = () => {
                   <td>{servicio.nombre}</td>
                   <td>{servicio.descripcion}</td>
                   <td>${servicio.precio.toFixed(2)}</td>
+                  <td>{servicio.duracion} min</td>
                   <td>{servicio.categoria?.nombre}</td>
                   <td>
                     <div className="action-buttons">
-                      <button 
+                      <button
                         className="admin-button image-button"
                         onClick={() => openImageModal(servicio.imagen)}
                       >
                         Ver Imagen
                       </button>
-                      <button 
+                      <button
                         className="admin-button"
                         onClick={() => {
                           setFormData({
@@ -248,7 +262,7 @@ const AdminServicios = () => {
                       >
                         Editar
                       </button>
-                      <button 
+                      <button
                         className="admin-button delete-button"
                         onClick={() => handleDelete(servicio.id)}
                       >
@@ -270,19 +284,19 @@ const AdminServicios = () => {
       >
         <div className="modal-header">
           <h3>Vista Previa de la Imagen</h3>
-          <button 
+          <button
             onClick={closeImageModal}
             className="admin-button close-button"
           >
             Cerrar
           </button>
         </div>
-        <img 
-          src={selectedImage} 
-          alt="Vista previa del servicio" 
+        <img
+          src={selectedImage}
+          alt="Vista previa del servicio"
           onError={(e) => {
-            e.target.onerror = null; 
-            e.target.src = '/placeholder-image.jpg'; // Asegúrate de tener este archivo en public/
+            e.target.onerror = null;
+            e.target.src = '/placeholder-image.jpg';
           }}
         />
       </Modal>

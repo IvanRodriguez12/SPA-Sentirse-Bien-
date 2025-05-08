@@ -26,6 +26,9 @@ public class ServicioController {
 
     @PostMapping("/crear")
     public ResponseEntity<Servicio> crearServicio(@RequestBody Servicio servicio) {
+        if (servicio.getDuracion() == null || servicio.getDuracion() <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         Servicio nuevoServicio = servicioService.crearServicio(servicio);
         if (nuevoServicio != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoServicio);
@@ -45,6 +48,9 @@ public class ServicioController {
 
     @PutMapping("/editar/{id}")
     public ResponseEntity<Servicio> actualizarServicio(@PathVariable Long id, @RequestBody Servicio servicio) {
+        if (servicio.getDuracion() == null || servicio.getDuracion() <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         Servicio servicioActualizado = servicioService.actualizarServicio(id, servicio);
         if (servicioActualizado != null) {
             return ResponseEntity.ok(servicioActualizado);
@@ -59,6 +65,3 @@ public class ServicioController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
-
-
-

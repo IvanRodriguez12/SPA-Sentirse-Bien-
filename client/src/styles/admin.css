@@ -356,3 +356,8 @@
   .back-button:hover {
     background: var(--texto-muy-oscuro);
   }
+
+  .disabled-input {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+  }

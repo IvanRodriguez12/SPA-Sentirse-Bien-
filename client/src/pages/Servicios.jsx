@@ -1,13 +1,13 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Importar el contexto de autenticación
+import { useAuth } from '../context/AuthContext';
 
 const Servicio = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth(); // Obtener el usuario autenticado
+  const { user } = useAuth();
 
-  const service = location.state?.service; // Obtener el servicio desde el estado de navegación
+  const service = location.state?.service;
 
   if (!service) {
     return (
@@ -25,10 +25,8 @@ const Servicio = () => {
 
   const handleReserve = () => {
     if (!user) {
-      // Si el usuario no está autenticado, redirigir a la página de login
       navigate('/login');
     } else {
-      // Si el usuario está autenticado, redirigir a la página de reservas
       navigate('/reservas', { state: { service } });
     }
   };
@@ -59,9 +57,27 @@ const Servicio = () => {
         }}
       />
       <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>{service.descripcion}</p>
-      <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--rosa-medio)' }}>
-        Precio: ${service.precio}
-      </p>
+
+      {/* Sección de detalles con duración */}
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        padding: '1rem',
+        borderRadius: '10px',
+        marginBottom: '1.5rem'
+      }}>
+        <p style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>
+          <strong style={{ color: 'var(--verde-oscuro)' }}>Precio:</strong> ${service.precio}
+        </p>
+        <p style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>
+          <strong style={{ color: 'var(--verde-oscuro)' }}>Duración:</strong> {service.duracion} minutos
+        </p>
+        {service.categoria && (
+          <p style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>
+            <strong style={{ color: 'var(--verde-oscuro)' }}>Categoría:</strong> {service.categoria.nombre}
+          </p>
+        )}
+      </div>
+
       <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
         <button
           onClick={() => navigate('/categorias')}
@@ -80,7 +96,6 @@ const Servicio = () => {
   );
 };
 
-// Estilo para los botones
 const buttonStyle = {
   backgroundColor: 'var(--rosa-medio)',
   color: 'white',

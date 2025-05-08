@@ -7,7 +7,6 @@ const Layout = () => {
   const location = useLocation();
   const background = location.state?.backgroundLocation;
 
-  // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
@@ -15,10 +14,10 @@ const Layout = () => {
   return (
     <div className="spa-app">
       <Navbar />
-        <main>
-            <Outlet />
-        </main>
-        {background && (
+      <main>
+        <Outlet />
+      </main>
+      {background && (
         <Routes>
           <Route path="/contacto" element={<ContactoModal />} />
         </Routes>
@@ -42,35 +41,97 @@ const Footer = () => (
       maxWidth: '1200px',
       margin: '0 auto'
     }}>
+      {/* Sección Contacto */}
       <div>
         <h3>Contacto</h3>
         <p>📧 info@sentirsebien.com</p>
         <p>📞 +54 9 11 2345-6789</p>
       </div>
-      
+
+      {/* Sección Enlaces Rápidos */}
       <div>
         <h3>Enlaces Rápidos</h3>
-        <Link to="/servicios" style={{color: 'white', display: 'block'}}>Servicios</Link>
-        <Link to="/faq" style={{color: 'white', display: 'block'}}>Preguntas Frecuentes</Link>
-        <Link to="/blog" style={{color: 'white', display: 'block'}}>Blog Wellness</Link>
+        <Link
+          to="/categorias"
+          style={{
+            color: 'white',
+            display: 'block',
+            textDecoration: 'none',
+            marginBottom: '0.5rem'
+          }}>
+          Servicios
+        </Link>
+        <Link
+          to="/faq"
+          style={{
+            color: 'white',
+            display: 'block',
+            textDecoration: 'none',
+            marginBottom: '0.5rem'
+          }}>
+          Preguntas Frecuentes
+        </Link>
+        <Link
+          to="/sobre-nosotros"
+          style={{
+            color: 'white',
+            display: 'block',
+            textDecoration: 'none'
+          }}>
+          Sobre Nosotros
+        </Link>
       </div>
-      
-      <div>
-        <h3>Síguenos</h3>
-        <div style={{display: 'flex', gap: '1rem'}}>
-          <a href="#" style={{color: 'white'}}>📱 Instagram</a>
-          <a href="#" style={{color: 'white'}}>📘 Facebook</a>
+
+      {/* Sección Redes Sociales - Versión en columna CENTRADA */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center' // Centra todo el contenido horizontalmente
+      }}>
+        <h3 style={{
+          marginBottom: '1rem',
+          width: '100%',
+          textAlign: 'center' // Centra el texto del título
+        }}>
+          Síguenos
+        </h3>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center', // Centra los elementos hijos horizontalmente
+          gap: '0.8rem',
+          width: '100%'
+        }}>
+          <a href="#" style={{
+            color: 'white',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span>📱</span> Instagram
+          </a>
+          <a href="#" style={{
+            color: 'white',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span>📘</span> Facebook
+          </a>
         </div>
       </div>
     </div>
-    
+
+    {/* Copyright */}
     <div style={{
       textAlign: 'center',
       marginTop: '2rem',
       borderTop: '1px solid rgba(255,255,255,0.2)',
       paddingTop: '2rem'
     }}>
-      <p>© 2024 SPA "Sentirse Bien" - Todos los derechos reservados</p>
+      <p>© 2019 SPA "Sentirse Bien" - Todos los derechos reservados</p>
     </div>
   </footer>
 );

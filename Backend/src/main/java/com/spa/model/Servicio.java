@@ -27,6 +27,9 @@ public class Servicio {
     @Column(nullable = false)
     private String imagen;
 
+    @Column(nullable = false)
+    private Integer duracion;
+
     // Getters y Setters
 
     public Long getId() {
@@ -74,5 +77,12 @@ public class Servicio {
     public String getImagen() {return imagen;}
 
     public void setImagen(String imagen) {this.imagen = imagen;}
+
+    public Integer getDuracion() {
+        return duracion;
+    }
+    public void setDuracion(Integer duracion) {
+        this.duracion = duracion;
+    }
 }
 

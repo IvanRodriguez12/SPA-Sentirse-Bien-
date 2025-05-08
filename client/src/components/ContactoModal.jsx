@@ -15,9 +15,9 @@ const ContactoModal = () => {
     <ModalOverlay onClick={handleClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={handleClose}>&times;</CloseButton>
-        
+
         <h2 style={{ color: 'var(--texto-oscuro)', marginBottom: '1rem' }}>Contacto</h2>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <WhatsAppLink
             href="https://wa.me/5491234567890"
@@ -26,7 +26,7 @@ const ContactoModal = () => {
           >
             WhatsApp
           </WhatsAppLink>
-          
+
           <EmailLink href="mailto:info@spa.com">
             Email
           </EmailLink>

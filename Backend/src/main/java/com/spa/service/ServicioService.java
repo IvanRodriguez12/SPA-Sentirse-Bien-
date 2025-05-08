@@ -1,6 +1,5 @@
 package com.spa.service;
 
-import com.spa.model.Cliente;
 import com.spa.model.Servicio;
 import com.spa.model.Categoria;
 import com.spa.repository.ServicioRepository;
@@ -27,6 +26,9 @@ public class ServicioService {
     }
 
     public Servicio crearServicio(Servicio servicio) {
+        if (servicio.getDuracion() == null || servicio.getDuracion() <= 0) {
+            throw new RuntimeException("La duración debe ser un valor positivo");
+        }
         Categoria categoria = categoriaRepository.findById(servicio.getCategoria().getId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         servicio.setCategoria(categoria);
@@ -40,6 +42,9 @@ public class ServicioService {
     public Servicio actualizarServicio(Long id, Servicio servicioActualizado) {
         return servicioRepository.findById(id)
                 .map(servicio -> {
+                    if (servicioActualizado.getDuracion() == null || servicioActualizado.getDuracion() <= 0) {
+                        throw new RuntimeException("La duración debe ser un valor positivo");
+                    }
                     Categoria categoria = categoriaRepository.findById(servicioActualizado.getCategoria().getId())
                             .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
@@ -49,6 +54,7 @@ public class ServicioService {
                     servicio.setPrecio(servicioActualizado.getPrecio());
                     servicio.setTipo(servicioActualizado.getTipo());
                     servicio.setImagen(servicioActualizado.getImagen());
+                    servicio.setDuracion(servicioActualizado.getDuracion());
 
                     return servicioRepository.save(servicio);
                 })
