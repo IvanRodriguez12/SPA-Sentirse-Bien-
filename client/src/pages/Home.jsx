@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Carousel from '../components/Carousel';
 import { getCategories, getServicesByCategory } from '../api/ListServicios';
+import WhyChooseUs from '../components/WhyChooseUs';
+import Testimonials from '../components/Testimonials';
+import Location from '../components/Location';
+import WelcomeSection from '../components/WelcomeSection';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -54,21 +58,39 @@ const Home = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <section
-        style={{
-          textAlign: 'center',
-          padding: '4rem 2rem',
-          background: `linear-gradient(to right, var(--verde-claro), var(--rosa-claro))`,
-          animation: 'fadeIn 1s ease',
-        }}
-      >
-        <h2>Bienvenido a SPA “Sentirse bien”</h2>
-        <p>Tu oasis de relajación natural</p>
-      </section>
-
+      <WelcomeSection/>
       <section style={{ marginTop: '2rem' }}>
         <h3>Servicios Destacados</h3>
         <Carousel items={featuredServices} onItemClick={handleServiceClick} />
+      </section>
+      <WhyChooseUs />
+      <Testimonials />
+      <Location />
+      <section style={{
+        padding: '4rem 2rem',
+        textAlign: 'center',
+        background: 'linear-gradient(to right, var(--verde-claro), var(--rosa-claro))'
+      }}>
+        <h2>¿Listo para tu experiencia de relajación?</h2>
+        <p style={{margin: '1rem 0'}}>Reserva tu sesión hoy mismo y obtén un 10% de descuento en tu primer tratamiento</p>
+        <button 
+          onClick={() => navigate('/categorias')}
+          style={{
+            padding: '1rem 3rem',
+            fontSize: '1.1rem',
+            backgroundColor: 'var(--rosa-medio)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '30px',
+            cursor: 'pointer',
+            transition: 'transform 0.3s ease',
+            ':hover': {
+              transform: 'scale(1.05)'
+            }
+          }}
+        >
+          Reservar Ahora
+        </button>
       </section>
     </div>
   );

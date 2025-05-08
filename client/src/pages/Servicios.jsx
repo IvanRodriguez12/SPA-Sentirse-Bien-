@@ -46,14 +46,16 @@ const Servicio = () => {
     >
       <h2 style={{ color: 'var(--verde-oscuro)', marginBottom: '1rem' }}>{service.nombre}</h2>
       <img
-        src={service.imagen || 'https://via.placeholder.com/800x400'} // Imagen del servicio o un placeholder
+        src={service.imagen || 'https://via.placeholder.com/800x400'}
         alt={service.nombre}
         style={{
           width: '100%',
-          height: 'auto',
+          maxHeight: '60vh',
+          objectFit: 'contain',
           borderRadius: '10px',
           marginBottom: '1rem',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+          backgroundColor: 'var(--verde-claro)',
+          padding: '1rem',
         }}
       />
       <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>{service.descripcion}</p>

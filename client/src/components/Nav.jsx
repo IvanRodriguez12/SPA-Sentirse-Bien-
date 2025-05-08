@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Icon from '../assets/Spa-icon.png'; // Asegúrate de que la ruta sea correcta
+import { useLocation } from 'react-router-dom';
+
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
 
   return (
     <nav style={{
@@ -25,8 +28,13 @@ const Navbar = () => {
         </Link>
         <Link to="/" style={linkStyle}>Inicio</Link>
         <Link to="/categorias" style={linkStyle}>Servicios</Link>
-        <Link to="/contacto" style={linkStyle}>Contacto</Link>
-        <Link to="/sobre-nosotros" style={linkStyle}>Sobre Nosotros</Link>
+        <Link 
+          to="/contacto" 
+          style={linkStyle}
+          state={{ backgroundLocation: location }} // <-- Esto es clave
+        >
+          Contacto
+        </Link>
       </div>
 
       {/* Sección derecha */}

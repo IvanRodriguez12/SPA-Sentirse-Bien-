@@ -49,7 +49,9 @@ public class SecurityConfig {
                                 "/api/clientes/login",
                                 "/api/servicios/listar",
                                 "/api/categorias/**",
-                                "/api/admin/registrar"
+                                "/api/admin/registrar",
+                                "/api/admin/login",
+                                "/api/admin/existeAdmin"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/turnos/crear",

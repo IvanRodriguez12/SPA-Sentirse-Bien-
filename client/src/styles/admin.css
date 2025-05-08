@@ -1,0 +1,358 @@
+.admin-panel {
+    background: var(--verde-claro);
+    min-height: 100vh;
+    padding: 2rem;
+  }
+  
+  .admin-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+  }
+  
+  .admin-button {
+    background: var(--verde-oscuro);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .admin-button:hover {
+    background: var(--texto-muy-oscuro);
+  }
+
+  /* Estilos generales para tablas */
+.table-container {
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--verde-medio);
+  }
+  
+  th {
+    background-color: var(--verde-claro);
+    color: var(--texto-muy-oscuro);
+  }
+  
+  tr:hover {
+    background-color: #f5f5f5;
+  }
+  
+  /* Barra de búsqueda */
+  .search-bar input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid var(--verde-medio);
+    border-radius: 5px;
+    margin-bottom: 1rem;
+  }
+  
+  /* Formularios */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid var(--verde-medio);
+    border-radius: 5px;
+  }
+
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .form-container {
+    margin-bottom: 2rem;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid var(--verde-medio);
+    border-radius: 5px;
+    background: white;
+  }
+  
+  .cancel-button {
+    background: var(--rosa-medio);
+  }
+  
+  .delete-button {
+    background: var(--rosa-medio);
+    margin-left: 0.5rem;
+  }
+  
+  .form-group input[type="number"] {
+    width: 100%;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .image-modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 90%;
+    max-height: 90vh;
+    width: auto;
+    position: relative;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .image-container {
+    max-width: 800px;
+    max-height: 600px;
+    overflow: auto;
+  }
+  
+  .image-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+  }
+  
+  .close-button {
+    background: var(--rosa-medio);
+    padding: 0.5rem 1rem;
+  }
+  
+  .image-button {
+    background: var(--verde-medio);
+    margin-bottom: 0.5rem;
+  }
+  
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  /* Ajustes para botones en móviles */
+  @media (max-width: 768px) {
+    .action-buttons {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    
+    .admin-button {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  .image-modal {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .image-container {
+    position: relative;
+    max-width: 800px;
+    max-height: 70vh;
+    overflow: auto;
+    background: var(--verde-claro);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .image-container img {
+    max-width: 100%;
+    max-height: 65vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .image-placeholder {
+    width: 400px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--verde-claro);
+    border: 2px dashed var(--verde-medio);
+    color: var(--texto-oscuro);
+  }
+
+  .image-modal {
+    display: flex;
+    flex-direction: column;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: fit-content;
+    height: fit-content;
+    padding: 20px;
+  }
+  
+  .image-container {
+    position: relative;
+    max-width: 80vw;
+    max-height: 70vh;
+    display: grid;
+    place-items: center;
+    background: var(--verde-claro);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .image-container img {
+    max-width: 100%;
+    max-height: 65vh;
+    width: auto;
+    height: auto;
+    object-fit: scale-down;
+    padding: 15px;
+    border-radius: 12px;
+    background: white;
+    box-sizing: border-box;
+  }
+  
+  /* Para pantallas pequeñas */
+  @media (max-width: 768px) {
+    .image-container {
+      max-width: 95vw;
+      max-height: 80vh;
+    }
+    
+    .image-container img {
+      max-height: 75vh;
+      padding: 10px;
+    }
+  }
+  
+  /* Clase adicional para contener la relación de aspecto */
+  .aspect-ratio-guard {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+  }
+  
+  .aspect-ratio-guard img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90%;
+  }
+
+  .filter-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+  }
+  
+  .filter-section select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid var(--verde-medio);
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .admin-modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+  }
+  
+  .admin-modal .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .admin-modal input[type="datetime-local"],
+  .admin-modal select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid var(--verde-medio);
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .admin-header h1 {
+    margin: 0;
+  }
+  
+  .back-button {
+    background: var(--verde-oscuro);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .back-button:hover {
+    background: var(--texto-muy-oscuro);
+  }

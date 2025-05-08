@@ -5,6 +5,8 @@ import com.spa.dto.LoginRequest;
 import com.spa.dto.RegisterRequest;
 import com.spa.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,9 +18,20 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public AuthResponse register(@RequestBody RegisterRequest request) {
-        return authService.register(request);
+public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    AuthResponse response = authService.register(request);
+    
+    if (response.getToken() == null) {
+        // Manejar diferentes tipos de errores
+        if (response.getMensaje().equals("Email ya registrado")) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
+    
+    return ResponseEntity.ok(response);
+}
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest request) {

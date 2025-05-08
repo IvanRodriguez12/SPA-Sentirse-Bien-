@@ -33,14 +33,8 @@ const Register = () => {
         telefono: data.phone.replace(/\s/g, ''),
         contrasena: data.password
       };
-
-      const result = await registerUser(formattedData);
-
-      if (result.mensaje === 'Email ya registrado') {
-        toast.error('Este correo ya está registrado. Usa otro.');
-        return;
-      }
-
+  
+      await registerUser(formattedData);
       toast.success('¡Registro exitoso!');
       navigate('/login');
     } catch (error) {

@@ -19,17 +19,10 @@ export const loginUser = async (credentials) => {
 
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, {
-      nombre: userData.nombre,
-      email: userData.email,
-      telefono: userData.telefono, 
-      contrasena: userData.contrasena
-    });
-
-    return response.data; // contiene { mensaje, token, cliente }
+    const response = await axios.post(`${API_URL}/register`, userData);
+    return response.data;
   } catch (error) {
-    const mensaje =
-      error.response?.data?.mensaje || 'Error desconocido al registrarse';
+    const mensaje = error.response?.data?.mensaje || 'Error desconocido al registrarse';
     throw new Error(mensaje);
   }
 };

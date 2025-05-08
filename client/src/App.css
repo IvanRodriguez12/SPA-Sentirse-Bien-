@@ -104,3 +104,12 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+  
+  body {
+    background-color: #f8f8f8; /* Color de respaldo para carga de imágenes */
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }

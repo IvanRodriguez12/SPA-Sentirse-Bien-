@@ -20,8 +20,8 @@ const ServiceCard = ({ service, onViewDetails }) => {
           alt={service.nombre}
           style={{
             width: '100%',
-            height: '180px',
-            objectFit: 'cover',
+            height: '200px', // Altura fija
+            objectFit: 'cover', // Cubre el espacio manteniendo relación de aspecto
             borderRadius: '8px',
             marginBottom: '1rem',
           }}

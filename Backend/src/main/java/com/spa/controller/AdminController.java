@@ -144,4 +144,20 @@ public class AdminController {
     public ResponseEntity<List<Administrador>> listarAdministradores() {
         return ResponseEntity.ok(administradorService.listarTodos());
     }
+    
+    @GetMapping("/perfil")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Administrador> obtenerPerfilAdmin(
+            @RequestHeader("Authorization") String token) {
+        String email = JwtUtil.extraerEmail(token.substring(7));
+        Administrador admin = administradorService.buscarPorEmail(email)
+                .orElseThrow(() -> new RuntimeException("Admin no encontrado"));
+        return ResponseEntity.ok(admin);
+    }
+
+    @GetMapping("/existeAdmin")
+    public ResponseEntity<Boolean> existeAdmin() {
+        boolean existe = !administradorService.listarTodos().isEmpty();
+        return ResponseEntity.ok(existe);
+    }
 }

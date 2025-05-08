@@ -24,6 +24,11 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         try {
+            if (request.getNombre() == null || request.getEmail() == null || 
+            request.getTelefono() == null || request.getContrasena() == null) {
+            return new AuthResponse("Todos los campos son obligatorios", null, null);
+            }
+
             if (clienteRepository.existsByEmail(request.getEmail())) {
                 return new AuthResponse("Email ya registrado", null, null);
             }
@@ -42,6 +47,7 @@ public class AuthService {
             return new AuthResponse("Registro exitoso", token, cliente);
         } catch (Exception e) {
             e.printStackTrace();
+             System.err.println("Error en registro: " + e.getMessage());
             return new AuthResponse("Error interno del servidor", null, null);
         }
     }
