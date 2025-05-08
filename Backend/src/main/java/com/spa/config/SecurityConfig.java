@@ -3,7 +3,6 @@ package com.spa.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -44,7 +43,6 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/clientes/registro",
@@ -55,35 +53,22 @@ public class SecurityConfig {
                                 "/api/admin/login",
                                 "/api/admin/existeAdmin"
                         ).permitAll()
-
-                        // Endpoints GET públicos
-                        .requestMatchers(HttpMethod.GET, "/api/turnos/listar").permitAll()
-
-                        // Endpoints específicos para administradores (definidos primero)
-                        .requestMatchers(HttpMethod.PUT, "/api/admin/turnos/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/admin/turnos/**").hasAuthority("ROLE_ADMIN")
-
-                        // Endpoints generales para administradores
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-
-                        // Endpoints para clientes
                         .requestMatchers(
                                 "/api/turnos/crear",
-                                "/api/turnos/mis-turnos"
-                        ).hasAuthority("ROLE_CLIENTE")
-
-                        // Endpoints para servicios (admin only)
-                        .requestMatchers("/api/servicios/**").hasAuthority("ROLE_ADMIN")
-
-                        // Endpoints compartidos
-                        .requestMatchers(
+                                "/api/turnos/listar",
                                 "/api/turnos/{id}"
-                        ).hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
-
+                        ).authenticated()
+                        .requestMatchers(
+                                "/api/admin/**",
+                                "/api/turnos/eliminar/**",
+                                "/api/turnos/editar/**",
+                                "/api/servicios/crear",
+                                "/api/servicios/editar/**",
+                                "/api/servicios/eliminar/**"
+                        ).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(clienteAuthenticationProvider)
                 .authenticationProvider(adminAuthenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -95,9 +80,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
