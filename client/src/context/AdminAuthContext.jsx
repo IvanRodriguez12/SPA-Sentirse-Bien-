@@ -21,7 +21,7 @@ export const AdminAuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await axios.get(`${API_URL}/admin/perfil`, {
+        const response = await axios.get(`https://spa-sentirse-bien-production.up.railway.app/api/admin/perfil`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAdmin(response.data);
