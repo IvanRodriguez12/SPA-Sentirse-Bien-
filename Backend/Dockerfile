@@ -8,8 +8,8 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 # Etapa 2: Ejecución
-FROM eclipse-temurin:22
+FROM eclipse-temurin:17
 WORKDIR /app
-COPY --from=build /app/target/spa-backend-1.0.0.jar app.jar
+COPY --from=build /app/target/spa-backend-1.0.0.jar /app/app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

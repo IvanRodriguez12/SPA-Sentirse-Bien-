@@ -88,15 +88,11 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version> <!-- Si ya estás usando esta versión, intenta actualizar a una versión más reciente, como 3.11.2 o 3.12.0 -->
-                <configuration>
-                    <source>22</source>
-                    <target>22</target>
-                </configuration>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
+
 
 </project>
