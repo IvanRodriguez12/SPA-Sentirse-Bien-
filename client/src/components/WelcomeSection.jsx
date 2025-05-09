@@ -55,7 +55,7 @@ const WelcomeSection = () => {
             marginBottom: '1rem',
             textShadow: '2px 2px 4px rgba(255,255,255,0.5)'
           }}>
-            Bienvenido a SPA “Sentirse bien”
+            Bienvenido a SPA <br/> “Sentirse bien”
           </h2>
           <p style={{ 
             color: 'var(--texto-oscuro)',

@@ -10,9 +10,11 @@ const AdminAuthContext = createContext();
 export const AdminAuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const checkAdminAuth = async () => {
+    setLoading(true);
     const token = localStorage.getItem('adminToken');
     if (token) {
       try {
@@ -26,6 +28,7 @@ export const AdminAuthProvider = ({ children }) => {
         logout();
       }
     }
+    setLoading(false);
   };
 
   const login = async (email, contrasena) => {
@@ -61,6 +64,7 @@ export const AdminAuthProvider = ({ children }) => {
         value={{ 
         admin,
         isAdminAuthenticated,
+        loading,
         login, // Tu función real
         logout // Tu función real
         }}

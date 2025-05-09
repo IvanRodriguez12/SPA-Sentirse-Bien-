@@ -79,6 +79,19 @@ const AdminLogin = () => {
           {isSubmitting ? 'Iniciando...' : 'Ingresar'}
         </button>
 
+         <p style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <Link 
+            to="/admin/registrar" 
+            style={{ 
+              color: 'var(--verde-oscuro)', 
+              textDecoration: 'none',
+              fontWeight: '500'
+            }}
+          >
+            ¿Primer administrador? Regístrate aquí
+          </Link>
+        </p>
+
         <p style={{ textAlign: 'center', marginTop: '1rem' }}>
           <Link 
             to="/" 

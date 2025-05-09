@@ -131,6 +131,7 @@ public class AdminController {
     }
 
     @PostMapping("/registrar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthResponse> registrarAdmin(@RequestBody RegisterRequest request) {
         AuthResponse response = administradorService.registrarAdmin(request);
         return ResponseEntity.ok(response);

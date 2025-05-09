@@ -46,7 +46,11 @@ const AdminRegistrar = () => {
       }
     };
 
-    verificarAdmin();
+      if (!admin) {
+      verificarAdmin();
+    } else {
+      setIsLoading(false); // Si ya está autenticado, permitir acceso
+    }
   }, [admin, navigate]);
 
   const onSubmit = async (data) => {
@@ -61,7 +65,7 @@ const AdminRegistrar = () => {
           email: data.email.trim().toLowerCase(),
           contrasena: data.contrasena
         },
-        { headers }
+        { headers } 
       );
 
       if (response.data.mensaje) {
