@@ -11,6 +11,60 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     margin-bottom: 1.5rem;
   }
+
+  .accounts-section h3 {
+    color: var(--texto-muy-oscuro);
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--verde-medio);
+    padding-bottom: 0.5rem;
+  }
+  
+  .table-container table {
+    --texto-color: var(--texto-muy-oscuro); /* Nuevo variable para el color */
+  }
+  
+  .table-container th,
+  .table-container td {
+    color: var(--texto-muy-oscuro) !important; /* Color oscuro forzado */
+  }
+  
+  .table-container tr:hover {
+    background-color: var(--verde-claro) !important; /* Fondo verde claro al hover */
+    color: var(--texto-muy-oscuro) !important;
+  }
+  
+  /* Asegurar contraste en los textos */
+  .admin-card p {
+    color: var(--texto-oscuro) !important;
+  }
+
+  /* Nuevos estilos para los enlaces del dashboard */
+  .admin-card {
+    text-decoration: none;
+    color: var(--verde-medio);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .admin-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-color: var(--verde-medio);
+  }
+
+  .admin-card:active, 
+  .admin-card:visited {
+    color: var(--verde-medio);
+  }
+
+  .admin-card h3 {
+    color: var(--texto-muy-oscuro);
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-card p {
+    color: var(--texto-oscuro);
+  }
   
   .admin-button {
     background: var(--verde-oscuro);

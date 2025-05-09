@@ -108,11 +108,8 @@ public class AdminController {
             clienteService.eliminarCliente(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
-            // Captura tanto RuntimeException como IllegalStateException
-            if (e instanceof IllegalStateException) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(e.getMessage());
         }
     }
 
@@ -143,6 +140,13 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Administrador>> listarAdministradores() {
         return ResponseEntity.ok(administradorService.listarTodos());
+    }
+
+    @DeleteMapping("/administradores/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> eliminarAdministrador(@PathVariable Long id) {
+        administradorService.eliminarAdministrador(id);
+        return ResponseEntity.noContent().build();
     }
     
     @GetMapping("/perfil")

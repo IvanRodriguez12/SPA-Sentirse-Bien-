@@ -7,6 +7,11 @@ import com.spa.model.Administrador;
 import com.spa.model.Cliente;
 import com.spa.repository.AdministradorRepository;
 import com.spa.repository.ClienteRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -56,6 +61,19 @@ public class AdministradorService implements UserDetailsService {
                 .password(cliente.getContrasena())
                 .roles("CLIENTE")
                 .build();
+    }
+
+    public void eliminarAdministrador(Long id) {
+        Administrador admin = administradorRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Administrador no encontrado"));
+        
+        // Validación para no autoeliminarse
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth.getName().equals(admin.getEmail())) {
+            throw new IllegalStateException("No puedes eliminarte a ti mismo");
+        }
+        
+        administradorRepository.delete(admin);
     }
 
     public AuthResponse registrarAdmin(RegisterRequest request) {

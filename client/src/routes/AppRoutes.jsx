@@ -16,7 +16,7 @@ const AdminLogin = lazy(() => import('../pages/admin/AdminLogin.jsx'));
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 const AdminServicios = lazy(() => import('../pages/admin/AdminServicios'));
 const AdminTurnos = lazy(() => import('../pages/admin/AdminTurnos'));
-const AdminClientes = lazy(() => import('../pages/admin/AdminClientes'));
+const AdminCuentas = lazy(() => import('../pages/admin/AdminCuentas'));
 const AdminRegistrar = lazy(() => import('../pages/admin/AdminRegistrar'));
 const ContactoModal = lazy(() => import('../components/ContactoModal'));
 
@@ -46,7 +46,7 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="servicios" element={<AdminServicios />} />
           <Route path="turnos" element={<AdminTurnos />} />
-          <Route path="clientes" element={<AdminClientes />} />
+          <Route path="cuentas" element={<AdminCuentas />} />
           <Route path="registrar" element={<AdminRegistrar />} />
         </Route>
       </Routes>

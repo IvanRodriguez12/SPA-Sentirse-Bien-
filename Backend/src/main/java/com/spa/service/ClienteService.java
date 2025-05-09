@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,15 +49,15 @@ public class ClienteService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + id));
     }
 
+    @Transactional
     public void eliminarCliente(Long id) {
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + id));
-
-        // Verificar si el cliente tiene turnos antes de eliminar
-        if (!turnoRepository.findByClienteId(id).isEmpty()) {
-            throw new IllegalStateException("No se puede eliminar el cliente porque tiene turnos asociados");
-        }
-
+            .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + id));
+    
+        // Eliminar todos los turnos asociados primero
+        turnoRepository.deleteByClienteId(id);
+        
+        // Ahora eliminar el cliente
         clienteRepository.delete(cliente);
     }
 

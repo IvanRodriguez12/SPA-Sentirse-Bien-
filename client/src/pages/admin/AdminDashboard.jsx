@@ -36,6 +36,12 @@ const AdminDashboard = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
         gap: '1.5rem' 
       }}>
+        {/* Nuevo card para registro de administradores */}
+        <Link to="/admin/registrar" className="admin-card">
+          <h3>Registrar Administradores</h3>
+          <p>Crear nuevas cuentas de administradores</p>
+        </Link>
+
         <Link to="/admin/servicios" className="admin-card">
           <h3>Gestionar Servicios</h3>
           <p>Agrega, edita o elimina servicios</p>
@@ -46,9 +52,9 @@ const AdminDashboard = () => {
           <p>Consulta y elimina turnos</p>
         </Link>
         
-        <Link to="/admin/clientes" className="admin-card">
-          <h3>Gestionar Clientes</h3>
-          <p>Lista y elimina cuentas</p>
+        <Link to="/admin/cuentas" className="admin-card">
+          <h3>Gestionar Cuentas</h3>
+          <p>Administra clientes y otros administradores</p>
         </Link>
       </div>
     </div>
