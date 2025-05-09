@@ -46,7 +46,7 @@ const AdminRegistrar = () => {
       }
     };
 
-      if (!admin) {
+    if (!admin) {
       verificarAdmin();
     } else {
       setIsLoading(false); // Si ya está autenticado, permitir acceso
