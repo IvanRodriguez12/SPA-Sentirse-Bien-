@@ -5,8 +5,6 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import ContactoModal from '../components/ContactoModal';
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
-
 const Turnos = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -19,7 +17,7 @@ const Turnos = () => {
             if (!user || !user.id || !token) return;
 
             try {
-                const response = await axios.get(`${API_URL}/turnos/listar`, {
+                const response = await axios.get(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/listar`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
