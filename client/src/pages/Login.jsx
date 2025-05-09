@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useAuth } from '../context/AuthContext'; // Asegurate que el path sea correcto
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const loginSchema = yup.object().shape({
   email: yup.string().email('Email inválido').required('El email es requerido'),
@@ -63,6 +64,12 @@ const Login = () => {
           <a href="/registro" className="link">
             Regístrate aquí
           </a>
+        </p>
+        <p className="auth-link" style={{ marginTop: '0.5rem' }}>
+          ¿Eres administrador?{' '}
+          <Link to="/admin/login" className="link">
+            Accede aquí
+          </Link>
         </p>
       </form>
     </div>
