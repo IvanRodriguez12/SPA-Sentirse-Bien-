@@ -12,7 +12,7 @@ const Location = () => (
         <h2>Nuestra Ubicación</h2>
         <p style={{margin: '1rem 0'}}>📍 Av. Relaxación 123, Buenos Aires</p>
         <p>🕒 Horarios:<br/>
-          Lunes a Viernes: 9:00 - 21:00<br/>
+          Lunes a Viernes: 9:00 - 20:30<br/>
           Sábados: 10:00 - 19:00
         </p>
         <button style={{

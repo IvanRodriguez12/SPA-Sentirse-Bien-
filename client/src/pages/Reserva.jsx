@@ -23,6 +23,44 @@ const Reserva = () => {
         }
     }, [editingTurno]);
 
+    // Función para calcular los límites según el día y duración del servicio
+    const getTimeLimits = () => {
+        if (!service) return null;
+
+        const day = selectedDateTime?.getDay() || new Date().getDay();
+        const isSaturday = day === 6;
+
+        // Configuración base
+        const config = {
+            weekday: {
+                open: 9,    // Apertura L-V
+                close: 21,  // Cierre L-V (21:01)
+                displayClose: "21:01"
+            },
+            saturday: {
+                open: 10,   // Apertura Sábado
+                close: 19,  // Cierre Sábado (19:01)
+                displayClose: "19:01"
+            }
+        };
+
+        const { open, close } = isSaturday ? config.saturday : config.weekday;
+
+        // Calcula el último turno posible considerando la duración
+        const lastAvailableTime = new Date();
+        lastAvailableTime.setHours(close, 1, 0, 0); // Hora de cierre (21:01 o 19:01)
+        const lastBookableTime = new Date(lastAvailableTime.getTime() - service.duracion * 60000);
+
+        return {
+            openingHour: open,
+            closingHour: close,
+            lastBookableHour: lastBookableTime.getHours(),
+            lastBookableMinute: lastBookableTime.getMinutes(),
+            displayClose: isSaturday ? config.saturday.displayClose : config.weekday.displayClose,
+            dayName: isSaturday ? 'sábados' : 'de lunes a viernes'
+        };
+    };
+
     const handleDateChange = (date) => {
         if (!date) {
             setSelectedDateTime(null);
@@ -44,47 +82,53 @@ const Reserva = () => {
 
     const isWeekday = (date) => {
         const day = date.getDay();
-        return day !== 0;
+        return day !== 0; // No domingos
     };
 
     const filterPassedTime = (time) => {
+        if (!service) return false;
+
         const hour = time.getHours();
         const minutes = time.getMinutes();
         const day = time.getDay();
 
+        // Solo permitir horas en punto o y media
         if (minutes !== 0 && minutes !== 30) return false;
 
-        if (day === 6) {
-            return hour >= 10 && hour <= 19;
-        } else if (day >= 1 && day <= 5) {
-            return hour >= 9 && hour <= 21;
+        const timeLimits = getTimeLimits();
+        if (!timeLimits) return false;
+
+        // Validar horario según día
+        if (day === 6) { // Sábados
+            return hour >= timeLimits.openingHour &&
+                   (hour < timeLimits.lastBookableHour ||
+                   (hour === timeLimits.lastBookableHour && minutes <= timeLimits.lastBookableMinute));
         }
-        return false;
+        else if (day >= 1 && day <= 5) { // Lunes a Viernes
+            return hour >= timeLimits.openingHour &&
+                   (hour < timeLimits.lastBookableHour ||
+                   (hour === timeLimits.lastBookableHour && minutes <= timeLimits.lastBookableMinute));
+        }
+        return false; // Domingos no disponibles
     };
 
     const getTimeConstraints = () => {
-        if (!selectedDateTime) return { minTime: null, maxTime: null };
+        if (!selectedDateTime || !service) return { minTime: null, maxTime: null };
 
-        const day = selectedDateTime.getDay();
+        const timeLimits = getTimeLimits();
+        if (!timeLimits) return { minTime: null, maxTime: null };
+
         const isToday = selectedDateTime.toDateString() === new Date().toDateString();
 
-        let minHours = 9;
-        let maxHours = 21;
-
-        if (day === 6) {
-            minHours = 10;
-            maxHours = 19;
-        }
-
         const minTime = new Date(selectedDateTime);
-        minTime.setHours(minHours, 0, 0, 0);
+        minTime.setHours(timeLimits.openingHour, 0, 0, 0);
 
         const maxTime = new Date(selectedDateTime);
-        maxTime.setHours(maxHours, 0, 0, 0);
+        maxTime.setHours(timeLimits.closingHour, 1, 0, 0); // 21:01 o 19:01
 
         if (isToday) {
             const now = new Date();
-            if (now.getHours() >= minHours) {
+            if (now.getHours() >= timeLimits.openingHour) {
                 minTime.setHours(now.getHours());
                 minTime.setMinutes(Math.ceil(now.getMinutes() / 30) * 30);
             }
@@ -96,19 +140,31 @@ const Reserva = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedDateTime) {
-            toast.error("Por favor selecciona fecha y hora");
+        if (!selectedDateTime || !service) {
+            toast.error("Faltan datos necesarios");
             return;
         }
 
-        const token = localStorage.getItem("authToken");
+        const timeLimits = getTimeLimits();
+        if (!timeLimits) return;
+
+        const hora = selectedDateTime.getHours();
+        const minutos = selectedDateTime.getMinutes();
         const now = new Date();
+
+        // Validación de horario según duración
+        if (hora > timeLimits.lastBookableHour ||
+            (hora === timeLimits.lastBookableHour && minutos > timeLimits.lastBookableMinute)) {
+            toast.error(`El último turno ${timeLimits.dayName} es a ${timeLimits.lastBookableHour}:${timeLimits.lastBookableMinute < 10 ? '0' : ''}${timeLimits.lastBookableMinute}`);
+            return;
+        }
 
         if (selectedDateTime < now) {
             toast.error("No puedes seleccionar una fecha/hora pasada.");
             return;
         }
 
+        const token = localStorage.getItem("authToken");
         try {
             const fechaParaBackend = new Date(selectedDateTime);
             fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
@@ -145,6 +201,7 @@ const Reserva = () => {
     };
 
     const { minTime, maxTime } = getTimeConstraints();
+    const timeLimits = getTimeLimits();
 
     return (
         <div style={{
@@ -167,6 +224,12 @@ const Reserva = () => {
                     <p><strong>Descripción:</strong> {service.descripcion}</p>
                     <p><strong>Precio:</strong> ${service.precio}</p>
                     <p><strong>Duración:</strong> {service.duracion} minutos</p>
+                    {timeLimits && (
+                        <>
+                            <p><strong>Horario:</strong> {timeLimits.dayName} de {timeLimits.openingHour}:00 a {timeLimits.displayClose}</p>
+                            <p><strong>Último turno:</strong> {timeLimits.lastBookableHour}:{timeLimits.lastBookableMinute < 10 ? '0' : ''}{timeLimits.lastBookableMinute}</p>
+                        </>
+                    )}
                 </div>
             )}
 

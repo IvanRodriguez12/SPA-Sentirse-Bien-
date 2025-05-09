@@ -176,9 +176,10 @@ const SobreNosotros = () => {
       {/* Info de contacto */}
       <section className={styles.contactInfo}>
         <h2><FaMapMarkerAlt /> Visítanos</h2>
+        <p style={{margin: '1rem 0'}}>📍 Av. Relaxación 123, Buenos Aires</p>
         <div className={styles.infoGrid}>
           <div>
-            <p><FaClock /> Lunes a Viernes: 9:00 - 21:00, Sábados: 10:00 - 19:00</p>
+            <p><FaClock /> Lunes a Viernes: 9:00 - 20:30, Sábados: 10:00 - 19:00</p>
           </div>
           <div>
             <p><FaPhone /> +54 9 11 2345-6789</p>
