@@ -4,7 +4,6 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-# Limpiar y compilar el proyecto
 RUN mvn clean install -DskipTests
 
 # Etapa 2: Ejecución
