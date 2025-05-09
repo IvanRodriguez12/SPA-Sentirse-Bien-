@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api/";
+const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('authToken');
     if (token) {
       try {
-        const response = await axios.get(`${API_URL}clientes/perfil`, {
+        const response = await axios.get(`${API_URL}/clientes/perfil`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   // Iniciar sesión
   const login = async (email, contrasena) => {
     try {
-      const response = await axios.post(`${API_URL}clientes/login`, {
+      const response = await axios.post(`${API_URL}/clientes/login`, {
         email,
         contrasena
       });
