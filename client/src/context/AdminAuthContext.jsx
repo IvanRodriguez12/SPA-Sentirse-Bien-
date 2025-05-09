@@ -14,11 +14,14 @@ export const AdminAuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const checkAdminAuth = async () => {
-    setLoading(true);
-    const token = localStorage.getItem('adminToken');
-    if (token) {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await axios.get(`https://spa-sentirse-bien-production.up.railway.app/api/admin/perfil`, {
+        const response = await axios.get(`${API_URL}/admin/perfil`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAdmin(response.data);
@@ -26,9 +29,9 @@ export const AdminAuthProvider = ({ children }) => {
       } catch (error) {
         console.error("Token inválido:", error);
         logout();
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
   };
 
   const login = async (email, contrasena) => {

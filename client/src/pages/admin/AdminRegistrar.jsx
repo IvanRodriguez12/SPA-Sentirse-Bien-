@@ -29,28 +29,33 @@ const AdminRegistrar = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const verificarAdmin = async () => {
+    const verificarAcceso = async () => {
       try {
-        const response = await axios.get(`https://spa-sentirse-bien-production.up.railway.app/api/admin/existeAdmin`);
+        // 1. Primero verificar si ya está autenticado
+        if (admin) {
+          setIsLoading(false);
+          return; // Si ya está autenticado, permitir acceso
+        }
+
+        // 2. Si no está autenticado, verificar existencia de admins
+        const response = await axios.get(`${API_URL}/admin/existeAdmin`);
         setAdminExiste(response.data);
         
-        // Si ya hay admins y no está logueado, redirigir
-        if (response.data && !admin) {
+        // 3. Redirigir solo si existen admins Y no está autenticado
+        if (response.data) {
           navigate('/admin/login');
+        } else {
+          setIsLoading(false);
         }
+        
       } catch (error) {
-        console.error("Error verificando administradores:", error);
-        toast.error("Error al verificar administradores");
-      } finally {
+        console.error("Error:", error);
+        toast.error("Error de conexión");
         setIsLoading(false);
       }
     };
 
-    if (!admin) {
-      verificarAdmin();
-    } else {
-      setIsLoading(false); // Si ya está autenticado, permitir acceso
-    }
+    verificarAcceso();
   }, [admin, navigate]);
 
   const onSubmit = async (data) => {
