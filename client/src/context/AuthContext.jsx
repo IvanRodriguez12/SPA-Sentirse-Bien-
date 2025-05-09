@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('authToken');
     if (token) {
       try {
-        const response = await axios.get(`${API_URL}/clientes/perfil`, {
+        const response = await axios.get(`https://spa-sentirse-bien-production.up.railway.app/api/clientes/perfil`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -33,8 +33,9 @@ export const AuthProvider = ({ children }) => {
 
   // Iniciar sesión
   const login = async (email, contrasena) => {
+    console.log('URL de login:', `${API_URL}/clientes/login`);
     try {
-      const response = await axios.post(`${API_URL}/clientes/login`, {
+      const response = await axios.post(`https://spa-sentirse-bien-production.up.railway.app/api/clientes/login`, {
         email,
         contrasena
       });
@@ -51,7 +52,9 @@ export const AuthProvider = ({ children }) => {
       toast.success('Inicio de sesión exitoso');
       navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.mensaje || 'Credenciales incorrectas');
+      const errorMessage = error.response?.data?.mensaje || 'Credenciales incorrectas';
+      console.error('Error during login:', errorMessage, error);
+      toast.error(errorMessage);
     }
   };
 
