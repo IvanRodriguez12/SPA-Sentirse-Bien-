@@ -1,7 +1,7 @@
 // App.jsx (CORREGIDO)
 import { Toaster } from 'react-hot-toast';
 import AppRoutes from './routes/AppRoutes';
-import './app.css';
+import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { AdminAuthProvider } from './context/AdminAuthContext';
