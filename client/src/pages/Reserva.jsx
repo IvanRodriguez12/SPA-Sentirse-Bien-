@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
+
 const Reserva = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -176,7 +178,7 @@ const Reserva = () => {
             };
 
             if (editingTurno) {
-                await axios.put(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/editar/${editingTurno.id}`, turnoData, {
+                await axios.put(`${API_URL}/turnos/editar/${editingTurno.id}`, turnoData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
@@ -184,7 +186,7 @@ const Reserva = () => {
                 });
                 toast.success("Turno actualizado exitosamente.");
             } else {
-                await axios.post("https://spa-sentirse-bien-production.up.railway.app/api/turnos/crear", turnoData, {
+                await axios.post(`${API_URL}/turnos/crear`, turnoData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"

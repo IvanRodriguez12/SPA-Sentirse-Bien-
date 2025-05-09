@@ -8,6 +8,8 @@ import AdminHeader from './AdminHeader';
 
 Modal.setAppElement('#root');
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
+
 const AdminTurnos = () => {
   const [turnos, setTurnos] = useState([]);
   const [clientes, setClientes] = useState([]);
@@ -82,19 +84,19 @@ const AdminTurnos = () => {
   };
 
   const fetchTurnos = (clienteId) => fetchData(
-    `https://spa-sentirse-bien-production.up.railway.app/api/admin/turnos/cliente/${clienteId}`,
+    `${API_URL}/admin/turnos/cliente/${clienteId}`,
     setTurnos,
     'turnos'
   );
 
   const fetchClientes = () => fetchData(
-    'https://spa-sentirse-bien-production.up.railway.app/api/admin/clientes',
+    `${API_URL}/admin/clientes`,
     setClientes,
     'clientes'
   );
 
   const fetchServicios = () => fetchData(
-    'https://spa-sentirse-bien-production.up.railway.app/api/servicios/listar',
+    `${API_URL}/servicios/listar`,
     setServicios,
     'servicios',
     false
@@ -109,7 +111,7 @@ const AdminTurnos = () => {
           return;
         }
 
-        await axios.delete(`https://spa-sentirse-bien-production.up.railway.app/api/admin/turnos/${id}`, {
+        await axios.delete(`${API_URL}/admin/turnos/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -199,7 +201,7 @@ const AdminTurnos = () => {
 
       // 5. Realizar petición
       const response = await instance.put(
-        `https://spa-sentirse-bien-production.up.railway.app/api/admin/turnos/${currentTurno.id}`,
+        `${API_URL}/admin/turnos/${currentTurno.id}`,
         turnoData,
         config
       );

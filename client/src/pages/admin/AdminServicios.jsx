@@ -7,6 +7,8 @@ import AdminHeader from './AdminHeader';
 
 Modal.setAppElement('#root');
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
+
 const AdminServicios = () => {
   const [servicios, setServicios] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -31,8 +33,8 @@ const AdminServicios = () => {
   const fetchDatos = async () => {
     try {
       const [serviciosRes, categoriasRes] = await Promise.all([
-        axios.get('https://spa-sentirse-bien-production.up.railway.app/api/servicios/listar'),
-        axios.get('https://spa-sentirse-bien-production.up.railway.app/api/categorias/listar')
+        axios.get(`${API_URL}/servicios/listar`),
+        axios.get(`${API_URL}/categorias/listar`)
       ]);
 
       setServicios(serviciosRes.data);
@@ -46,8 +48,8 @@ const AdminServicios = () => {
     e.preventDefault();
     try {
       const endpoint = editingId
-        ? `https://spa-sentirse-bien-production.up.railway.app/api/servicios/editar/${editingId}`
-        : 'https://spa-sentirse-bien-production.up.railway.app/api/servicios/crear';
+        ? `${API_URL}/servicios/editar/${editingId}`
+        : `${API_URL}/servicios/crear`;
 
       const method = editingId ? 'put' : 'post';
 
@@ -68,7 +70,7 @@ const AdminServicios = () => {
   const handleDelete = async (id) => {
     if (window.confirm("¿Eliminar este servicio permanentemente?")) {
       try {
-        await axios.delete(`https://spa-sentirse-bien-production.up.railway.app/api/servicios/eliminar/${id}`, {
+        await axios.delete(`${API_URL}/servicios/eliminar/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('adminToken')}`
           }

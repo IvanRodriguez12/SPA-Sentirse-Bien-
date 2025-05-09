@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
+
 const schema = yup.object().shape({
   email: yup.string().email('Email inválido').required('Requerido'),
   contrasena: yup.string().min(6, 'Mínimo 6 caracteres').required('Requerido'),
@@ -29,7 +31,7 @@ const AdminRegistrar = () => {
   useEffect(() => {
     const verificarAdmin = async () => {
       try {
-        const response = await axios.get('https://spa-sentirse-bien-production.up.railway.app/api/admin/existeAdmin');
+        const response = await axios.get(`${API_URL}/admin/existeAdmin`);
         setAdminExiste(response.data);
         
         // Si ya hay admins y no está logueado, redirigir
@@ -54,7 +56,7 @@ const AdminRegistrar = () => {
       } : {};
       
       const response = await axios.post(
-        'https://spa-sentirse-bien-production.up.railway.app/api/admin/registrar',
+        `${API_URL}/admin/registrar`,
         {
           email: data.email.trim().toLowerCase(),
           contrasena: data.contrasena
