@@ -82,19 +82,19 @@ const AdminTurnos = () => {
   };
 
   const fetchTurnos = (clienteId) => fetchData(
-    `http://localhost:8080/api/admin/turnos/cliente/${clienteId}`,
+    `https://spa-sentirse-bien-production.up.railway.app/api/admin/turnos/cliente/${clienteId}`,
     setTurnos,
     'turnos'
   );
 
   const fetchClientes = () => fetchData(
-    'http://localhost:8080/api/admin/clientes',
+    'https://spa-sentirse-bien-production.up.railway.app/api/admin/clientes',
     setClientes,
     'clientes'
   );
 
   const fetchServicios = () => fetchData(
-    'http://localhost:8080/api/servicios/listar',
+    'https://spa-sentirse-bien-production.up.railway.app/api/servicios/listar',
     setServicios,
     'servicios',
     false
@@ -109,7 +109,7 @@ const AdminTurnos = () => {
           return;
         }
 
-        await axios.delete(`http://localhost:8080/api/admin/turnos/${id}`, {
+        await axios.delete(`https://spa-sentirse-bien-production.up.railway.app/api/admin/turnos/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -199,7 +199,7 @@ const AdminTurnos = () => {
 
       // 5. Realizar petición
       const response = await instance.put(
-        `http://localhost:8080/api/admin/turnos/${currentTurno.id}`,
+        `https://spa-sentirse-bien-production.up.railway.app/api/admin/turnos/${currentTurno.id}`,
         turnoData,
         config
       );

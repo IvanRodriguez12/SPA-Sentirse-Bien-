@@ -28,7 +28,7 @@ const AdminCuentas = () => {
   const fetchClientes = async () => {
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await axios.get('http://localhost:8080/api/admin/clientes', {
+      const response = await axios.get('https://spa-sentirse-bien-production.up.railway.app/api/admin/clientes', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClientes(response.data);
@@ -40,7 +40,7 @@ const AdminCuentas = () => {
   const fetchAdministradores = async () => {
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await axios.get('http://localhost:8080/api/admin/administradores', {
+      const response = await axios.get('https://spa-sentirse-bien-production.up.railway.app/api/admin/administradores', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAdministradores(response.data);
@@ -72,7 +72,7 @@ const AdminCuentas = () => {
           ? `clientes/${id}` 
           : `administradores/${id}`;
 
-        await axios.delete(`http://localhost:8080/api/admin/${endpoint}`, {
+        await axios.delete(`https://spa-sentirse-bien-production.up.railway.app/api/admin/${endpoint}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

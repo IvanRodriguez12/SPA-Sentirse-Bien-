@@ -29,7 +29,7 @@ const AdminRegistrar = () => {
   useEffect(() => {
     const verificarAdmin = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/admin/existeAdmin');
+        const response = await axios.get('https://spa-sentirse-bien-production.up.railway.app/api/admin/existeAdmin');
         setAdminExiste(response.data);
         
         // Si ya hay admins y no está logueado, redirigir
@@ -54,7 +54,7 @@ const AdminRegistrar = () => {
       } : {};
       
       const response = await axios.post(
-        'http://localhost:8080/api/admin/registrar',
+        'https://spa-sentirse-bien-production.up.railway.app/api/admin/registrar',
         {
           email: data.email.trim().toLowerCase(),
           contrasena: data.contrasena

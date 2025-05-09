@@ -14,7 +14,7 @@ export const AdminAuthProvider = ({ children }) => {
     const token = localStorage.getItem('adminToken');
     if (token) {
       try {
-        const response = await axios.get('http://localhost:8080/api/admin/perfil', {
+        const response = await axios.get('https://spa-sentirse-bien-production.up.railway.app/api/admin/perfil', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAdmin(response.data);
@@ -28,7 +28,7 @@ export const AdminAuthProvider = ({ children }) => {
 
   const login = async (email, contrasena) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/admin/login', {
+      const response = await axios.post('https://spa-sentirse-bien-production.up.railway.app/api/admin/login', {
         email, 
         contrasena
       });

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = 'https://spa-sentirse-bien-production.up.railway.app/';
 
 export const getCategories = async () => {
   try {

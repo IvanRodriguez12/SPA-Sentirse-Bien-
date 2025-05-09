@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/auth'; // Cambiar por tu endpoint real
+const API_URL = 'https://spa-sentirse-bien-production.up.railway.app/api/auth'; // Cambiar por tu endpoint real
 
 export const loginUser = async (credentials) => {
   try {
