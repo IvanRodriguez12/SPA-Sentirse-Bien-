@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://spa-sentirse-bien-production.up.railway.app';
+const API_URL = 'https://spa-sentirse-bien-production.up.railway.app/api'; // Cambiar por tu endpoint real
 
 export const getCategories = async () => {
   try {
