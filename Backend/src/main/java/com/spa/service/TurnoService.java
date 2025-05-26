@@ -36,20 +36,20 @@ public class TurnoService {
         Cliente cliente = clienteRepository.findById(turno.getCliente().getId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + turno.getCliente().getId()));
 
-        Servicio servicio = servicioRepository.findById(turno.getServicio().getId())
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado con ID: " + turno.getServicio().getId()));
+        // Obtén la lista de servicios
+        List<Servicio> servicios = servicioRepository.findAllById(
+                turno.getServicios().stream().map(Servicio::getId).toList()
+        );
+
+        if (servicios.isEmpty()) {
+            throw new RuntimeException("No se encontraron los servicios proporcionados.");
+        }
 
         turno.setCliente(cliente);
-        turno.setServicio(servicio);
+        turno.setServicios(servicios);
 
         validarTurno(turno);
-        Turno turnoGuardado = turnoRepository.save(turno);
-
-        // FORZAR CARGA COMPLETA ANTES DE RETORNARLO
-        turnoGuardado.setCliente(cliente);
-        turnoGuardado.setServicio(servicio);
-
-        return turnoGuardado;
+        return turnoRepository.save(turno);
     }
 
     public List<Turno> listarTurnos() {
@@ -83,26 +83,44 @@ public class TurnoService {
 
         turnoExistente.setCliente(clienteRepository.findById(turnoActualizado.getCliente().getId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado")));
-        turnoExistente.setServicio(servicioRepository.findById(turnoActualizado.getServicio().getId())
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado")));
+
+        List<Servicio> servicios = servicioRepository.findAllById(
+                turnoActualizado.getServicios().stream().map(Servicio::getId).toList()
+        );
+
+        if (servicios.isEmpty()) {
+            throw new RuntimeException("No se encontraron los servicios proporcionados.");
+        }
+
+        turnoExistente.setServicios(servicios);
         turnoExistente.setFechaHora(turnoActualizado.getFechaHora());
 
         return turnoRepository.save(turnoExistente);
     }
 
+
     private void validarTurno(Turno turno) {
-        // Validar que existan cliente y servicio
+        // Validar que el cliente exista
         if (!clienteRepository.existsById(turno.getCliente().getId())) {
             throw new RuntimeException("Cliente no encontrado");
         }
-        if (!servicioRepository.existsById(turno.getServicio().getId())) {
-            throw new RuntimeException("Servicio no encontrado");
+
+        // Validar que los servicios existan
+        if (turno.getServicios() == null || turno.getServicios().isEmpty()) {
+            throw new RuntimeException("Debe seleccionar al menos un servicio.");
+        }
+
+        List<Long> servicioIds = turno.getServicios().stream().map(Servicio::getId).toList();
+        long serviciosEncontrados = servicioRepository.countByIdIn(servicioIds);
+
+        if (serviciosEncontrados != servicioIds.size()) {
+            throw new RuntimeException("Uno o más servicios no fueron encontrados.");
         }
 
         // Validar fecha y hora
         LocalDateTime fecha = turno.getFechaHora();
         if (fecha.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("No se puede reservar en fechas pasadas");
+            throw new IllegalArgumentException("No se puede reservar en fechas pasadas.");
         }
 
         // Validar horario de atención (8am a 8pm)

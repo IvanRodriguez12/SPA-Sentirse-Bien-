@@ -29,14 +29,19 @@ public class TurnoController {
 
     @PostMapping("/crear")
     public Turno crearTurno(@RequestBody Turno turno) {
-        // Buscar cliente y servicio por ID antes de guardar el turno
         Cliente cliente = clienteRepository.findById(turno.getCliente().getId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + turno.getCliente().getId()));
-        Servicio servicio = servicioRepository.findById(turno.getServicio().getId())
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado con ID: " + turno.getServicio().getId()));
+
+        List<Servicio> servicios = servicioRepository.findAllById(
+                turno.getServicios().stream().map(Servicio::getId).toList()
+        );
+
+        if (servicios.isEmpty()) {
+            throw new RuntimeException("No se encontraron los servicios proporcionados.");
+        }
 
         turno.setCliente(cliente);
-        turno.setServicio(servicio);
+        turno.setServicios(servicios);
 
         return turnoService.guardarTurno(turno);
     }

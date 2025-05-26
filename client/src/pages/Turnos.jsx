@@ -115,7 +115,8 @@ const Turnos = () => {
             <ul style={{ listStyle: 'none', padding: 0 }}>
                 {turnos.map((turno) => {
                     const fechaInicio = new Date(turno.fechaHora);
-                    const fechaFin = new Date(fechaInicio.getTime() + turno.servicio.duracion * 60000);
+                    const duracionTotal = turno.servicios.reduce((total, servicio) => total + servicio.duracion, 0);
+                    const fechaFin = new Date(fechaInicio.getTime() + duracionTotal * 60000);
 
                     return (
                         <li
@@ -129,11 +130,11 @@ const Turnos = () => {
                             }}
                         >
                             <div>
-                                <p><strong>Servicio:</strong> {turno.servicio.nombre}</p>
+                                <p><strong>Servicios:</strong> {turno.servicios.map(servicio => servicio.nombre).join(", ")}</p>
                                 <p><strong>Fecha:</strong> {fechaInicio.toLocaleDateString()}</p>
                                 <p><strong>Hora inicio:</strong> {fechaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                                 <p><strong>Hora fin:</strong> {fechaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                <p><strong>Duración:</strong> {turno.servicio.duracion} minutos</p>
+                                <p><strong>Duración total:</strong> {duracionTotal} minutos</p>
                             </div>
                         </li>
                     );

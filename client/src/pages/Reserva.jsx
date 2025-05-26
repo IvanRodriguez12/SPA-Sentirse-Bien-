@@ -12,7 +12,7 @@ const Reserva = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const service = location.state?.service;
+    const services = location.state?.services || [];
     const editingTurno = location.state?.editingTurno;
 
     const [selectedDateTime, setSelectedDateTime] = useState(null);
@@ -27,7 +27,7 @@ const Reserva = () => {
 
     // Función para calcular los límites según el día y duración del servicio
     const getTimeLimits = () => {
-        if (!service) return null;
+        if (!services.length) return null;
 
         const day = selectedDateTime?.getDay() || new Date().getDay();
         const isSaturday = day === 6;
@@ -37,12 +37,12 @@ const Reserva = () => {
             weekday: {
                 open: 9,    // Apertura L-V
                 close: 21,  // Cierre L-V (21:01)
-                displayClose: "21:01"
+                displayClose: "21:00"
             },
             saturday: {
                 open: 10,   // Apertura Sábado
                 close: 19,  // Cierre Sábado (19:01)
-                displayClose: "19:01"
+                displayClose: "19:00"
             }
         };
 
@@ -51,7 +51,8 @@ const Reserva = () => {
         // Calcula el último turno posible considerando la duración
         const lastAvailableTime = new Date();
         lastAvailableTime.setHours(close, 1, 0, 0); // Hora de cierre (21:01 o 19:01)
-        const lastBookableTime = new Date(lastAvailableTime.getTime() - service.duracion * 60000);
+        const totalDuracion = services.reduce((total, servicio) => total + servicio.duracion, 0);
+        const lastBookableTime = new Date(lastAvailableTime.getTime() - totalDuracion * 60000);
 
         return {
             openingHour: open,
@@ -88,7 +89,7 @@ const Reserva = () => {
     };
 
     const filterPassedTime = (time) => {
-        if (!service) return false;
+        if (!services.length) return false;
 
         const hour = time.getHours();
         const minutes = time.getMinutes();
@@ -115,7 +116,7 @@ const Reserva = () => {
     };
 
     const getTimeConstraints = () => {
-        if (!selectedDateTime || !service) return { minTime: null, maxTime: null };
+       if (!selectedDateTime || !services.length) return { minTime: null, maxTime: null };
 
         const timeLimits = getTimeLimits();
         if (!timeLimits) return { minTime: null, maxTime: null };
@@ -142,7 +143,7 @@ const Reserva = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedDateTime || !service) {
+        if (!selectedDateTime || !services.length) {
             toast.error("Faltan datos necesarios");
             return;
         }
@@ -172,7 +173,7 @@ const Reserva = () => {
             fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
 
             const turnoData = {
-                servicio: { id: service.id },
+                servicios: services.map(servicio => ({ id: servicio.id })),
                 cliente: { id: user.id },
                 fechaHora: fechaParaBackend.toISOString(),
             };
@@ -215,17 +216,17 @@ const Reserva = () => {
                 {editingTurno ? 'Editar Turno' : 'Reservar Servicio'}
             </h2>
 
-            {service && (
+            {services.length > 0 && (
                 <div style={{
                     marginBottom: '2rem',
                     padding: '1rem',
                     backgroundColor: '#f8f9fa',
                     borderRadius: '8px'
                 }}>
-                    <p><strong>Servicio:</strong> {service.nombre}</p>
-                    <p><strong>Descripción:</strong> {service.descripcion}</p>
-                    <p><strong>Precio:</strong> ${service.precio}</p>
-                    <p><strong>Duración:</strong> {service.duracion} minutos</p>
+                    <p><strong>Servicios:</strong> {services.map(servicio => servicio.nombre).join(", ")}</p>
+                    <p><strong>Descripción:</strong> {services.map(servicio => servicio.descripcion).join(", ")}</p>
+                    <p><strong>Precio total:</strong> ${services.reduce((total, servicio) => total + servicio.precio, 0)}</p>
+                    <p><strong>Duración total:</strong> {services.reduce((total, servicio) => total + servicio.duracion, 0)} minutos</p>
                     {timeLimits && (
                         <>
                             <p><strong>Horario:</strong> {timeLimits.dayName} de {timeLimits.openingHour}:00 a {timeLimits.displayClose}</p>

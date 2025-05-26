@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,7 +7,7 @@ const Servicio = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const service = location.state?.service;
+  const services = location.state?.services || [];
 
   if (!service) {
     return (
@@ -23,11 +23,17 @@ const Servicio = () => {
     );
   }
 
+  const [selectedServices, setSelectedServices] = useState([service]);
+
+  const handleSelectService = (servicio) => {
+    setSelectedServices(prev => [...prev, servicio]); // ✅ Agrega otro servicio a la lista
+  };
+
   const handleReserve = () => {
     if (!user) {
       navigate('/login');
     } else {
-      navigate('/reservas', { state: { service } });
+      navigate('/reservas', { state: { services: selectedServices } }); // ✅ Enviar lista de servicios
     }
   };
 
@@ -84,6 +90,12 @@ const Servicio = () => {
           style={buttonStyle}
         >
           Volver a Categorías
+        </button>
+        <button
+          onClick={handleSelectService}
+          style={{ ...buttonStyle, backgroundColor: 'var(--rosa-claro)' }}
+        >
+          Añadir otro servicio
         </button>
         <button
           onClick={handleReserve}
