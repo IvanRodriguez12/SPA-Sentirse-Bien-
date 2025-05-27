@@ -7,9 +7,10 @@ const Servicio = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  console.log("Estado recibido en Servicio:", location.state); // ✅ Verificar qué datos llegan
+  console.log("Estado recibido en Servicio:", location.state);
+  console.log("Lista de servicios recibidos:", location.state?.services);
 
-  const services = location.state?.services || [];
+  const services = location.state?.services?.length ? location.state?.services : [];
 
   if (!services.length) {
     console.error("No se encontró ningún servicio. Estado recibido:", location.state);
@@ -26,17 +27,19 @@ const Servicio = () => {
     );
   }
 
-  const [selectedServices, setSelectedServices] = useState(services.length ? services : []);
+  const [selectedServices, setSelectedServices] = useState(services);
 
   const handleSelectService = (servicio) => {
-    setSelectedServices(prev => [...prev, servicio]); // ✅ Agrega otro servicio a la lista
+    console.log("Añadiendo servicio:", servicio);
+    setSelectedServices(prev => [...prev, servicio]);
   };
 
   const handleReserve = () => {
+    console.log("Servicios seleccionados para reservar:", selectedServices);
     if (!user) {
       navigate('/login');
     } else {
-      navigate('/reservas', { state: { services: selectedServices } }); // ✅ Envía la lista completa de servicios
+      navigate('/reservas', { state: { services: selectedServices } });
     }
   };
 

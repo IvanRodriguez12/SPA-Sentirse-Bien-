@@ -45,7 +45,7 @@ const Home = () => {
   }, []);
 
   const handleServiceClick = (service) => {
-    navigate('/servicios', { state: { service } }); // Redirigir a la página de servicios con el servicio seleccionado
+    navigate('/servicios', { state: { services: [service] } }); // ✅ Envía `service` dentro de un array
   };
 
   if (loading) {

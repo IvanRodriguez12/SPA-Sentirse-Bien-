@@ -38,7 +38,7 @@ const Categorias = () => {
   }, []);
 
   const handleViewService = (service) => {
-    navigate('/servicios', { state: { service } });
+    navigate('/servicios', { state: { services: [service] } }); // ✅ Envía una lista con un solo elemento
   };
 
   if (loading) return <div style={{ padding: '2rem' }}>Cargando servicios...</div>;
