@@ -9,6 +9,7 @@ import com.spa.service.TurnoService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.spa.dto.TurnoRequest;
 
 @RestController
 @RequestMapping("/api/turnos")
@@ -28,20 +29,20 @@ public class TurnoController {
     }
 
     @PostMapping("/crear")
-    public Turno crearTurno(@RequestBody Turno turno) {
-        Cliente cliente = clienteRepository.findById(turno.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + turno.getCliente().getId()));
+    public Turno crearTurno(@RequestBody TurnoRequest request) {
+        Cliente cliente = clienteRepository.findById(request.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + request.getClienteId()));
 
-        List<Servicio> servicios = servicioRepository.findAllById(
-                turno.getServicios().stream().map(Servicio::getId).toList()
-        );
+        List<Servicio> servicios = servicioRepository.findAllById(request.getServicioIds());
 
         if (servicios.isEmpty()) {
             throw new RuntimeException("No se encontraron los servicios proporcionados.");
         }
 
+        Turno turno = new Turno();
         turno.setCliente(cliente);
         turno.setServicios(servicios);
+        turno.setFechaHora(request.getFechaHora());
 
         return turnoService.guardarTurno(turno);
     }
