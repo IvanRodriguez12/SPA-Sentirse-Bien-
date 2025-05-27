@@ -60,6 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String userEmail = jwtUtil.extraerEmail(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                System.out.println("Email extraído del token: " + userEmail);
                 UserDetails userDetails = loadUserByEmail(userEmail);
 
                 if (userDetails != null && jwtUtil.validarToken(jwt)) {
@@ -73,9 +74,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authentication.setDetails(
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
+                    System.out.println("Autenticación creada para: " + userDetails.getUsername());
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
+
             }
         } catch (Exception e) {
             logger.error("Error en el filtro de autenticación JWT", e);

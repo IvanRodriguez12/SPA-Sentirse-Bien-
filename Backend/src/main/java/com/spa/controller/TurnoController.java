@@ -30,6 +30,9 @@ public class TurnoController {
 
     @PostMapping("/crear")
     public Turno crearTurno(@RequestBody TurnoRequest request) {
+        System.out.println("⚙️ RECIBIDO: clienteId=" + request.getClienteId()
+                + ", fechaHora=" + request.getFechaHora()
+                + ", servicioIds=" + request.getServicioIds());
         Cliente cliente = clienteRepository.findById(request.getClienteId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + request.getClienteId()));
 
