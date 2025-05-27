@@ -168,29 +168,18 @@ const Reserva = () => {
         }
 
         const token = localStorage.getItem("authToken");
-
-        if (!token) {
-            toast.error("Debes iniciar sesión para reservar un turno.");
-            navigate("/login");
-            return;
-        }
-
-        console.log("Token enviado:", token); // ✅ Verifica que el token no sea `null`
-
         try {
             const fechaParaBackend = new Date(selectedDateTime);
             fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
 
             const turnoData = {
-                clienteId: user.id, // ✅ Cambiado a clienteId
+                servicios: services.map(servicio => ({ id: servicio.id })),
+                cliente: { id: user.id },
                 fechaHora: fechaParaBackend.toISOString(),
-                servicios: services.map(servicio => servicio.id), // ✅ Solo IDs de servicios, sin objetos `{ id: servicio.id }`
             };
 
-            console.log("Datos enviados al backend:", turnoData); // ✅ Verifica que `turnoData` sea correcto
-
             if (editingTurno) {
-                await axios.put(`${API_URL}/turnos/editar/${editingTurno.id}`, turnoData, {
+                await axios.put(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/editar/${editingTurno.id}`, turnoData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
@@ -198,7 +187,7 @@ const Reserva = () => {
                 });
                 toast.success("Turno actualizado exitosamente.");
             } else {
-                await axios.post(`${API_URL}/turnos/crear`, turnoData, {
+                await axios.post(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/crear`, turnoData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
