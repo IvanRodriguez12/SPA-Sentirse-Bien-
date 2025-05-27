@@ -20,7 +20,7 @@ public class Turno {
     @JsonIgnoreProperties({"telefono", "contrasena","hibernateLazyInitializer", "handler"})
     private Cliente cliente;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "turno_servicio",
             joinColumns = @JoinColumn(name = "turno_id"),

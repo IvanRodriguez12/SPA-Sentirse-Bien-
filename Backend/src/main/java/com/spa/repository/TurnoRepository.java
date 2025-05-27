@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TurnoRepository extends JpaRepository<Turno, Long> {
-    @Query("SELECT t FROM Turno t JOIN FETCH t.cliente JOIN FETCH t.servicio WHERE t.id = :id")
+    @Query("SELECT DISTINCT t FROM Turno t JOIN FETCH t.cliente LEFT JOIN FETCH t.servicios WHERE t.id = :id")
     Optional<Turno> findByIdWithDetails(@Param("id") Long id);
 
     @Transactional
