@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://spa-sentirse-bien-production.up.railway.app/api';
+const API_URL = 'https://spa-sentirse-bien-production.up.railway.app/api'; // Cambiar por tu endpoint real
 
 export const getCategories = async () => {
   try {
@@ -23,7 +23,7 @@ export const getServicesByCategory = async (categoryId) => {
 };
 
 export const getServiceDetails = async (serviceId) => {
-  console.log("Obteniendo detalles de servicio con ID:", serviceId); // ✅ Verificar que `serviceId` llega bien
+  console.log("Obteniendo detalles de servicio con ID:", serviceId); // ✅ Verifica si serviceId es correcto
   try {
     const response = await axios.get(`${API_URL}/servicios/detalle/${serviceId}`);
     return response.data;

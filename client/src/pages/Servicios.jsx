@@ -7,7 +7,7 @@ const Servicio = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  console.log("Estado recibido en Servicio:", location.state); // ✅ Verificar que los datos llegan bien
+  console.log("Estado recibido en Servicio:", location.state); // ✅ Verificar qué datos llegan
 
   const services = location.state?.services || [];
 
