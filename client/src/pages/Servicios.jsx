@@ -7,9 +7,12 @@ const Servicio = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  console.log("Estado recibido en Servicio:", location.state); // ✅ Verificar que los datos llegan bien
+
   const services = location.state?.services || [];
 
   if (!services.length) {
+    console.error("No se encontró ningún servicio. Estado recibido:", location.state);
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <h2>No se encontró ningún servicio</h2>
@@ -23,7 +26,7 @@ const Servicio = () => {
     );
   }
 
-  const [selectedServices, setSelectedServices] = useState(services);
+  const [selectedServices, setSelectedServices] = useState(services.length ? services : []);
 
   const handleSelectService = (servicio) => {
     setSelectedServices(prev => [...prev, servicio]); // ✅ Agrega otro servicio a la lista

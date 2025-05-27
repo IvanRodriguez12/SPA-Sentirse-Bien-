@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://spa-sentirse-bien-production.up.railway.app/api'; // Cambiar por tu endpoint real
+const API_URL = 'https://spa-sentirse-bien-production.up.railway.app/api';
 
 export const getCategories = async () => {
   try {
@@ -14,8 +14,8 @@ export const getCategories = async () => {
 
 export const getServicesByCategory = async (categoryId) => {
   try {
-    const response = await axios.get(`${API_URL}/servicios/listar`);
-    return response.data.filter(service => service.categoria.id === categoryId);
+    const response = await axios.get(`${API_URL}/servicios/listar?categoriaId=${categoryId}`); // ✅ Filtración desde el backend
+    return response.data;
   } catch (error) {
     console.error('Error fetching services:', error);
     throw error;
@@ -23,6 +23,7 @@ export const getServicesByCategory = async (categoryId) => {
 };
 
 export const getServiceDetails = async (serviceId) => {
+  console.log("Obteniendo detalles de servicio con ID:", serviceId); // ✅ Verificar que `serviceId` llega bien
   try {
     const response = await axios.get(`${API_URL}/servicios/detalle/${serviceId}`);
     return response.data;
