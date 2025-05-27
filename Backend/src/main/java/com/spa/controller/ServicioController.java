@@ -19,8 +19,13 @@ public class ServicioController {
     private ServicioService servicioService;
 
     @GetMapping("/listar")
-    public ResponseEntity<List<Servicio>> listarServicios() {
-        List<Servicio> servicios = servicioService.obtenerTodos();
+    public ResponseEntity<List<Servicio>> listarServiciosPorCategoria(@RequestParam(required = false) Long categoriaId) {
+        List<Servicio> servicios;
+        if (categoriaId != null) {
+            servicios = servicioService.obtenerServiciosPorCategoria(categoriaId);
+        } else {
+            servicios = servicioService.obtenerTodos();
+        }
         return ResponseEntity.ok(servicios);
     }
 

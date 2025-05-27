@@ -72,7 +72,11 @@ public class ServicioService {
         if (!categoriaRepository.existsById(categoriaId)) {
             throw new RuntimeException("Categoría no encontrada con ID: " + categoriaId);
         }
-        return servicioRepository.findByCategoriaId(categoriaId);
+
+        List<Servicio> serviciosFiltrados = servicioRepository.findByCategoriaId(categoriaId);
+        System.out.println("Servicios filtrados para categoría " + categoriaId + ": " + serviciosFiltrados);
+
+        return serviciosFiltrados;
     }
 
     public Servicio obtenerServicioPorId(Long id) {
