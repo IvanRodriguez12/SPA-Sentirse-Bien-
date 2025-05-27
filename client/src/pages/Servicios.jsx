@@ -27,11 +27,18 @@ const Servicio = () => {
     );
   }
 
-  const [selectedServices, setSelectedServices] = useState(services);
+  const [selectedServices, setSelectedServices] = useState(
+    services.filter((value, index, self) => self.findIndex(s => s.id === value.id) === index)
+  );
 
   const handleSelectService = (servicio) => {
-    console.log("Añadiendo servicio:", servicio);
-    setSelectedServices(prev => [...prev, servicio]);
+    console.log("Intentando añadir servicio:", servicio);
+    if (!selectedServices.some(s => s.id === servicio.id)) {
+      setSelectedServices(prev => [...prev, servicio]); // ✅ Evita duplicados
+      console.log("Servicio añadido:", servicio);
+    } else {
+      console.log("El servicio ya está en la lista, no se añade nuevamente.");
+    }
   };
 
   const handleReserve = () => {
