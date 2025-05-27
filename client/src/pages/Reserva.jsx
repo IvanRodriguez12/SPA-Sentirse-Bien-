@@ -148,38 +148,30 @@ const Reserva = () => {
             return;
         }
 
-        const timeLimits = getTimeLimits();
-        if (!timeLimits) return;
-
-        const hora = selectedDateTime.getHours();
-        const minutos = selectedDateTime.getMinutes();
-        const now = new Date();
-
-        // Validación de horario según duración
-        if (hora > timeLimits.lastBookableHour ||
-            (hora === timeLimits.lastBookableHour && minutos > timeLimits.lastBookableMinute)) {
-            toast.error(`El último turno ${timeLimits.dayName} es a ${timeLimits.lastBookableHour}:${timeLimits.lastBookableMinute < 10 ? '0' : ''}${timeLimits.lastBookableMinute}`);
-            return;
-        }
-
-        if (selectedDateTime < now) {
-            toast.error("No puedes seleccionar una fecha/hora pasada.");
-            return;
-        }
-
         const token = localStorage.getItem("authToken");
+
+        if (!token) {
+            toast.error("Debes iniciar sesión para reservar un turno.");
+            navigate("/login");
+            return;
+        }
+
+        console.log("Token enviado:", token); // ✅ Verifica que el token no sea `null`
+
         try {
             const fechaParaBackend = new Date(selectedDateTime);
             fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
 
             const turnoData = {
-                servicios: services.map(servicio => ({ id: servicio.id })),
-                cliente: { id: user.id },
+                clienteId: user.id,
                 fechaHora: fechaParaBackend.toISOString(),
+                servicios: services.map(servicio => servicio.id), // ✅ Envía solo IDs de servicios
             };
 
+            console.log("Datos enviados al backend:", turnoData); // ✅ Verifica que `turnoData` sea correcto
+
             if (editingTurno) {
-                await axios.put(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/editar/${editingTurno.id}`, turnoData, {
+                await axios.put(`${API_URL}/turnos/editar/${editingTurno.id}`, turnoData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
@@ -187,7 +179,7 @@ const Reserva = () => {
                 });
                 toast.success("Turno actualizado exitosamente.");
             } else {
-                await axios.post(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/crear`, turnoData, {
+                await axios.post(`${API_URL}/turnos/crear`, turnoData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
