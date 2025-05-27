@@ -148,6 +148,25 @@ const Reserva = () => {
             return;
         }
 
+        const timeLimits = getTimeLimits();
+        if (!timeLimits) return;
+
+        const hora = selectedDateTime.getHours();
+        const minutos = selectedDateTime.getMinutes();
+        const now = new Date();
+
+        // Validación de horario según duración
+        if (hora > timeLimits.lastBookableHour ||
+            (hora === timeLimits.lastBookableHour && minutos > timeLimits.lastBookableMinute)) {
+            toast.error(`El último turno ${timeLimits.dayName} es a ${timeLimits.lastBookableHour}:${timeLimits.lastBookableMinute < 10 ? '0' : ''}${timeLimits.lastBookableMinute}`);
+            return;
+        }
+
+        if (selectedDateTime < now) {
+            toast.error("No puedes seleccionar una fecha/hora pasada.");
+            return;
+        }
+
         const token = localStorage.getItem("authToken");
 
         if (!token) {
@@ -163,9 +182,9 @@ const Reserva = () => {
             fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
 
             const turnoData = {
-                clienteId: user.id,
+                clienteId: user.id, // ✅ Cambiado a clienteId
                 fechaHora: fechaParaBackend.toISOString(),
-                servicios: services.map(servicio => servicio.id), // ✅ Envía solo IDs de servicios
+                servicios: services.map(servicio => servicio.id), // ✅ Solo IDs de servicios, sin objetos `{ id: servicio.id }`
             };
 
             console.log("Datos enviados al backend:", turnoData); // ✅ Verifica que `turnoData` sea correcto
