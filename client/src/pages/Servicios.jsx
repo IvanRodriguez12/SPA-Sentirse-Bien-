@@ -9,10 +9,10 @@ const Servicio = () => {
 
   const services = location.state?.services || [];
 
-  if (!service) {
+  if (!services.length) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>No se encontró el servicio</h2>
+        <h2>No se encontró ningún servicio</h2>
         <button
           onClick={() => navigate('/categorias')}
           style={buttonStyle}
@@ -23,7 +23,7 @@ const Servicio = () => {
     );
   }
 
-  const [selectedServices, setSelectedServices] = useState([service]);
+  const [selectedServices, setSelectedServices] = useState(services);
 
   const handleSelectService = (servicio) => {
     setSelectedServices(prev => [...prev, servicio]); // ✅ Agrega otro servicio a la lista
@@ -33,7 +33,7 @@ const Servicio = () => {
     if (!user) {
       navigate('/login');
     } else {
-      navigate('/reservas', { state: { services: selectedServices } }); // ✅ Enviar lista de servicios
+      navigate('/reservas', { state: { services: selectedServices } }); // ✅ Envía la lista completa de servicios
     }
   };
 
@@ -48,10 +48,10 @@ const Servicio = () => {
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
       }}
     >
-      <h2 style={{ color: 'var(--verde-oscuro)', marginBottom: '1rem' }}>{service.nombre}</h2>
+      <h2 style={{ color: 'var(--verde-oscuro)', marginBottom: '1rem' }}>{services[0]?.nombre}</h2>
       <img
-        src={service.imagen || 'https://via.placeholder.com/800x400'}
-        alt={service.nombre}
+        src={services[0]?.imagen || 'https://via.placeholder.com/800x400'}
+        alt={services[0]?.nombre}
         style={{
           width: '100%',
           maxHeight: '60vh',
@@ -62,7 +62,7 @@ const Servicio = () => {
           padding: '1rem',
         }}
       />
-      <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>{service.descripcion}</p>
+      <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>{services[0]?.descripcion}</p>
 
       {/* Sección de detalles con duración */}
       <div style={{
@@ -72,14 +72,14 @@ const Servicio = () => {
         marginBottom: '1.5rem'
       }}>
         <p style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>
-          <strong style={{ color: 'var(--verde-oscuro)' }}>Precio:</strong> ${service.precio}
+          <strong style={{ color: 'var(--verde-oscuro)' }}>Precio:</strong> ${services[0]?.precio}
         </p>
         <p style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>
-          <strong style={{ color: 'var(--verde-oscuro)' }}>Duración:</strong> {service.duracion} minutos
+          <strong style={{ color: 'var(--verde-oscuro)' }}>Duración:</strong> {services[0]?.duracion} minutos
         </p>
-        {service.categoria && (
+        {services[0]?.categoria && (
           <p style={{ fontSize: '1.1rem', margin: '0.5rem 0' }}>
-            <strong style={{ color: 'var(--verde-oscuro)' }}>Categoría:</strong> {service.categoria.nombre}
+            <strong style={{ color: 'var(--verde-oscuro)' }}>Categoría:</strong> {services[0]?.categoria.nombre}
           </p>
         )}
       </div>
@@ -92,7 +92,7 @@ const Servicio = () => {
           Volver a Categorías
         </button>
         <button
-          onClick={handleSelectService}
+          onClick={() => handleSelectService(services[0])}
           style={{ ...buttonStyle, backgroundColor: 'var(--rosa-claro)' }}
         >
           Añadir otro servicio
