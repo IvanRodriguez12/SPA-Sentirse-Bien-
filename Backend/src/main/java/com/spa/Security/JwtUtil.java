@@ -1,23 +1,28 @@
 package com.spa.Security;
 
 import io.jsonwebtoken.*;
-import org.springframework.stereotype.Component;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
-    private static final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+
+    // Usa una clave constante y segura (codificada en base64)
+    private static final String SECRET_KEY = "U29tZVNlY3JldEtleVdpdGhMb3RzQ2hhcmFjdGVycw==";
+    private static final SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(SECRET_KEY));
     private static final long EXPIRATION_TIME = 86400000; // 24 horas
 
     public static String generarToken(String email, String rol) {
         return Jwts.builder()
                 .setSubject(email)
-                .claim("rol", rol) // Añade el claim de rol
+                .claim("rol", rol)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 24h
-                .signWith(key)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
