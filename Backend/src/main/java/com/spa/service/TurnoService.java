@@ -1,16 +1,22 @@
 package com.spa.service;
 
+import com.spa.dto.TurnoRequest;
 import com.spa.model.Cliente;
 import com.spa.model.Servicio;
 import com.spa.model.Turno;
 import com.spa.repository.ClienteRepository;
 import com.spa.repository.ServicioRepository;
 import com.spa.repository.TurnoRepository;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class TurnoService {
@@ -18,38 +24,33 @@ public class TurnoService {
     private final TurnoRepository turnoRepository;
     private final ClienteRepository clienteRepository;
     private final ServicioRepository servicioRepository;
-    private final ClienteService clienteService;
-    private final ServicioService servicioService;
 
-    public TurnoService(TurnoRepository turnoRepository,
-                        ClienteRepository clienteRepository,
-                        ServicioRepository servicioRepository,
-                        ClienteService clienteService,
-                        ServicioService servicioService) {
+    public TurnoService(TurnoRepository turnoRepository, ClienteRepository clienteRepository, ServicioRepository servicioRepository) {
         this.turnoRepository = turnoRepository;
         this.clienteRepository = clienteRepository;
         this.servicioRepository = servicioRepository;
-        this.clienteService = clienteService;
-        this.servicioService = servicioService;
     }
 
     @Transactional
-    public Turno guardarTurno(Turno turno) {
-        Cliente cliente = clienteRepository.findById(turno.getCliente().getId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + turno.getCliente().getId()));
+    public Turno guardarTurno(TurnoRequest turnoRequest) {
+        // Obtener email desde el contexto de seguridad
+        String emailCliente = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        List<Servicio> servicios = servicioRepository.findAllById(
-                turno.getServicios().stream().map(Servicio::getId).toList()
-        );
-
-        if (servicios.isEmpty()) {
-            throw new RuntimeException("No se encontraron los servicios proporcionados.");
+        Optional<Cliente> clienteOptional = clienteRepository.findByEmail(emailCliente);
+        if (clienteOptional.isEmpty()) {
+            throw new IllegalArgumentException("Cliente no encontrado con email: " + emailCliente);
         }
 
-        turno.setCliente(cliente);
-        turno.setServicios(servicios);
+        List<Servicio> servicios = servicioRepository.findAllById(turnoRequest.getServicioIds());
+        if (servicios.size() != turnoRequest.getServicioIds().size()) {
+            throw new IllegalArgumentException("Algunos servicios no fueron encontrados.");
+        }
 
-        validarTurno(turno);
+        Turno turno = new Turno();
+        turno.setCliente(clienteOptional.get());
+        turno.setFechaHora(turnoRequest.getFechaHora());
+        turno.setServicios(servicios); // usaremos la lista directamente
+
         return turnoRepository.save(turno);
     }
 
