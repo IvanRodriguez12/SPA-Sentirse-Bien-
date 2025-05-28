@@ -50,6 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             final String authorizationHeader = request.getHeader("Authorization");
+            System.out.println("🔐 Authorization Header: " + authorizationHeader);
 
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
                 filterChain.doFilter(request, response);
@@ -58,12 +59,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String jwt = authorizationHeader.substring(7);
             String userEmail = jwtUtil.extraerEmail(jwt);
+            System.out.println("🔑 JWT extraído: " + jwt);
+            System.out.println("📧 Email extraído del token: " + userEmail);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 System.out.println("Email extraído del token: " + userEmail);
                 UserDetails userDetails = loadUserByEmail(userEmail);
 
                 if (userDetails != null && jwtUtil.validarToken(jwt)) {
+                    System.out.println("✅ TOKEN válido. Usuario autenticado: " + userDetails.getUsername());
+                    System.out.println("➡️ Authorities: " + userDetails.getAuthorities());
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
@@ -86,7 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write("Error de autenticación");
             return;
         }
-
+        System.out.println("✅ Filtro JWT procesado. Contexto actual: " + SecurityContextHolder.getContext().getAuthentication());
         filterChain.doFilter(request, response);
     }
 

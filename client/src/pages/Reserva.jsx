@@ -173,9 +173,9 @@ const Reserva = () => {
             fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
 
             const turnoData = {
-                servicios: services.map(servicio => ({ id: servicio.id })),
-                cliente: { id: user.id },
+                clienteId: user.id,
                 fechaHora: fechaParaBackend.toISOString(),
+                servicioIds: services.map(servicio => servicio.id)
             };
 
             if (editingTurno) {
