@@ -38,7 +38,6 @@ public class TurnoService {
         Cliente cliente = clienteRepository.findById(turno.getCliente().getId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + turno.getCliente().getId()));
 
-        // Obtén la lista de servicios
         List<Servicio> servicios = servicioRepository.findAllById(
                 turno.getServicios().stream().map(Servicio::getId).toList()
         );
@@ -100,14 +99,11 @@ public class TurnoService {
         return turnoRepository.save(turnoExistente);
     }
 
-
     private void validarTurno(Turno turno) {
-        // Validar que el cliente exista
         if (!clienteRepository.existsById(turno.getCliente().getId())) {
             throw new RuntimeException("Cliente no encontrado");
         }
 
-        // Validar que los servicios existan
         if (turno.getServicios() == null || turno.getServicios().isEmpty()) {
             throw new RuntimeException("Debe seleccionar al menos un servicio.");
         }
@@ -119,13 +115,11 @@ public class TurnoService {
             throw new RuntimeException("Uno o más servicios no fueron encontrados.");
         }
 
-        // Validar fecha y hora
         LocalDateTime fecha = turno.getFechaHora();
         if (fecha.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("No se puede reservar en fechas pasadas.");
         }
 
-        // Validar horario de atención (8am a 8pm)
         int hora = fecha.getHour();
         if (hora < 8 || hora >= 20) {
             throw new IllegalArgumentException("Horario no válido (8:00 - 20:00)");
