@@ -177,24 +177,15 @@ const Reserva = () => {
                 fechaHora: fechaParaBackend.toISOString(),
                 servicioIds: services.map(servicio => servicio.id)
             };
-
-            if (editingTurno) {
-                await axios.put(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/editar/${editingTurno.id}`, turnoData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                toast.success("Turno actualizado exitosamente.");
-            } else {
-                await axios.post(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/crear`, turnoData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                toast.success("Turno reservado exitosamente.");
-            }
+            console.log("Turno data:", turnoData);
+            console.log("Token:", token);
+            await axios.post(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/crear`, turnoData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+            toast.success("Turno reservado exitosamente.");           
 
             navigate("/turnos");
         } catch (error) {
