@@ -4,17 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class TurnoRequest {
-    private Long clienteId;
     private LocalDateTime fechaHora;
     private List<Long> servicioIds;
-
-    public Long getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(Long clienteId) {
-        this.clienteId = clienteId;
-    }
 
     public LocalDateTime getFechaHora() {
         return fechaHora;

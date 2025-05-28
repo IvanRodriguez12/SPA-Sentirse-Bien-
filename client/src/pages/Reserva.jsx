@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import DatePicker from 'react-datepicker';
@@ -11,7 +10,6 @@ const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-p
 const Reserva = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user } = useAuth();
     const services = location.state?.services || [];
     const editingTurno = location.state?.editingTurno;
 
@@ -173,7 +171,6 @@ const Reserva = () => {
             fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
 
             const turnoData = {
-                clienteId: user.id,
                 fechaHora: fechaParaBackend.toISOString(),
                 servicioIds: services.map(servicio => servicio.id)
             };
