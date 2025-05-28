@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 
-// Carga diferida para mejor performance
+// Carga diferida para mejor rendimiento
 const Home = lazy(() => import('../pages/Home'));
 const Reserva = lazy(() => import('../pages/Reserva'));
 const Servicios = lazy(() => import('../pages/Servicios'));
@@ -35,12 +35,12 @@ const AppRoutes = () => {
           <Route path="/turnos" element={<Turnos />} />
           <Route path="/contacto" element={<ContactoModal />} />
           <Route path="/categorias" element={<Categorias />} />
-          <Route path="/servicios" element={<Servicios/>} />
+          <Route path="/servicios" element={<Servicios />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/sobre-nosotros" element={<SobreNosotros />} />
-          {/* Redirección para mantener consistencia en las URLs */}
           <Route path="/SobreNosotros" element={<Navigate to="/sobre-nosotros" replace />} />
         </Route>
+
         <Route path="/admin">
           <Route path="login" element={<AdminLogin />} />
           <Route path="dashboard" element={<AdminDashboard />} />
@@ -49,7 +49,11 @@ const AppRoutes = () => {
           <Route path="cuentas" element={<AdminCuentas />} />
           <Route path="registrar" element={<AdminRegistrar />} />
         </Route>
+
+        {/* Redirección para rutas no reconocidas */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
       {state?.backgroundLocation && (
         <Routes>
           <Route path="/contacto" element={<ContactoModal />} />
