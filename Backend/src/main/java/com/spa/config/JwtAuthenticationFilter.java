@@ -40,6 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        
+        logger.debug("🔍 Entró al filtro JWT. Path: {}", request.getRequestURI());
 
         final String authorizationHeader = request.getHeader("Authorization");
 
