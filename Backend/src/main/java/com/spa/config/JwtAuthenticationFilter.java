@@ -67,6 +67,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = loadUserByEmail(userEmail);
 
                 if (userDetails != null && jwtUtil.validarToken(jwt)) {
+                    System.out.println("🔍 userDetails: " + userDetails.getUsername());
+                    System.out.println("🔐 ¿Token válido?: " + jwtUtil.validarToken(jwt));
                     System.out.println("✅ TOKEN válido. Usuario autenticado: " + userDetails.getUsername());
                     System.out.println("➡️ Authorities: " + userDetails.getAuthorities());
                     UsernamePasswordAuthenticationToken authentication =
@@ -86,6 +88,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             }
         } catch (Exception e) {
+            System.out.println("❌ Error en JwtAuthenticationFilter: " + e.getMessage());
+            e.printStackTrace();
             logger.error("Error en el filtro de autenticación JWT", e);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Error de autenticación");
