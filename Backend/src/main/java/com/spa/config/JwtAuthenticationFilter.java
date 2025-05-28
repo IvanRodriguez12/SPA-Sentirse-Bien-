@@ -28,10 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ClienteService clienteService;
     private final AdministradorService administradorService;
 
-    public JwtAuthenticationFilter(
-            JwtUtil jwtUtil,
-            ClienteService clienteService,
-            AdministradorService administradorService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   ClienteService clienteService,
+                                   AdministradorService administradorService) {
         this.jwtUtil = jwtUtil;
         this.clienteService = clienteService;
         this.administradorService = administradorService;
@@ -42,64 +41,55 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Permitir solicitudes OPTIONS para CORS
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
+        final String authorizationHeader = request.getHeader("Authorization");
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            logger.debug("🔒 No se encontró token Bearer. Continuando sin autenticar.");
+            filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            final String authorizationHeader = request.getHeader("Authorization");
-            logger.debug("🔐 Authorization Header: {}", authorizationHeader);
-
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
             String jwt = authorizationHeader.substring(7);
             String userEmail = jwtUtil.extraerEmail(jwt);
-            logger.debug("🔑 JWT extraído: {}", jwt);
-            logger.debug("📧 Email extraído del token: {}", userEmail);
+
+            logger.debug("🔐 Token recibido: {}", jwt);
+            logger.debug("📧 Email extraído: {}", userEmail);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = loadUserByEmail(userEmail);
 
-                if (userDetails != null && jwtUtil.validarToken(jwt)) {
-                    logger.debug("✅ TOKEN válido. Usuario autenticado: {}", userDetails.getUsername());
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
-
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
+                if (jwtUtil.validarToken(jwt)) {
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
                     );
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    logger.info("✅ Token válido. Usuario autenticado: {}", userDetails.getUsername());
+                    logger.info("🎭 Roles: {}", userDetails.getAuthorities());
+                } else {
+                    logger.warn("❌ Token inválido para el usuario: {}", userEmail);
                 }
             }
+
         } catch (Exception e) {
-            logger.error("❌ Error en JwtAuthenticationFilter", e);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Error de autenticación");
+            logger.error("❌ Error procesando autenticación JWT", e);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Token inválido o no autorizado.");
             return;
         }
 
-        logger.debug("✅ Filtro JWT procesado. Contexto actual: {}", SecurityContextHolder.getContext().getAuthentication());
+        logger.debug("🔎 Contexto actual de seguridad: {}", SecurityContextHolder.getContext().getAuthentication());
         filterChain.doFilter(request, response);
     }
 
     private UserDetails loadUserByEmail(String email) {
         try {
-            UserDetails adminDetails = administradorService.loadUserByUsername(email);
-            logger.debug("🔐 Usuario autenticado como ADMIN: {}", email);
-            return adminDetails;
-        } catch (UsernameNotFoundException adminException) {
-            UserDetails clientDetails = clienteService.loadUserByUsername(email);
-            logger.debug("🔐 Usuario autenticado como CLIENTE: {}", email);
-            return clientDetails;
+            return administradorService.loadUserByUsername(email);
+        } catch (UsernameNotFoundException e) {
+            return clienteService.loadUserByUsername(email);
         }
     }
 }
