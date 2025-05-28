@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.List;
 
 @Service
 public class ClienteService implements UserDetailsService {
@@ -76,7 +78,7 @@ public class ClienteService implements UserDetailsService {
         return new User(
                 cliente.getEmail(),
                 cliente.getContrasena(),
-                Collections.emptyList()
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
         );
     }
 }
