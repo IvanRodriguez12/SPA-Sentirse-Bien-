@@ -7,6 +7,7 @@ import com.spa.repository.ClienteRepository;
 import com.spa.repository.ServicioRepository;
 import com.spa.repository.TurnoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +33,7 @@ public class TurnoService {
         this.servicioService = servicioService;
     }
 
+    @Transactional
     public Turno guardarTurno(Turno turno) {
         Cliente cliente = clienteRepository.findById(turno.getCliente().getId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + turno.getCliente().getId()));
