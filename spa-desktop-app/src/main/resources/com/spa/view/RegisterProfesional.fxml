@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.spa.controller.RegisterProfesionalController">
+    <children>
+        <VBox alignment="CENTER" spacing="10.0" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+            <Label text="Registro de Profesional" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+            <TextField fx:id="nombreField" promptText="Nombre" />
+            <TextField fx:id="telefonoField" promptText="Teléfono" />
+            <TextField fx:id="emailField" promptText="Correo Electrónico" />
+            <PasswordField fx:id="contrasenaField" promptText="Contraseña" />
+            <TextField fx:id="profesionField" promptText="Profesión" />
+
+            <HBox spacing="10">
+                <Button text="Registrar" onAction="#onRegistrarProfesional" />
+                <Button text="Volver" onAction="#volverAlLogin" />
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

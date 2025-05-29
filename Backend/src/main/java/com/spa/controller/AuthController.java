@@ -18,7 +18,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
     AuthResponse response = authService.register(request);
     
     if (response.getToken() == null) {
@@ -36,6 +36,29 @@ public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest reques
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @PostMapping("/registrar-profesional")
+    public ResponseEntity<AuthResponse> registrarProfesional(@RequestBody RegisterRequest request) {
+        request.setProfesion(request.getProfesion() != null ? request.getProfesion() : "Sin especificar");
+        AuthResponse response = authService.register(request);
+
+        if (response.getToken() == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/login-profesional")
+    public ResponseEntity<AuthResponse> loginProfesional(@RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+
+        if (response.getToken() == null || response.getProfesion() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        return ResponseEntity.ok(response);
     }
 }
 

@@ -5,6 +5,7 @@ public class RegisterRequest {
     private String email;
     private String telefono;
     private String contrasena;
+    private String profesion;
 
     // Getters y setters
     public String getNombre() { return nombre; }
@@ -19,6 +20,9 @@ public class RegisterRequest {
 
     public String getContrasena() { return contrasena; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+
+    public String getProfesion() { return profesion; }
+    public void setProfesion(String profesion) { this.nombre = profesion; }
 }
 
 

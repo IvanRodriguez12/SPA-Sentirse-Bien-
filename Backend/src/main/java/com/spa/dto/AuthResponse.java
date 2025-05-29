@@ -36,6 +36,10 @@ public class AuthResponse {
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
+
+    public String getProfesion() {
+        return cliente != null ? cliente.getProfesion() : null;
+    }
 }
 
 
