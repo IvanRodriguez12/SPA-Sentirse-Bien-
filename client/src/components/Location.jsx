@@ -10,7 +10,7 @@ const Location = () => (
     }}>
       <div style={{flex: '1 1 400px', maxWidth: '600px'}}>
         <h2>Nuestra Ubicación</h2>
-        <p style={{margin: '1rem 0'}}>📍 Av. Relaxación 123, Buenos Aires</p>
+        <p style={{margin: '1rem 0'}}>📍 Av. 25 de Mayo 240, Resistencia, Chaco</p>
         <p>🕒 Horarios:<br/>
           Lunes a Viernes: 9:00 - 20:30<br/>
           Sábados: 10:00 - 19:00
@@ -28,7 +28,7 @@ const Location = () => (
         </button>
       </div>
       <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.016887889527!2d-58.383759!3d-34.603738!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccacf425a4a1f%3A0x9dc384029c9de5a2!2sObelisco!5e0!3m2!1ses!2sar!4v1716425382352!5m2!1ses!2sar"
+        src="https://maps.app.goo.gl/CX8M84G5tVGHL1Rj7"
         width="400"
         height="300"
         style={{border: '0', borderRadius: '15px', flex: '1 1 400px'}}

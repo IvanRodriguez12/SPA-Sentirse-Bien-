@@ -167,7 +167,7 @@ const SobreNosotros = () => {
               color: '#2e8b57',
               fontSize: '0.9rem'
             }}>
-              O llama al <a href="tel:+54 9 11 2345-6789" style={{ color: '#2e8b57', fontWeight: '600' }}>+54 9 11 2345-6789</a>
+              O llama al <a href="tel:+54 9 12 3456-7890" style={{ color: '#2e8b57', fontWeight: '600' }}>+54 9 11 2345-6789</a>
             </p>
           </div>
         </div>
@@ -176,14 +176,14 @@ const SobreNosotros = () => {
       {/* Info de contacto */}
       <section className={styles.contactInfo}>
         <h2><FaMapMarkerAlt /> Visítanos</h2>
-        <p style={{margin: '1rem 0'}}>📍 Av. Relaxación 123, Buenos Aires</p>
+        <p style={{margin: '1rem 0'}}>📍 Av. 25 de Mayo 240, Resistencia, Chaco</p>
         <div className={styles.infoGrid}>
           <div>
             <p><FaClock /> Lunes a Viernes: 9:00 - 20:30, Sábados: 10:00 - 19:00</p>
           </div>
           <div>
-            <p><FaPhone /> +54 9 11 2345-6789</p>
-            <p><FaEnvelope /> info@sentirsebien.com</p>
+            <p><FaPhone /> +54 9 12 3456-7890</p>
+            <p><FaEnvelope /> spasentirsebiencontacto@gmail.com</p>
           </div>
         </div>
       </section>

@@ -44,8 +44,8 @@ const Footer = () => (
       {/* Sección Contacto */}
       <div>
         <h3>Contacto</h3>
-        <p>📧 info@sentirsebien.com</p>
-        <p>📞 +54 9 11 2345-6789</p>
+        <p>📧 spasentirsebiencontacto@gmail.com</p>
+        <p>📞 +54 9 12 3456-7890</p>
       </div>
 
       {/* Sección Enlaces Rápidos */}
@@ -102,7 +102,7 @@ const Footer = () => (
           gap: '0.8rem',
           width: '100%'
         }}>
-          <a href="#" style={{
+          <a href="https://www.instagram.com/spa.sentirsebien/" style={{
             color: 'white',
             textDecoration: 'none',
             display: 'flex',
@@ -111,7 +111,7 @@ const Footer = () => (
           }}>
             <span>📱</span> Instagram
           </a>
-          <a href="#" style={{
+          <a href="https://www.facebook.com/profile.php?id=61577026581004" style={{
             color: 'white',
             textDecoration: 'none',
             display: 'flex',
