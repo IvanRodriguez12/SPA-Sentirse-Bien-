@@ -49,7 +49,7 @@ public class TurnoService {
         Turno turno = new Turno();
         turno.setCliente(clienteOptional.get());
         turno.setFechaHora(turnoRequest.getFechaHora());
-        turno.setServicios(servicios); // usaremos la lista directamente
+        turno.setServicios(new HashSet<>(servicios));
 
         return turnoRepository.save(turno);
     }
@@ -94,7 +94,7 @@ public class TurnoService {
             throw new RuntimeException("No se encontraron los servicios proporcionados.");
         }
 
-        turnoExistente.setServicios(servicios);
+        turnoExistente.setServicios(new HashSet<>(servicios));
         turnoExistente.setFechaHora(turnoActualizado.getFechaHora());
 
         return turnoRepository.save(turnoExistente);

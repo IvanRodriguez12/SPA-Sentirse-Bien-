@@ -1,6 +1,8 @@
 package com.spa.model;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Servicio {
@@ -30,59 +32,35 @@ public class Servicio {
     @Column(nullable = false)
     private Integer duracion;
 
+    @ManyToMany(mappedBy = "servicios")
+    private Set<Turno> turnos = new HashSet<>();
+
     // Getters y Setters
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public Categoria getCategoria() {return categoria; }
+    public Double getPrecio() { return precio; }
+    public void setPrecio(Double precio) { this.precio = precio; }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+    public String getImagen() { return imagen; }
+    public void setImagen(String imagen) { this.imagen = imagen; }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
+    public Integer getDuracion() { return duracion; }
+    public void setDuracion(Integer duracion) { this.duracion = duracion; }
 
-    public Double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(Double precio) {
-        this.precio = precio;
-    }
-
-    public String getTipo() {return tipo;}
-
-    public void setTipo(String tipo) {this.tipo = tipo;}
-
-    public String getImagen() {return imagen;}
-
-    public void setImagen(String imagen) {this.imagen = imagen;}
-
-    public Integer getDuracion() {
-        return duracion;
-    }
-    public void setDuracion(Integer duracion) {
-        this.duracion = duracion;
-    }
+    public Set<Turno> getTurnos() { return turnos; }
+    public void setTurnos(Set<Turno> turnos) { this.turnos = turnos; }
 }
-

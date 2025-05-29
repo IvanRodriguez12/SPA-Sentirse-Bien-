@@ -23,6 +23,9 @@ public class Cliente {
     @Column(nullable = false)
     private String contrasena;
 
+    @Column(nullable = true)
+    private String profesion;
+
     // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -38,5 +41,8 @@ public class Cliente {
 
     public String getContrasena() { return contrasena; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+
+    public String getProfesion() {return profesion;}
+    public void setProfesion(String profesion) {this.profesion = profesion;}
 }
 
