@@ -3,17 +3,22 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import DatePicker from 'react-datepicker';
+import Modal from 'react-modal';
 import 'react-datepicker/dist/react-datepicker.css';
+
+Modal.setAppElement('#root');
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 const Reserva = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const services = location.state?.services || [];
+    const [services, setServices] = useState(location.state?.services || []);
     const editingTurno = location.state?.editingTurno;
 
     const [selectedDateTime, setSelectedDateTime] = useState(null);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [allServices, setAllServices] = useState([]);
 
     useEffect(() => {
         if (editingTurno) {
@@ -22,6 +27,34 @@ const Reserva = () => {
             setSelectedDateTime(fechaLocal);
         }
     }, [editingTurno]);
+
+    useEffect(() => {
+        const fetchServicios = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/servicios/listar`);
+                setAllServices(response.data);
+            } catch  {
+                toast.error("Error cargando servicios.");
+            }
+        };
+        fetchServicios();
+    }, []);
+
+    const openModal = () => setModalIsOpen(true);
+    const closeModal = () => setModalIsOpen(false);
+
+    const addService = (servicio) => {
+        if (services.some(s => s.id === servicio.id)) {
+            toast("Este servicio ya fue agregado.");
+            return;
+        }
+        setServices([...services, servicio]);
+        toast.success("Servicio agregado");
+    };
+
+    const removeService = (id) => {
+        setServices(services.filter(s => s.id !== id));
+    };
 
     // Función para calcular los límites según el día y duración del servicio
     const getTimeLimits = () => {
@@ -192,46 +225,42 @@ const Reserva = () => {
     };
 
     const { minTime, maxTime } = getTimeConstraints();
-    const timeLimits = getTimeLimits();
 
     return (
         <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-                    <h2 style={{ marginBottom: '1.5rem' }}>
-                        {editingTurno ? 'Editar Turno' : 'Reservar Servicio'}
-                    </h2>
+            <h2 style={{ marginBottom: '1.5rem' }}>
+                {editingTurno ? 'Editar Turno' : 'Reservar Servicio'}
+            </h2>
 
-                    {services.length > 0 && (
-                        <div style={{
-                            marginBottom: '2rem',
-                            padding: '1rem',
-                            backgroundColor: '#f8f9fa',
-                            borderRadius: '8px'
-                        }}>
-                            <p><strong>Servicios:</strong> {services.map(servicio => servicio.nombre).join(", ")}</p>
-                            <p><strong>Descripción:</strong> {services.map(servicio => servicio.descripcion).join(", ")}</p>
-                            <p><strong>Precio total:</strong> ${services.reduce((total, servicio) => total + servicio.precio, 0)}</p>
-                            <p><strong>Duración total:</strong> {services.reduce((total, servicio) => total + servicio.duracion, 0)} minutos</p>
-                        </div>
-                    )}
+            {services.length > 0 && (
+                <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+                    <p><strong>Servicios:</strong> {services.map(servicio => servicio.nombre).join(", ")}</p>
+                    <p><strong>Precio total:</strong> ${services.reduce((total, servicio) => total + servicio.precio, 0)}</p>
+                    <p><strong>Duración total:</strong> {services.reduce((total, servicio) => total + servicio.duracion, 0)} minutos</p>
+                    <ul>
+                        {services.map(servicio => (
+                            <li key={servicio.id}>
+                                {servicio.nombre} <button onClick={() => removeService(servicio.id)}>❌</button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
-                    {/* Botón para añadir otro servicio */}
-                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                        <button
-                            style={{
-                                backgroundColor: 'var(--rosa-medio)',
-                                color: 'white',
-                                padding: '0.8rem 1.5rem',
-                                border: 'none',
-                                borderRadius: '25px',
-                                cursor: 'pointer',
-                                fontSize: '1rem',
-                                transition: 'all 0.3s ease'
-                            }}
-                            onClick={() => navigate('/categorias', { state: { previousPage: '/reservas', currentServices: services } })}
-                        >
-                            Añadir otro servicio
-                        </button>
-                    </div>
+            <button onClick={openModal} style={{ marginBottom: '1rem' }}>Añadir Servicio</button>
+
+            <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Seleccionar Servicios">
+                <h3>Selecciona un servicio</h3>
+                <ul>
+                    {allServices.map(servicio => (
+                        <li key={servicio.id}>
+                            {servicio.nombre} - ${servicio.precio} - {servicio.duracion} min
+                            <button onClick={() => addService(servicio)} style={{ marginLeft: '1rem' }}>Agregar</button>
+                        </li>
+                    ))}
+                </ul>
+                <button onClick={closeModal}>Cerrar</button>
+            </Modal>
 
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: '1.5rem' }}>

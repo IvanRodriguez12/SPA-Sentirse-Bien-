@@ -12,6 +12,10 @@ const Servicio = () => {
 
   const services = location.state?.services?.length ? location.state?.services : [];
 
+  const [selectedServices] = useState(
+    services.filter((value, index, self) => self.findIndex(s => s.id === value.id) === index)
+  );
+
   if (!services.length) {
     console.error("No se encontró ningún servicio. Estado recibido:", location.state);
     return (
@@ -26,10 +30,6 @@ const Servicio = () => {
       </div>
     );
   }
-
-  const [selectedServices, setSelectedServices] = useState(
-    services.filter((value, index, self) => self.findIndex(s => s.id === value.id) === index)
-  );
 
   const handleReserve = () => {
     console.log("Servicios seleccionados para reservar:", selectedServices);
