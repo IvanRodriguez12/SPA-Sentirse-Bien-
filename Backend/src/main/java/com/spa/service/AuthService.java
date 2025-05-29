@@ -39,6 +39,7 @@ public class AuthService {
             cliente.setTelefono(request.getTelefono());
             cliente.setContrasena(passwordEncoder.encode(request.getContrasena()));
             cliente.setProfesion(request.getProfesion());
+            System.out.println("Profesión recibida: " + request.getProfesion());
 
             clienteRepository.save(cliente);
 
