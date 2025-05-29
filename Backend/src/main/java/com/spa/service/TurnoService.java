@@ -54,6 +54,7 @@ public class TurnoService {
         return turnoRepository.save(turno);
     }
 
+    @Transactional
     public List<Turno> listarTurnos() {
         return turnoRepository.findAll();
     }

@@ -22,7 +22,7 @@ public class Turno {
     @JsonIgnoreProperties({"telefono", "contrasena", "hibernateLazyInitializer", "handler"})
     private Cliente cliente;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER) // 🔹 Cambiado a EAGER para evitar LazyInitializationException
     @JoinTable(
             name = "turno_servicio",
             joinColumns = @JoinColumn(name = "turno_id"),
