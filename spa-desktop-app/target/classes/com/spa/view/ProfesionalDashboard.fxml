@@ -5,8 +5,12 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.spa.controller.ProfesionalDashboardController">
     <children>
         <Label fx:id="labelProfesional" layoutX="20" layoutY="20" text="Panel del Profesional" />
-        <ListView fx:id="turnosList" layoutX="20" layoutY="60" prefWidth="360" prefHeight="260" />
-        <Button layoutX="20" layoutY="330" text="Imprimir turnos" onAction="#handlePrint" />
-        <Button layoutX="180" layoutY="330" text="Ver turnos del día" onAction="#handleVerTurnosDelDia" />
+
+        <ListView fx:id="turnosList" layoutX="20" layoutY="60" prefWidth="500" prefHeight="260" />
+
+        <Button layoutX="20" layoutY="330" text="Ver turnos HOY" onAction="#handleVerTurnosHoy" />
+        <Button layoutX="140" layoutY="330" text="Ver turnos MAÑANA" onAction="#handleVerTurnosManana" />
+        <Button layoutX="300" layoutY="330" text="Ver turnos HOY Y MAÑANA" onAction="#handleVerTurnosHoyYManana" />
+        <Button layoutX="460" layoutY="330" text="Imprimir turnos" onAction="#handlePrint" />
     </children>
 </AnchorPane>

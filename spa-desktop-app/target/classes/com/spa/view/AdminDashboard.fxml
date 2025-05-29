@@ -2,8 +2,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.spa.controller.AdminDashboardController">
     <children>
-        <Label text="Bienvenida Dra. Felicidad" layoutX="20" layoutY="20" />
+        <Label layoutX="20" layoutY="20" text="Bienvenida Dra. Felicidad" />
+
+        <ListView fx:id="turnosListAdmin" layoutX="20" layoutY="60" prefWidth="500" prefHeight="260" />
+
+        <Button layoutX="20" layoutY="330" text="Ver todos los turnos" onAction="#handleVerTodosLosTurnos" />
+        <Button layoutX="200" layoutY="330" text="Imprimir turnos" onAction="#handlePrint" />
     </children>
 </AnchorPane>

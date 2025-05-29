@@ -19,37 +19,31 @@ import com.spa.util.AppConfig;
 
 import javafx.fxml.FXML;
 import javafx.print.PrinterJob;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-public class ProfesionalDashboardController {
+public class AdminDashboardController {
 
-    @FXML private Label labelProfesional;
-    @FXML private ListView<String> turnosList;
+    @FXML
+    private ListView<String> turnosListAdmin;
 
     private String authToken;
-    private String nombreProfesional;
 
     public void setAuthToken(String token) {
         this.authToken = token;
-        cargarTurnos("ambos"); // por defecto al entrar carga hoy y mañana
     }
 
-    public void setNombreProfesional(String nombre) {
-        this.nombreProfesional = nombre;
-        labelProfesional.setText("Bienvenido, " + nombre);
-    }
-
-    private void cargarTurnos(String filtroFecha) {
+    @FXML
+    private void handleVerTodosLosTurnos() {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
-            String url = AppConfig.BASE_URL + "/api/turnos/profesional?fecha=" + filtroFecha;
+            String url = AppConfig.BASE_URL + "/api/turnos/listar";
             HttpGet request = new HttpGet(url);
             request.setHeader("Authorization", "Bearer " + authToken);
 
             ClassicHttpResponse response = (ClassicHttpResponse) client.execute(request);
             int statusCode = response.getCode();
+
             if (statusCode == 200) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
                 Type listType = new TypeToken<List<TurnoDTO>>() {}.getType();
@@ -65,39 +59,24 @@ public class ProfesionalDashboardController {
                         })
                         .collect(Collectors.toList());
 
-                turnosList.getItems().setAll(formateados);
+                turnosListAdmin.getItems().setAll(formateados);
             } else {
-                turnosList.getItems().add("Error al cargar turnos (" + statusCode + ")");
+                turnosListAdmin.getItems().add("Error al cargar turnos (código " + statusCode + ")");
             }
         } catch (Exception e) {
-            turnosList.getItems().add("Error al conectar con el servidor: " + e.getMessage());
+            turnosListAdmin.getItems().add("Error al conectar con el servidor: " + e.getMessage());
         }
-    }
-
-    @FXML
-    private void handleVerTurnosHoy() {
-        cargarTurnos("hoy");
-    }
-
-    @FXML
-    private void handleVerTurnosManana() {
-        cargarTurnos("mañana");
-    }
-
-    @FXML
-    private void handleVerTurnosHoyYManana() {
-        cargarTurnos("ambos");
     }
 
     @FXML
     private void handlePrint() {
         TextFlow content = new TextFlow();
-        for (String turno : turnosList.getItems()) {
+        for (String turno : turnosListAdmin.getItems()) {
             content.getChildren().add(new Text(turno + "\n"));
         }
 
         PrinterJob job = PrinterJob.createPrinterJob();
-        if (job != null && job.showPrintDialog(turnosList.getScene().getWindow())) {
+        if (job != null && job.showPrintDialog(turnosListAdmin.getScene().getWindow())) {
             boolean success = job.printPage(content);
             if (success) {
                 job.endJob();
@@ -105,7 +84,7 @@ public class ProfesionalDashboardController {
         }
     }
 
-    // Clases auxiliares para deserializar JSON correctamente
+    // Clases internas DTO para deserialización
 
     private static class TurnoDTO {
         String fechaHora;

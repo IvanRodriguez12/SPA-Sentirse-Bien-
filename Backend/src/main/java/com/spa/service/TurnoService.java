@@ -7,16 +7,14 @@ import com.spa.model.Turno;
 import com.spa.repository.ClienteRepository;
 import com.spa.repository.ServicioRepository;
 import com.spa.repository.TurnoRepository;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TurnoService {
@@ -32,10 +30,8 @@ public class TurnoService {
     }
 
     @Transactional
-    public Turno guardarTurno(TurnoRequest turnoRequest) {
-        // Obtener email desde el contexto de seguridad
+    public Turno guardarTurnoConAsignacion(TurnoRequest turnoRequest) {
         String emailCliente = SecurityContextHolder.getContext().getAuthentication().getName();
-
         Optional<Cliente> clienteOptional = clienteRepository.findByEmail(emailCliente);
         if (clienteOptional.isEmpty()) {
             throw new IllegalArgumentException("Cliente no encontrado con email: " + emailCliente);
@@ -46,10 +42,24 @@ public class TurnoService {
             throw new IllegalArgumentException("Algunos servicios no fueron encontrados.");
         }
 
+        Set<String> categorias = servicios.stream()
+                .map(servicio -> servicio.getCategoria().getNombre())
+                .collect(Collectors.toSet());
+
+        Set<Cliente> profesionalesAsignados = new HashSet<>();
+        for (String categoria : categorias) {
+            List<Cliente> candidatos = clienteRepository.findByProfesion(categoria);
+            if (!candidatos.isEmpty()) {
+                Cliente elegido = candidatos.get(new Random().nextInt(candidatos.size()));
+                profesionalesAsignados.add(elegido);
+            }
+        }
+
         Turno turno = new Turno();
         turno.setCliente(clienteOptional.get());
         turno.setFechaHora(turnoRequest.getFechaHora());
         turno.setServicios(new HashSet<>(servicios));
+        turno.setProfesionales(profesionalesAsignados);
 
         return turnoRepository.save(turno);
     }
@@ -136,5 +146,37 @@ public class TurnoService {
     public Servicio buscarServicioPorId(Long id) {
         return servicioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Servicio no encontrado con ID: " + id));
+    }
+
+    public List<Turno> listarTurnosPorProfesionalAutenticado(String filtroFecha) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Cliente> profesionalOptional = clienteRepository.findByEmail(email);
+
+        if (profesionalOptional.isEmpty()) {
+            throw new RuntimeException("Profesional no encontrado con email: " + email);
+        }
+
+        Cliente profesional = profesionalOptional.get();
+
+        if (profesional.getProfesion() == null) {
+            throw new RuntimeException("Este usuario no tiene una profesión asignada.");
+        }
+
+        List<Turno> turnosAsignados = turnoRepository.findByProfesionalesContaining(profesional);
+
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDate hoyInicio = ahora.toLocalDate();
+        LocalDate hoyFin = hoyInicio.plusDays(1);
+        LocalDate mañana = hoyInicio.plusDays(1);
+
+        return turnosAsignados.stream().filter(turno -> {
+            LocalDate fechaTurno = turno.getFechaHora().toLocalDate();
+            return switch (filtroFecha.toLowerCase()) {
+                case "hoy" -> fechaTurno.equals(hoyInicio);
+                case "mañana" -> fechaTurno.equals(mañana);
+                case "ambos" -> fechaTurno.equals(hoyInicio) || fechaTurno.equals(mañana);
+                default -> false;
+            };
+        }).collect(Collectors.toList());
     }
 }

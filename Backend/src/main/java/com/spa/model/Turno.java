@@ -31,6 +31,15 @@ public class Turno {
     @JsonIgnoreProperties({"descripcion", "turnos", "hibernateLazyInitializer", "handler"})
     private Set<Servicio> servicios = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "turno_profesional",
+            joinColumns = @JoinColumn(name = "turno_id"),
+            inverseJoinColumns = @JoinColumn(name = "profesional_id")
+    )
+    @JsonIgnoreProperties({"telefono", "contrasena", "hibernateLazyInitializer", "handler"})
+    private Set<Cliente> profesionales = new HashSet<>();
+
     // Getters y Setters
 
     public Long getId() { return id; }
@@ -44,4 +53,8 @@ public class Turno {
 
     public Set<Servicio> getServicios() { return servicios; }
     public void setServicios(Set<Servicio> servicios) { this.servicios = servicios; }
+
+    public Set<Cliente> getProfesionales() { return profesionales; }
+    public void setProfesionales(Set<Cliente> profesionales) { this.profesionales = profesionales; }
+
 }

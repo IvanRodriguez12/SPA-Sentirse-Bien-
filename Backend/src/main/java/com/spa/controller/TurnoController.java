@@ -20,7 +20,7 @@ public class TurnoController {
 
     @PostMapping("/crear")
     public Turno crearTurno(@RequestBody TurnoRequest request) {
-        return turnoService.guardarTurno(request);
+        return turnoService.guardarTurnoConAsignacion(request);
     }
 
     @GetMapping("/listar")
@@ -38,8 +38,9 @@ public class TurnoController {
         turnoService.eliminarTurno(id);
     }
 
-    @PutMapping("/editar/{id}")
-    public Turno editarTurno(@PathVariable Long id, @RequestBody Turno turnoActualizado) {
-        return turnoService.actualizarTurno(id, turnoActualizado);
+    @GetMapping("/profesional")
+    public List<Turno> listarTurnosAsignadosAlProfesional(
+            @RequestParam(name = "fecha", required = false, defaultValue = "ambos") String filtroFecha) {
+        return turnoService.listarTurnosPorProfesionalAutenticado(filtroFecha);
     }
 }

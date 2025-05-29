@@ -6,7 +6,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.spa.util.AppConfig;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,40 +29,91 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
 
+    private void mostrarAlerta(String titulo, String cabecera, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(cabecera);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
     @FXML
     protected void onLogin(ActionEvent event) {
         try {
-            JSONObject loginJson = new JSONObject();
-            loginJson.put("email", emailField.getText());
-            loginJson.put("contrasena", passwordField.getText());
+            String email = emailField.getText();
+            String password = passwordField.getText();
 
-            URL url = new URL("https://spa-sentirse-bien-production.up.railway.app/api/auth/login-profesional");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
+            String url = AppConfig.BASE_URL + "/api/auth/login";
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setDoOutput(true);
 
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(loginJson.toString().getBytes());
-                os.flush();
+            // Enviar JSON
+            String json = String.format("{\"email\":\"%s\", \"contrasena\":\"%s\"}", email, password);
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] input = json.getBytes("utf-8");
+                os.write(input, 0, input.length);
             }
 
-            int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/spa/view/ProfesionalDashboard.fxml"));
-                Parent root = loader.load();
-                Stage stage = (Stage) emailField.getScene().getWindow();
-                stage.setScene(new Scene(root));
+            // Leer respuesta
+            int responseCode = con.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                responseCode >= 200 && responseCode < 300
+                    ? con.getInputStream()
+                    : con.getErrorStream()
+            ));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = in.readLine()) != null) {
+                response.append(line);
+            }
+            in.close();
+
+            if (responseCode == 200) {
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(response.toString(), JsonObject.class);
+
+                String token = jsonObject.get("token").getAsString();
+                JsonObject cliente = jsonObject.getAsJsonObject("cliente");
+                String nombre = cliente.get("nombre").getAsString();
+                JsonElement profesionElement = jsonObject.get("profesion");
+
+                // Verificar si es administrador
+                if (nombre.equalsIgnoreCase("Ana Felicidad")) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/spa/view/AdminDashboard.fxml"));
+                    Parent root = loader.load();
+                    AdminDashboardController controller = loader.getController();
+                    controller.setAuthToken(token);
+                    Stage stage = (Stage) emailField.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                    stage.setTitle("Panel Administrador");
+                    stage.show();
+                    return;
+                }
+
+                // Verificar si es profesional
+                if (profesionElement != null && !profesionElement.isJsonNull()) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/spa/view/ProfesionalDashboard.fxml"));
+                    Parent root = loader.load();
+                    ProfesionalDashboardController controller = loader.getController();
+                    controller.setAuthToken(token);
+                    controller.setNombreProfesional(nombre);
+                    Stage stage = (Stage) emailField.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                    stage.setTitle("Panel Profesional");
+                    stage.show();
+                    return;
+                }
+
+                mostrarAlerta("Login", "Usuario válido", "Login correcto, pero sin panel asignado.");
             } else {
-                mostrarErrorDesdeConexion(conn);
+                mostrarAlerta("Error", "Login fallido", response.toString());
             }
 
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("No se pudo iniciar sesión");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            mostrarAlerta("Error", "No se pudo iniciar sesión", e.getMessage());
         }
     }
 

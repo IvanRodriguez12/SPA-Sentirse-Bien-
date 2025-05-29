@@ -1,5 +1,6 @@
 package com.spa.repository;
 
+import com.spa.model.Cliente;
 import com.spa.model.Turno;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,5 +21,6 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
     void deleteByClienteId(@Param("clienteId") Long clienteId);
 
     List<Turno> findByClienteId(Long clienteId);
+    List<Turno> findByProfesionalesContaining(Cliente profesional);
 }
 
