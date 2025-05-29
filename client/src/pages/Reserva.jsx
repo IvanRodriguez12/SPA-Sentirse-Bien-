@@ -195,34 +195,43 @@ const Reserva = () => {
     const timeLimits = getTimeLimits();
 
     return (
-        <div style={{
-            padding: '2rem',
-            maxWidth: '600px',
-            margin: '0 auto'
-        }}>
-            <h2 style={{ marginBottom: '1.5rem' }}>
-                {editingTurno ? 'Editar Turno' : 'Reservar Servicio'}
-            </h2>
+        <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
+                    <h2 style={{ marginBottom: '1.5rem' }}>
+                        {editingTurno ? 'Editar Turno' : 'Reservar Servicio'}
+                    </h2>
 
-            {services.length > 0 && (
-                <div style={{
-                    marginBottom: '2rem',
-                    padding: '1rem',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px'
-                }}>
-                    <p><strong>Servicios:</strong> {services.map(servicio => servicio.nombre).join(", ")}</p>
-                    <p><strong>Descripción:</strong> {services.map(servicio => servicio.descripcion).join(", ")}</p>
-                    <p><strong>Precio total:</strong> ${services.reduce((total, servicio) => total + servicio.precio, 0)}</p>
-                    <p><strong>Duración total:</strong> {services.reduce((total, servicio) => total + servicio.duracion, 0)} minutos</p>
-                    {timeLimits && (
-                        <>
-                            <p><strong>Horario:</strong> {timeLimits.dayName} de {timeLimits.openingHour}:00 a {timeLimits.displayClose}</p>
-                            <p><strong>Último turno:</strong> {timeLimits.lastBookableHour}:{timeLimits.lastBookableMinute < 10 ? '0' : ''}{timeLimits.lastBookableMinute}</p>
-                        </>
+                    {services.length > 0 && (
+                        <div style={{
+                            marginBottom: '2rem',
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px'
+                        }}>
+                            <p><strong>Servicios:</strong> {services.map(servicio => servicio.nombre).join(", ")}</p>
+                            <p><strong>Descripción:</strong> {services.map(servicio => servicio.descripcion).join(", ")}</p>
+                            <p><strong>Precio total:</strong> ${services.reduce((total, servicio) => total + servicio.precio, 0)}</p>
+                            <p><strong>Duración total:</strong> {services.reduce((total, servicio) => total + servicio.duracion, 0)} minutos</p>
+                        </div>
                     )}
-                </div>
-            )}
+
+                    {/* Botón para añadir otro servicio */}
+                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                        <button
+                            style={{
+                                backgroundColor: 'var(--rosa-medio)',
+                                color: 'white',
+                                padding: '0.8rem 1.5rem',
+                                border: 'none',
+                                borderRadius: '25px',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                transition: 'all 0.3s ease'
+                            }}
+                            onClick={() => navigate('/categorias', { state: { previousPage: '/reservas', currentServices: services } })}
+                        >
+                            Añadir otro servicio
+                        </button>
+                    </div>
 
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: '1.5rem' }}>

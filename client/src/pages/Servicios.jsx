@@ -31,16 +31,6 @@ const Servicio = () => {
     services.filter((value, index, self) => self.findIndex(s => s.id === value.id) === index)
   );
 
-  const handleSelectService = (servicio) => {
-    console.log("Intentando añadir servicio:", servicio);
-    if (!selectedServices.some(s => s.id === servicio.id)) {
-      setSelectedServices(prev => [...prev, servicio]); // ✅ Evita duplicados
-      console.log("Servicio añadido:", servicio);
-    } else {
-      console.log("El servicio ya está en la lista, no se añade nuevamente.");
-    }
-  };
-
   const handleReserve = () => {
     console.log("Servicios seleccionados para reservar:", selectedServices);
     if (!user) {
@@ -103,12 +93,6 @@ const Servicio = () => {
           style={buttonStyle}
         >
           Volver a Categorías
-        </button>
-        <button
-          onClick={() => handleSelectService(services[0])}
-          style={{ ...buttonStyle, backgroundColor: 'var(--rosa-claro)' }}
-        >
-          Añadir otro servicio
         </button>
         <button
           onClick={handleReserve}
