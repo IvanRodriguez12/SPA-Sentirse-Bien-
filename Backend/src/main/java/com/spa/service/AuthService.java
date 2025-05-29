@@ -38,6 +38,7 @@ public class AuthService {
             cliente.setEmail(request.getEmail());
             cliente.setTelefono(request.getTelefono());
             cliente.setContrasena(passwordEncoder.encode(request.getContrasena()));
+            cliente.setProfesion(request.getProfesion());
 
             clienteRepository.save(cliente);
 

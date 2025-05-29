@@ -10,6 +10,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -57,7 +59,7 @@ public class RegisterProfesionalController {
                 showAlert("Registro exitoso", "El profesional fue registrado correctamente.");
                 volverAlLogin();
             } else {
-                showAlert("Error", "No se pudo registrar el profesional. Código: " + responseCode);
+                mostrarErrorDesdeConexion(conn);
             }
 
         } catch (Exception e) {
@@ -84,5 +86,26 @@ public class RegisterProfesionalController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void mostrarErrorDesdeConexion(HttpURLConnection conn) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()))) {
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error en registro");
+            alert.setHeaderText("Respuesta del servidor");
+            alert.setContentText(response.toString());
+            alert.showAndWait();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error inesperado");
+            alert.setHeaderText("No se pudo leer el mensaje de error del servidor");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 }
