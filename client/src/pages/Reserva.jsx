@@ -19,6 +19,7 @@ const Reserva = () => {
     const [selectedDateTime, setSelectedDateTime] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [allServices, setAllServices] = useState([]);
+    const [loadingServices, setLoadingServices] = useState(false);
 
     useEffect(() => {
         if (editingTurno) {
@@ -30,17 +31,28 @@ const Reserva = () => {
 
     useEffect(() => {
         const fetchServicios = async () => {
+            setLoadingServices(true);
             try {
+                console.log('Intentando cargar servicios desde:', `${API_URL}/servicios/listar`);
                 const response = await axios.get(`${API_URL}/servicios/listar`);
+                console.log('Servicios obtenidos:', response.data);
                 setAllServices(response.data);
-            } catch  {
-                toast.error("Error cargando servicios.");
+            } catch (error) {
+                console.error("Error cargando servicios:", error);
+                console.error("Detalles del error:", error.response?.data || error.message);
+                toast.error("Error cargando servicios: " + (error.response?.data?.message || error.message));
+            } finally {
+                setLoadingServices(false);
             }
         };
         fetchServicios();
     }, []);
 
-    const openModal = () => setModalIsOpen(true);
+    const openModal = () => {
+        console.log('Abriendo modal. Servicios disponibles:', allServices.length);
+        setModalIsOpen(true);
+    };
+
     const closeModal = () => setModalIsOpen(false);
 
     const addService = (servicio) => {
@@ -215,7 +227,7 @@ const Reserva = () => {
                     "Content-Type": "application/json"
                 }
             });
-            toast.success("Turno reservado exitosamente.");           
+            toast.success("Turno reservado exitosamente.");
 
             navigate("/turnos");
         } catch (error) {
@@ -247,18 +259,26 @@ const Reserva = () => {
                 </div>
             )}
 
-            <button onClick={openModal} style={{ marginBottom: '1rem' }}>Añadir Servicio</button>
+            <button onClick={openModal} style={{ marginBottom: '1rem' }}>
+                {loadingServices ? 'Cargando servicios...' : 'Añadir Servicio'}
+            </button>
 
             <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Seleccionar Servicios">
                 <h3>Selecciona un servicio</h3>
-                <ul>
-                    {allServices.map(servicio => (
-                        <li key={servicio.id}>
-                            {servicio.nombre} - ${servicio.precio} - {servicio.duracion} min
-                            <button onClick={() => addService(servicio)} style={{ marginLeft: '1rem' }}>Agregar</button>
-                        </li>
-                    ))}
-                </ul>
+                {loadingServices ? (
+                    <p>Cargando servicios...</p>
+                ) : allServices.length === 0 ? (
+                    <p>No hay servicios disponibles o no se pudieron cargar.</p>
+                ) : (
+                    <ul>
+                        {allServices.map(servicio => (
+                            <li key={servicio.id}>
+                                {servicio.nombre} - ${servicio.precio} - {servicio.duracion} min
+                                <button onClick={() => addService(servicio)} style={{ marginLeft: '1rem' }}>Agregar</button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
                 <button onClick={closeModal}>Cerrar</button>
             </Modal>
 
