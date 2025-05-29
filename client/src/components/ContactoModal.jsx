@@ -27,9 +27,14 @@ const ContactoModal = () => {
             WhatsApp
           </WhatsAppLink>
 
-          <EmailLink href="spasentirsebiencontacto@gmail.com">
-            Email
+          <EmailLink
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=spasentirsebiencontacto@gmail.com&su=Consulta&body=Hola, me gustaría obtener más información."
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Enviar Email
           </EmailLink>
+
         </div>
       </ModalContent>
     </ModalOverlay>

@@ -167,7 +167,7 @@ const SobreNosotros = () => {
               color: '#2e8b57',
               fontSize: '0.9rem'
             }}>
-              O llama al <a href="tel:+54 9 12 3456-7890" style={{ color: '#2e8b57', fontWeight: '600' }}>+54 9 11 2345-6789</a>
+              O llama al <a href="tel:+54 9 12 3456-7890" style={{ color: '#2e8b57', fontWeight: '600' }}>+54 9 12 3456-7890</a>
             </p>
           </div>
         </div>
