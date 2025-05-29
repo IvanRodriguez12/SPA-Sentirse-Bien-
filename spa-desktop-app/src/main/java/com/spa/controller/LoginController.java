@@ -43,7 +43,7 @@ public class LoginController {
             String email = emailField.getText();
             String password = passwordField.getText();
 
-            String url = AppConfig.BASE_URL + "/api/auth/login";
+            String url = AppConfig.BASE_URL + "/api/auth/login-profesional";
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
