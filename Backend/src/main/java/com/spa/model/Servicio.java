@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Servicio {
 
@@ -32,6 +34,7 @@ public class Servicio {
     @Column(nullable = false)
     private Integer duracion;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "servicios")
     private Set<Turno> turnos = new HashSet<>();
 
