@@ -33,20 +33,38 @@ const Reserva = () => {
         const fetchServicios = async () => {
             setLoadingServices(true);
             try {
+                const token = localStorage.getItem("authToken");
                 console.log('Intentando cargar servicios desde:', `${API_URL}/servicios/listar`);
-                const response = await axios.get(`${API_URL}/servicios/listar`);
+                console.log('Token disponible:', !!token);
+
+                const response = await axios.get(`${API_URL}/servicios/listar`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
                 console.log('Servicios obtenidos:', response.data);
                 setAllServices(response.data);
             } catch (error) {
                 console.error("Error cargando servicios:", error);
                 console.error("Detalles del error:", error.response?.data || error.message);
-                toast.error("Error cargando servicios: " + (error.response?.data?.message || error.message));
+                console.error("Status del error:", error.response?.status);
+
+                if (error.response?.status === 403) {
+                    toast.error("Tu sesión ha expirado. Redirigiendo al login...");
+                    localStorage.removeItem("authToken");
+                    setTimeout(() => {
+                        navigate("/login");
+                    }, 2000);
+                } else {
+                    toast.error("Error cargando servicios: " + (error.response?.data?.message || error.message));
+                }
             } finally {
                 setLoadingServices(false);
             }
         };
         fetchServicios();
-    }, []);
+    }, [navigate]);
 
     const openModal = () => {
         console.log('Abriendo modal. Servicios disponibles:', allServices.length);
@@ -221,7 +239,8 @@ const Reserva = () => {
             };
             console.log("Turno data:", turnoData);
             console.log("Token:", token);
-            await axios.post(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/crear`, turnoData, {
+
+            await axios.post(`${API_URL}/turnos/crear`, turnoData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -232,7 +251,16 @@ const Reserva = () => {
             navigate("/turnos");
         } catch (error) {
             console.error("Error al reservar/editar el turno:", error.response?.data || error.message);
-            toast.error(error.response?.data?.message || "Hubo un problema al reservar/editar el turno.");
+
+            if (error.response?.status === 403) {
+                toast.error("Tu sesión ha expirado. Redirigiendo al login...");
+                localStorage.removeItem("authToken");
+                setTimeout(() => {
+                    navigate("/login");
+                }, 2000);
+            } else {
+                toast.error(error.response?.data?.message || "Hubo un problema al reservar/editar el turno.");
+            }
         }
     };
 
