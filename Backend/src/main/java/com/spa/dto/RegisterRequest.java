@@ -22,7 +22,7 @@ public class RegisterRequest {
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
     public String getProfesion() { return profesion; }
-    public void setProfesion(String profesion) { this.nombre = profesion; }
+    public void setProfesion(String profesion) { this.profesion = profesion; }
 }
 
 
