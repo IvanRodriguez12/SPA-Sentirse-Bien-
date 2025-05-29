@@ -56,9 +56,9 @@ public class SecurityConfig {
                                 "/api/admin/login",
                                 "/api/admin/existeAdmin"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/turnos/listar").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers(
                                 "/api/turnos/crear",
-                                "/api/turnos/listar",
                                 "/api/turnos/{id}"
                         ).hasRole("CLIENTE")
                         .requestMatchers(
@@ -101,4 +101,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-} 
+}
