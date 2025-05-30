@@ -71,9 +71,11 @@ const Reserva = () => {
                 // Mostrar estructura detallada de los primeros elementos para debug
                 if (serviciosData.length > 0) {
                     console.log('Estructura del primer servicio:', serviciosData[0]);
+                    console.log('Claves disponibles en el primer servicio:', Object.keys(serviciosData[0]));
                 }
                 if (categoriasData.length > 0) {
                     console.log('Estructura de la primera categoría:', categoriasData[0]);
+                    console.log('Claves disponibles en la primera categoría:', Object.keys(categoriasData[0]));
                 }
 
                 setAllServices(serviciosData);
@@ -108,9 +110,22 @@ const Reserva = () => {
 
     const closeModal = () => setModalIsOpen(false);
 
+    // Función para obtener el ID del servicio de manera robusta
+    const getServiceId = (servicio) => {
+        return servicio._id || servicio.id || servicio.serviceId;
+    };
+
     const addService = (servicio) => {
-        // Verificar si el servicio ya está agregado
-        const yaAgregado = services.some(s => s._id === servicio._id);
+        const servicioId = getServiceId(servicio);
+
+        if (!servicioId) {
+            console.error('No se pudo obtener el ID del servicio:', servicio);
+            toast.error("Error: No se pudo identificar el servicio.");
+            return;
+        }
+
+        // Verificar si el servicio ya está agregado usando el ID obtenido
+        const yaAgregado = services.some(s => getServiceId(s) === servicioId);
 
         if (yaAgregado) {
             toast.info("Este servicio ya fue agregado.");
@@ -123,8 +138,8 @@ const Reserva = () => {
     };
 
     const removeService = (id) => {
-        const servicioRemovido = services.find(s => s._id === id);
-        setServices(services.filter(s => s._id !== id));
+        const servicioRemovido = services.find(s => getServiceId(s) === id);
+        setServices(services.filter(s => getServiceId(s) !== id));
         if (servicioRemovido) {
             toast.success(`${servicioRemovido.nombre} eliminado`);
         }
@@ -169,9 +184,12 @@ const Reserva = () => {
         return serviciosFiltrados;
     };
 
-    // Función para verificar si un servicio ya está agregado
-    const isServiceSelected = (servicioId) => {
-        return services.some(s => s._id === servicioId);
+    // Función para verificar si un servicio ya está agregado (corregida)
+    const isServiceSelected = (servicio) => {
+        const servicioId = getServiceId(servicio);
+        if (!servicioId) return false;
+
+        return services.some(s => getServiceId(s) === servicioId);
     };
 
     // Función para calcular los límites según el día y duración del servicio
@@ -312,15 +330,35 @@ const Reserva = () => {
         }
 
         const token = localStorage.getItem("authToken");
+
+        // Validar que el token existe
+        if (!token) {
+            toast.error("No se encontró token de autenticación. Redirigiendo al login...");
+            navigate("/login");
+            return;
+        }
+
         try {
             const fechaParaBackend = new Date(selectedDateTime);
 
+            // Obtener los IDs de los servicios de manera robusta
+            const servicioIds = services.map(servicio => getServiceId(servicio)).filter(id => id);
+
+            // Validar que tenemos IDs válidos
+            if (servicioIds.length !== services.length) {
+                console.error('Algunos servicios no tienen ID válido:', services);
+                toast.error("Error: Algunos servicios no tienen ID válido.");
+                return;
+            }
+
             const turnoData = {
                 fechaHora: fechaParaBackend.toISOString(),
-                servicioIds: services.map(servicio => servicio._id)
+                servicioIds: servicioIds
             };
 
             console.log("Turno data:", turnoData);
+            console.log("Servicios seleccionados:", services);
+            console.log("IDs extraídos:", servicioIds);
 
             const endpoint = editingTurno
                 ? `${API_BASE_URL}/api/turnos/editar/${editingTurno.id}`
@@ -341,9 +379,16 @@ const Reserva = () => {
             navigate("/turnos");
         } catch (error) {
             console.error("Error al reservar/editar el turno:", error);
+            console.error("Token usado:", token ? "Presente" : "Ausente");
 
             if (error.response?.status === 403) {
-                toast.error("Tu sesión ha expirado. Redirigiendo al login...");
+                toast.error("Tu sesión ha expirado o no tienes permisos. Redirigiendo al login...");
+                localStorage.removeItem("authToken");
+                setTimeout(() => {
+                    navigate("/login");
+                }, 2000);
+            } else if (error.response?.status === 401) {
+                toast.error("Token inválido. Redirigiendo al login...");
                 localStorage.removeItem("authToken");
                 setTimeout(() => {
                     navigate("/login");
@@ -372,32 +417,35 @@ const Reserva = () => {
                     <p><strong>Precio total:</strong> ${services.reduce((total, servicio) => total + servicio.precio, 0)}</p>
                     <p><strong>Duración total:</strong> {services.reduce((total, servicio) => total + servicio.duracion, 0)} minutos</p>
                     <ul style={{ listStyle: 'none', padding: 0 }}>
-                        {services.map(servicio => (
-                            <li key={servicio._id} style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '0.5rem',
-                                marginBottom: '0.25rem',
-                                backgroundColor: 'white',
-                                borderRadius: '4px'
-                            }}>
-                                <span>{servicio.nombre} - ${servicio.precio}</span>
-                                <button
-                                    onClick={() => removeService(servicio._id)}
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '1.2rem',
-                                        color: '#dc3545'
-                                    }}
-                                    title="Eliminar servicio"
-                                >
-                                    ❌
-                                </button>
-                            </li>
-                        ))}
+                        {services.map(servicio => {
+                            const servicioId = getServiceId(servicio);
+                            return (
+                                <li key={servicioId} style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '0.5rem',
+                                    marginBottom: '0.25rem',
+                                    backgroundColor: 'white',
+                                    borderRadius: '4px'
+                                }}>
+                                    <span>{servicio.nombre} - ${servicio.precio}</span>
+                                    <button
+                                        onClick={() => removeService(servicioId)}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            fontSize: '1.2rem',
+                                            color: '#dc3545'
+                                        }}
+                                        title="Eliminar servicio"
+                                    >
+                                        ❌
+                                    </button>
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             )}
@@ -532,11 +580,12 @@ const Reserva = () => {
                                     </h4>
                                     <div style={{ display: 'grid', gap: '0.5rem' }}>
                                         {serviciosDeCategoria.map(servicio => {
-                                            const yaSeleccionado = isServiceSelected(servicio._id);
+                                            const yaSeleccionado = isServiceSelected(servicio);
+                                            const servicioId = getServiceId(servicio);
 
                                             return (
                                                 <button
-                                                    key={servicio._id}
+                                                    key={servicioId}
                                                     onClick={() => addService(servicio)}
                                                     style={{
                                                         width: '100%',
@@ -614,7 +663,7 @@ const Reserva = () => {
                     </>
                 )}
 
-                {/* Debug info solo en desarrollo */}
+                {/* Debug info mejorada */}
                 {process.env.NODE_ENV === 'development' && (
                     <div style={{
                         marginTop: '2rem',
@@ -628,6 +677,7 @@ const Reserva = () => {
                             <p>Total categorías: {allCategories.length}</p>
                             <p>Total servicios: {allServices.length}</p>
                             <p>Servicios seleccionados: {services.length}</p>
+                            <p>Estructura de primer servicio: {allServices.length > 0 ? JSON.stringify(Object.keys(allServices[0])) : 'N/A'}</p>
                             {allCategories.map(cat => {
                                 const serviciosCount = getServicesByCategory(cat).length;
                                 return (
