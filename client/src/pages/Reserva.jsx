@@ -8,7 +8,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 Modal.setAppElement('#root');
 
-// CORREGIDO: Cambiar la URL base para no duplicar /api
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app";
 
 const Reserva = () => {
@@ -36,7 +35,6 @@ const Reserva = () => {
             setLoadingServices(true);
             try {
                 const token = localStorage.getItem("authToken");
-                // CORREGIDO: URLs con /api incluido
                 console.log('Intentando cargar servicios desde:', `${API_BASE_URL}/api/servicios/listar`);
                 console.log('Token disponible:', !!token);
 
@@ -58,8 +56,20 @@ const Reserva = () => {
                 console.log('Servicios obtenidos:', serviciosRes.data);
                 console.log('Categorías obtenidas:', categoriasRes.data);
 
-                setAllServices(serviciosRes.data);
-                setAllCategories(categoriasRes.data);
+                // Normalizar datos de servicios y categorías
+                const serviciosData = Array.isArray(serviciosRes.data)
+                    ? serviciosRes.data
+                    : serviciosRes.data.data || serviciosRes.data.servicios || [];
+
+                const categoriasData = Array.isArray(categoriasRes.data)
+                    ? categoriasRes.data
+                    : categoriasRes.data.data || categoriasRes.data.categorias || [];
+
+                console.log('Servicios procesados:', serviciosData);
+                console.log('Categorías procesadas:', categoriasData);
+
+                setAllServices(serviciosData);
+                setAllCategories(categoriasData);
             } catch (error) {
                 console.error("Error cargando servicios o categorías:", error);
                 console.error("Detalles del error:", error.response?.data || error.message);
@@ -84,23 +94,63 @@ const Reserva = () => {
 
     const openModal = () => {
         console.log('Abriendo modal. Servicios disponibles:', allServices.length);
+        console.log('Categorías disponibles:', allCategories.length);
         setModalIsOpen(true);
     };
 
     const closeModal = () => setModalIsOpen(false);
 
     const addService = (servicio) => {
-        if (services.some(s => s._id === servicio._id)) {
-            toast("Este servicio ya fue agregado.");
+        // Verificar si el servicio ya está agregado
+        const yaAgregado = services.some(s => s._id === servicio._id);
+
+        if (yaAgregado) {
+            toast.info("Este servicio ya fue agregado.");
             return;
         }
-        setServices([...services, servicio]);
-        toast.success("Servicio agregado");
+
+        setServices(prevServices => [...prevServices, servicio]);
+        toast.success(`${servicio.nombre} agregado correctamente`);
         closeModal();
     };
 
     const removeService = (id) => {
+        const servicioRemovido = services.find(s => s._id === id);
         setServices(services.filter(s => s._id !== id));
+        if (servicioRemovido) {
+            toast.success(`${servicioRemovido.nombre} eliminado`);
+        }
+    };
+
+    // Función mejorada para obtener servicios por categoría
+    const getServicesByCategory = (categoriaId) => {
+        if (!allServices || !Array.isArray(allServices)) {
+            console.log('allServices no es un array válido:', allServices);
+            return [];
+        }
+
+        const serviciosFiltrados = allServices.filter(servicio => {
+            if (!servicio) return false;
+
+            // Diferentes formas de comparar la categoría según la estructura de datos
+            const categoriaDelServicio = servicio.categoria || servicio.categoriaId || servicio.category;
+
+            // Si la categoría es un objeto, comparar por _id
+            if (typeof categoriaDelServicio === 'object' && categoriaDelServicio !== null) {
+                return categoriaDelServicio._id === categoriaId || categoriaDelServicio.id === categoriaId;
+            }
+
+            // Si la categoría es un string, comparar directamente
+            return categoriaDelServicio === categoriaId;
+        });
+
+        console.log(`Servicios para categoría ${categoriaId}:`, serviciosFiltrados);
+        return serviciosFiltrados;
+    };
+
+    // Función para verificar si un servicio ya está agregado
+    const isServiceSelected = (servicioId) => {
+        return services.some(s => s._id === servicioId);
     };
 
     // Función para calcular los límites según el día y duración del servicio
@@ -110,25 +160,23 @@ const Reserva = () => {
         const day = selectedDateTime?.getDay() || new Date().getDay();
         const isSaturday = day === 6;
 
-        // Configuración base
         const config = {
             weekday: {
-                open: 9,    // Apertura L-V
-                close: 21,  // Cierre L-V (21:01)
+                open: 9,
+                close: 21,
                 displayClose: "21:00"
             },
             saturday: {
-                open: 10,   // Apertura Sábado
-                close: 19,  // Cierre Sábado (19:01)
+                open: 10,
+                close: 19,
                 displayClose: "19:00"
             }
         };
 
         const { open, close } = isSaturday ? config.saturday : config.weekday;
 
-        // Calcula el último turno posible considerando la duración
         const lastAvailableTime = new Date();
-        lastAvailableTime.setHours(close, 1, 0, 0); // Hora de cierre (21:01 o 19:01)
+        lastAvailableTime.setHours(close, 1, 0, 0);
         const totalDuracion = services.reduce((total, servicio) => total + servicio.duracion, 0);
         const lastBookableTime = new Date(lastAvailableTime.getTime() - totalDuracion * 60000);
 
@@ -163,7 +211,7 @@ const Reserva = () => {
 
     const isWeekday = (date) => {
         const day = date.getDay();
-        return day !== 0; // No domingos
+        return day !== 0;
     };
 
     const filterPassedTime = (time) => {
@@ -173,24 +221,22 @@ const Reserva = () => {
         const minutes = time.getMinutes();
         const day = time.getDay();
 
-        // Solo permitir horas en punto o y media
         if (minutes !== 0 && minutes !== 30) return false;
 
         const timeLimits = getTimeLimits();
         if (!timeLimits) return false;
 
-        // Validar horario según día
-        if (day === 6) { // Sábados
+        if (day === 6) {
             return hour >= timeLimits.openingHour &&
                    (hour < timeLimits.lastBookableHour ||
                    (hour === timeLimits.lastBookableHour && minutes <= timeLimits.lastBookableMinute));
         }
-        else if (day >= 1 && day <= 5) { // Lunes a Viernes
+        else if (day >= 1 && day <= 5) {
             return hour >= timeLimits.openingHour &&
                    (hour < timeLimits.lastBookableHour ||
                    (hour === timeLimits.lastBookableHour && minutes <= timeLimits.lastBookableMinute));
         }
-        return false; // Domingos no disponibles
+        return false;
     };
 
     const getTimeConstraints = () => {
@@ -205,7 +251,7 @@ const Reserva = () => {
         minTime.setHours(timeLimits.openingHour, 0, 0, 0);
 
         const maxTime = new Date(selectedDateTime);
-        maxTime.setHours(timeLimits.closingHour, 1, 0, 0); // 21:01 o 19:01
+        maxTime.setHours(timeLimits.closingHour, 1, 0, 0);
 
         if (isToday) {
             const now = new Date();
@@ -233,7 +279,6 @@ const Reserva = () => {
         const minutos = selectedDateTime.getMinutes();
         const now = new Date();
 
-        // Validación de horario según duración
         if (hora > timeLimits.lastBookableHour ||
             (hora === timeLimits.lastBookableHour && minutos > timeLimits.lastBookableMinute)) {
             toast.error(`El último turno ${timeLimits.dayName} es a ${timeLimits.lastBookableHour}:${timeLimits.lastBookableMinute < 10 ? '0' : ''}${timeLimits.lastBookableMinute}`);
@@ -248,33 +293,33 @@ const Reserva = () => {
         const token = localStorage.getItem("authToken");
         try {
             const fechaParaBackend = new Date(selectedDateTime);
-            fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
 
             const turnoData = {
                 fechaHora: fechaParaBackend.toISOString(),
                 servicioIds: services.map(servicio => servicio._id)
             };
-            console.log("Turno data:", turnoData);
-            console.log("Token:", token);
 
-            // CORREGIDO: URLs con /api incluido
+            console.log("Turno data:", turnoData);
+
             const endpoint = editingTurno
                 ? `${API_BASE_URL}/api/turnos/editar/${editingTurno.id}`
                 : `${API_BASE_URL}/api/turnos/crear`;
 
             const method = editingTurno ? 'put' : 'post';
 
-            await axios[method](endpoint, turnoData, {
+            const response = await axios[method](endpoint, turnoData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
 
+            console.log('Respuesta del servidor:', response.data);
+
             toast.success(editingTurno ? "Turno editado exitosamente." : "Turno reservado exitosamente.");
             navigate("/turnos");
         } catch (error) {
-            console.error("Error al reservar/editar el turno:", error.response?.data || error.message);
+            console.error("Error al reservar/editar el turno:", error);
 
             if (error.response?.status === 403) {
                 toast.error("Tu sesión ha expirado. Redirigiendo al login...");
@@ -283,7 +328,11 @@ const Reserva = () => {
                     navigate("/login");
                 }, 2000);
             } else {
-                toast.error(error.response?.data?.message || "Hubo un problema al reservar/editar el turno.");
+                const errorMessage = error.response?.data?.message ||
+                                   error.response?.data?.error ||
+                                   error.message ||
+                                   "Hubo un problema al reservar/editar el turno.";
+                toast.error(errorMessage);
             }
         }
     };
@@ -301,13 +350,28 @@ const Reserva = () => {
                     <p><strong>Servicios:</strong> {services.map(servicio => servicio.nombre).join(", ")}</p>
                     <p><strong>Precio total:</strong> ${services.reduce((total, servicio) => total + servicio.precio, 0)}</p>
                     <p><strong>Duración total:</strong> {services.reduce((total, servicio) => total + servicio.duracion, 0)} minutos</p>
-                    <ul>
+                    <ul style={{ listStyle: 'none', padding: 0 }}>
                         {services.map(servicio => (
-                            <li key={servicio._id}>
-                                {servicio.nombre}
+                            <li key={servicio._id} style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: '0.5rem',
+                                marginBottom: '0.25rem',
+                                backgroundColor: 'white',
+                                borderRadius: '4px'
+                            }}>
+                                <span>{servicio.nombre} - ${servicio.precio}</span>
                                 <button
                                     onClick={() => removeService(servicio._id)}
-                                    style={{ marginLeft: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '1.2rem',
+                                        color: '#dc3545'
+                                    }}
+                                    title="Eliminar servicio"
                                 >
                                     ❌
                                 </button>
@@ -415,39 +479,144 @@ const Reserva = () => {
                 </div>
 
                 {loadingServices ? (
-                    <p>Cargando servicios...</p>
+                    <div style={{ textAlign: 'center', padding: '2rem' }}>
+                        <p>Cargando servicios...</p>
+                    </div>
+                ) : allCategories.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '2rem' }}>
+                        <p>No hay categorías disponibles</p>
+                    </div>
                 ) : (
-                    allCategories.map((categoria) => (
-                        <div key={categoria._id} style={{ marginBottom: '1.5rem' }}>
-                            <h4 style={{ marginBottom: '0.5rem', color: '#333' }}>{categoria.nombre}</h4>
-                            <ul style={{ listStyle: 'none', padding: 0 }}>
-                                {allServices
-                                    .filter(servicio => servicio.categoria === categoria._id)
-                                    .map(servicio => (
-                                        <li key={servicio._id} style={{ marginBottom: '0.5rem' }}>
-                                            <button
-                                                onClick={() => addService(servicio)}
-                                                style={{
-                                                    width: '100%',
-                                                    textAlign: 'left',
-                                                    padding: '0.5rem',
-                                                    border: '1px solid #ddd',
-                                                    borderRadius: '4px',
-                                                    backgroundColor: services.some(s => s._id === servicio._id) ? '#e6f3ff' : 'white',
-                                                    cursor: 'pointer'
-                                                }}
-                                                disabled={services.some(s => s._id === servicio._id)}
-                                            >
-                                                <strong>{servicio.nombre}</strong><br />
-                                                ${servicio.precio} - {servicio.duracion} min
-                                                {servicio.descripcion && <br />}
-                                                <small>{servicio.descripcion}</small>
-                                            </button>
-                                        </li>
-                                    ))}
-                            </ul>
+                    <>
+                        {allCategories.map((categoria) => {
+                            const serviciosDeCategoria = getServicesByCategory(categoria._id);
+
+                            // Solo mostrar la categoría si tiene servicios
+                            if (serviciosDeCategoria.length === 0) {
+                                return null;
+                            }
+
+                            return (
+                                <div key={categoria._id} style={{ marginBottom: '1.5rem' }}>
+                                    <h4 style={{
+                                        marginBottom: '0.5rem',
+                                        color: '#333',
+                                        borderBottom: '2px solid #e9ecef',
+                                        paddingBottom: '0.25rem'
+                                    }}>
+                                        {categoria.nombre}
+                                        <span style={{ fontSize: '0.8rem', color: '#666', marginLeft: '0.5rem' }}>
+                                            ({serviciosDeCategoria.length} servicio{serviciosDeCategoria.length !== 1 ? 's' : ''})
+                                        </span>
+                                    </h4>
+                                    <div style={{ display: 'grid', gap: '0.5rem' }}>
+                                        {serviciosDeCategoria.map(servicio => {
+                                            const yaSeleccionado = isServiceSelected(servicio._id);
+
+                                            return (
+                                                <button
+                                                    key={servicio._id}
+                                                    onClick={() => addService(servicio)}
+                                                    style={{
+                                                        width: '100%',
+                                                        textAlign: 'left',
+                                                        padding: '0.75rem',
+                                                        border: yaSeleccionado ? '2px solid #28a745' : '1px solid #ddd',
+                                                        borderRadius: '6px',
+                                                        backgroundColor: yaSeleccionado ? '#e8f5e8' : 'white',
+                                                        cursor: yaSeleccionado ? 'not-allowed' : 'pointer',
+                                                        opacity: yaSeleccionado ? 0.7 : 1,
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                    disabled={yaSeleccionado}
+                                                >
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                                                        <div style={{ flex: 1 }}>
+                                                            <strong style={{ color: yaSeleccionado ? '#28a745' : '#333' }}>
+                                                                {servicio.nombre}
+                                                            </strong>
+                                                            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.25rem' }}>
+                                                                ${servicio.precio} • {servicio.duracion} min
+                                                            </div>
+                                                            {servicio.descripcion && (
+                                                                <div style={{ fontSize: '0.8rem', color: '#777', marginTop: '0.25rem' }}>
+                                                                    {servicio.descripcion}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {yaSeleccionado && (
+                                                            <div style={{
+                                                                color: '#28a745',
+                                                                fontSize: '1.2rem',
+                                                                marginLeft: '0.5rem'
+                                                            }}>
+                                                                ✓
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {yaSeleccionado && (
+                                                        <div style={{
+                                                            fontSize: '0.8rem',
+                                                            color: '#28a745',
+                                                            marginTop: '0.25rem',
+                                                            fontWeight: '500'
+                                                        }}>
+                                                            Ya agregado
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        {/* Información de servicios seleccionados */}
+                        {services.length > 0 && (
+                            <div style={{
+                                marginTop: '1.5rem',
+                                padding: '1rem',
+                                backgroundColor: '#f8f9fa',
+                                borderRadius: '6px',
+                                borderLeft: '4px solid #007bff'
+                            }}>
+                                <h5 style={{ margin: '0 0 0.5rem 0', color: '#333' }}>
+                                    Servicios seleccionados ({services.length})
+                                </h5>
+                                <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                                    Total: ${services.reduce((total, s) => total + s.precio, 0)} •
+                                    {services.reduce((total, s) => total + s.duracion, 0)} minutos
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Debug info solo en desarrollo */}
+                {process.env.NODE_ENV === 'development' && (
+                    <div style={{
+                        marginTop: '2rem',
+                        padding: '1rem',
+                        backgroundColor: '#fff3cd',
+                        borderRadius: '4px',
+                        border: '1px solid #ffeaa7'
+                    }}>
+                        <h5 style={{ color: '#856404', marginBottom: '0.5rem' }}>Debug Info:</h5>
+                        <div style={{ fontSize: '0.8rem', color: '#856404' }}>
+                            <p>Total categorías: {allCategories.length}</p>
+                            <p>Total servicios: {allServices.length}</p>
+                            <p>Servicios seleccionados: {services.length}</p>
+                            {allCategories.map(cat => {
+                                const serviciosCount = getServicesByCategory(cat._id).length;
+                                return (
+                                    <p key={cat._id}>
+                                        {cat.nombre}: {serviciosCount} servicio{serviciosCount !== 1 ? 's' : ''}
+                                    </p>
+                                );
+                            })}
                         </div>
-                    ))
+                    </div>
                 )}
             </Modal>
 
