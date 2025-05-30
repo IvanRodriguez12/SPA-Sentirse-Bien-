@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,10 +25,20 @@ public class TurnoService {
     private final ClienteRepository clienteRepository;
     private final ServicioRepository servicioRepository;
 
+    // Zona horaria de Argentina
+    private static final ZoneId ZONA_ARGENTINA = ZoneId.of("America/Argentina/Buenos_Aires");
+
     public TurnoService(TurnoRepository turnoRepository, ClienteRepository clienteRepository, ServicioRepository servicioRepository) {
         this.turnoRepository = turnoRepository;
         this.clienteRepository = clienteRepository;
         this.servicioRepository = servicioRepository;
+    }
+
+    // Método para ajustar LocalDateTime desde frontend a hora argentina
+    private LocalDateTime ajustarAHoraArgentina(LocalDateTime fechaFromFrontend) {
+        // El frontend envía la fecha como si fuera UTC, pero en realidad es hora argentina
+        // Necesitamos restar 3 horas para compensar
+        return fechaFromFrontend.minusHours(3);
     }
 
     @Transactional
@@ -57,7 +69,11 @@ public class TurnoService {
 
         Turno turno = new Turno();
         turno.setCliente(clienteOptional.get());
-        turno.setFechaHora(turnoRequest.getFechaHora());
+
+        // Ajustar la fecha a hora argentina
+        LocalDateTime fechaAjustada = ajustarAHoraArgentina(turnoRequest.getFechaHora());
+        turno.setFechaHora(fechaAjustada);
+
         turno.setServicios(new HashSet<>(servicios));
         turno.setProfesionales(profesionalesAsignados);
 
@@ -106,7 +122,10 @@ public class TurnoService {
         }
 
         turnoExistente.setServicios(new HashSet<>(servicios));
-        turnoExistente.setFechaHora(turnoActualizado.getFechaHora());
+
+        // Ajustar la fecha actualizada
+        LocalDateTime fechaAjustada = ajustarAHoraArgentina(turnoActualizado.getFechaHora());
+        turnoExistente.setFechaHora(fechaAjustada);
 
         return turnoRepository.save(turnoExistente);
     }
@@ -127,8 +146,11 @@ public class TurnoService {
             throw new RuntimeException("Uno o más servicios no fueron encontrados.");
         }
 
-        LocalDateTime fecha = turno.getFechaHora();
-        if (fecha.isBefore(LocalDateTime.now())) {
+        // Para validación, usar la fecha ajustada
+        LocalDateTime fecha = ajustarAHoraArgentina(turno.getFechaHora());
+        ZonedDateTime ahoraArgentina = ZonedDateTime.now(ZONA_ARGENTINA);
+
+        if (fecha.isBefore(ahoraArgentina.toLocalDateTime())) {
             throw new IllegalArgumentException("No se puede reservar en fechas pasadas.");
         }
 
@@ -164,9 +186,8 @@ public class TurnoService {
 
         List<Turno> turnosAsignados = turnoRepository.findByProfesionalesContaining(profesional);
 
-        LocalDateTime ahora = LocalDateTime.now();
-        LocalDate hoyInicio = ahora.toLocalDate();
-        LocalDate hoyFin = hoyInicio.plusDays(1);
+        ZonedDateTime ahoraArgentina = ZonedDateTime.now(ZONA_ARGENTINA);
+        LocalDate hoyInicio = ahoraArgentina.toLocalDate();
         LocalDate mañana = hoyInicio.plusDays(1);
 
         return turnosAsignados.stream().filter(turno -> {
