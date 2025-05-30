@@ -11,11 +11,16 @@ const Turnos = () => {
     const [turnos, setTurnos] = useState([]);
     const [showContactModal, setShowContactModal] = useState(false);
 
-    // Función para formatear fecha y hora en zona horaria argentina
+    // Función para tratar la fecha como si fuera hora local argentina
+    const parsearFechaComoArgentina = (fechaString) => {
+        // Si la fecha viene sin zona horaria, la tratamos como hora local argentina
+        const fecha = new Date(fechaString + (fechaString.includes('T') && !fechaString.includes('Z') ? '-03:00' : ''));
+        return fecha;
+    };
+
     const formatearFechaArgentina = (fechaISO) => {
-        const fecha = new Date(fechaISO);
+        const fecha = parsearFechaComoArgentina(fechaISO);
         return fecha.toLocaleDateString('es-AR', {
-            timeZone: 'America/Argentina/Buenos_Aires',
             year: 'numeric',
             month: '2-digit',
             day: '2-digit'
@@ -23,9 +28,8 @@ const Turnos = () => {
     };
 
     const formatearHoraArgentina = (fechaISO) => {
-        const fecha = new Date(fechaISO);
+        const fecha = parsearFechaComoArgentina(fechaISO);
         return fecha.toLocaleTimeString('es-AR', {
-            timeZone: 'America/Argentina/Buenos_Aires',
             hour: '2-digit',
             minute: '2-digit',
             hour12: false
