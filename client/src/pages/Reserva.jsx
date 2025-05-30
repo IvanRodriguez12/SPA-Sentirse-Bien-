@@ -36,6 +36,7 @@ const Reserva = () => {
             setLoadingServices(true);
             try {
                 const token = localStorage.getItem("authToken");
+                // CORREGIDO: URLs con /api incluido
                 console.log('Intentando cargar servicios desde:', `${API_BASE_URL}/api/servicios/listar`);
                 console.log('Token disponible:', !!token);
 
@@ -57,12 +58,8 @@ const Reserva = () => {
                 console.log('Servicios obtenidos:', serviciosRes.data);
                 console.log('Categorías obtenidas:', categoriasRes.data);
 
-                // CORREGIDO: Acceder a los datos correctamente
-                const serviciosData = serviciosRes.data.data || serviciosRes.data;
-                const categoriasData = categoriasRes.data.data || categoriasRes.data;
-
-                setAllServices(serviciosData);
-                setAllCategories(categoriasData);
+                setAllServices(serviciosRes.data);
+                setAllCategories(categoriasRes.data);
             } catch (error) {
                 console.error("Error cargando servicios o categorías:", error);
                 console.error("Detalles del error:", error.response?.data || error.message);
@@ -87,7 +84,6 @@ const Reserva = () => {
 
     const openModal = () => {
         console.log('Abriendo modal. Servicios disponibles:', allServices.length);
-        console.log('Categorías disponibles:', allCategories.length);
         setModalIsOpen(true);
     };
 
@@ -251,14 +247,13 @@ const Reserva = () => {
 
         const token = localStorage.getItem("authToken");
         try {
-            // CORREGIDO: Mejor manejo de la fecha
             const fechaParaBackend = new Date(selectedDateTime);
+            fechaParaBackend.setMinutes(fechaParaBackend.getMinutes() - fechaParaBackend.getTimezoneOffset());
 
             const turnoData = {
                 fechaHora: fechaParaBackend.toISOString(),
                 servicioIds: services.map(servicio => servicio._id)
             };
-
             console.log("Turno data:", turnoData);
             console.log("Token:", token);
 
@@ -269,21 +264,17 @@ const Reserva = () => {
 
             const method = editingTurno ? 'put' : 'post';
 
-            const response = await axios[method](endpoint, turnoData, {
+            await axios[method](endpoint, turnoData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
 
-            console.log('Respuesta del servidor:', response.data);
-
             toast.success(editingTurno ? "Turno editado exitosamente." : "Turno reservado exitosamente.");
             navigate("/turnos");
         } catch (error) {
-            console.error("Error al reservar/editar el turno:", error);
-            console.error("Detalles del error:", error.response?.data || error.message);
-            console.error("Status del error:", error.response?.status);
+            console.error("Error al reservar/editar el turno:", error.response?.data || error.message);
 
             if (error.response?.status === 403) {
                 toast.error("Tu sesión ha expirado. Redirigiendo al login...");
@@ -292,23 +283,9 @@ const Reserva = () => {
                     navigate("/login");
                 }, 2000);
             } else {
-                const errorMessage = error.response?.data?.message ||
-                                   error.response?.data?.error ||
-                                   error.message ||
-                                   "Hubo un problema al reservar/editar el turno.";
-                toast.error(errorMessage);
+                toast.error(error.response?.data?.message || "Hubo un problema al reservar/editar el turno.");
             }
         }
-    };
-
-    // CORREGIDO: Función para filtrar servicios por categoría
-    const getServicesByCategory = (categoriaId) => {
-        return allServices.filter(servicio => {
-            // Verificar diferentes posibles estructuras de datos
-            return servicio.categoria === categoriaId ||
-                   servicio.categoria?._id === categoriaId ||
-                   servicio.categoriaId === categoriaId;
-        });
     };
 
     const { minTime, maxTime } = getTimeConstraints();
@@ -439,24 +416,14 @@ const Reserva = () => {
 
                 {loadingServices ? (
                     <p>Cargando servicios...</p>
-                ) : allCategories.length === 0 ? (
-                    <p>No hay categorías disponibles</p>
                 ) : (
-                    allCategories.map((categoria) => {
-                        const serviciosDeCategoria = getServicesByCategory(categoria._id);
-
-                        // Solo mostrar la categoría si tiene servicios
-                        if (serviciosDeCategoria.length === 0) {
-                            return null;
-                        }
-
-                        return (
-                            <div key={categoria._id} style={{ marginBottom: '1.5rem' }}>
-                                <h4 style={{ marginBottom: '0.5rem', color: '#333' }}>
-                                    {categoria.nombre} ({serviciosDeCategoria.length} servicios)
-                                </h4>
-                                <ul style={{ listStyle: 'none', padding: 0 }}>
-                                    {serviciosDeCategoria.map(servicio => (
+                    allCategories.map((categoria) => (
+                        <div key={categoria._id} style={{ marginBottom: '1.5rem' }}>
+                            <h4 style={{ marginBottom: '0.5rem', color: '#333' }}>{categoria.nombre}</h4>
+                            <ul style={{ listStyle: 'none', padding: 0 }}>
+                                {allServices
+                                    .filter(servicio => servicio.categoria === categoria._id)
+                                    .map(servicio => (
                                         <li key={servicio._id} style={{ marginBottom: '0.5rem' }}>
                                             <button
                                                 onClick={() => addService(servicio)}
@@ -467,46 +434,20 @@ const Reserva = () => {
                                                     border: '1px solid #ddd',
                                                     borderRadius: '4px',
                                                     backgroundColor: services.some(s => s._id === servicio._id) ? '#e6f3ff' : 'white',
-                                                    cursor: services.some(s => s._id === servicio._id) ? 'not-allowed' : 'pointer',
-                                                    opacity: services.some(s => s._id === servicio._id) ? 0.6 : 1
+                                                    cursor: 'pointer'
                                                 }}
                                                 disabled={services.some(s => s._id === servicio._id)}
                                             >
                                                 <strong>{servicio.nombre}</strong><br />
                                                 ${servicio.precio} - {servicio.duracion} min
-                                                {servicio.descripcion && (
-                                                    <>
-                                                        <br />
-                                                        <small>{servicio.descripcion}</small>
-                                                    </>
-                                                )}
-                                                {services.some(s => s._id === servicio._id) && (
-                                                    <>
-                                                        <br />
-                                                        <small style={{ color: '#666' }}>Ya agregado</small>
-                                                    </>
-                                                )}
+                                                {servicio.descripcion && <br />}
+                                                <small>{servicio.descripcion}</small>
                                             </button>
                                         </li>
                                     ))}
-                                </ul>
-                            </div>
-                        );
-                    })
-                )}
-
-                {/* CORREGIDO: Debug info para desarrollo */}
-                {process.env.NODE_ENV === 'development' && (
-                    <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#f0f0f0', borderRadius: '4px' }}>
-                        <h5>Debug Info:</h5>
-                        <p>Total categorías: {allCategories.length}</p>
-                        <p>Total servicios: {allServices.length}</p>
-                        {allCategories.map(cat => (
-                            <p key={cat._id}>
-                                {cat.nombre}: {getServicesByCategory(cat._id).length} servicios
-                            </p>
-                        ))}
-                    </div>
+                            </ul>
+                        </div>
+                    ))
                 )}
             </Modal>
 
