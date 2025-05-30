@@ -8,7 +8,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 Modal.setAppElement('#root');
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
+// CORREGIDO: Cambiar la URL base para no duplicar /api
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app";
 
 const Reserva = () => {
     const location = useLocation();
@@ -35,17 +36,18 @@ const Reserva = () => {
             setLoadingServices(true);
             try {
                 const token = localStorage.getItem("authToken");
-                console.log('Intentando cargar servicios desde:', `${API_URL}/servicios/listar`);
+                // CORREGIDO: URLs con /api incluido
+                console.log('Intentando cargar servicios desde:', `${API_BASE_URL}/api/servicios/listar`);
                 console.log('Token disponible:', !!token);
 
                 const [serviciosRes, categoriasRes] = await Promise.all([
-                    axios.get(`${API_URL}/servicios/listar`, {
+                    axios.get(`${API_BASE_URL}/api/servicios/listar`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                             "Content-Type": "application/json"
                         }
                     }),
-                    axios.get(`${API_URL}/categorias/listar`, {
+                    axios.get(`${API_BASE_URL}/api/categorias/listar`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                             "Content-Type": "application/json"
@@ -255,9 +257,10 @@ const Reserva = () => {
             console.log("Turno data:", turnoData);
             console.log("Token:", token);
 
+            // CORREGIDO: URLs con /api incluido
             const endpoint = editingTurno
-                ? `${API_URL}/turnos/editar/${editingTurno.id}`
-                : `${API_URL}/turnos/crear`;
+                ? `${API_BASE_URL}/api/turnos/editar/${editingTurno.id}`
+                : `${API_BASE_URL}/api/turnos/crear`;
 
             const method = editingTurno ? 'put' : 'post';
 
