@@ -22,11 +22,34 @@ const Reserva = () => {
     const [allCategories, setAllCategories] = useState([]);
     const [loadingServices, setLoadingServices] = useState(false);
 
+    // Función para obtener la fecha/hora actual en zona horaria Argentina (UTC-3)
+    const getArgentinaDateTime = () => {
+        const now = new Date();
+        // Convertir a Argentina (UTC-3)
+        const argentinaTime = new Date(now.getTime() - (3 * 60 * 60 * 1000));
+        return argentinaTime;
+    };
+
+    // Función para verificar si una fecha cumple con el requisito de 48 horas
+    const isAtLeast48HoursFromNow = (date) => {
+        const now = getArgentinaDateTime();
+        const diffInHours = (date - now) / (1000 * 60 * 60);
+        return diffInHours >= 48;
+    };
+
+    // Función para obtener fecha mínima (48 horas desde ahora)
+    const getMinDate = () => {
+        const now = getArgentinaDateTime();
+        const minDate = new Date(now.getTime() + (48 * 60 * 60 * 1000));
+        return minDate;
+    };
+
     useEffect(() => {
         if (editingTurno) {
             const fecha = new Date(editingTurno.fechaHora);
-            const fechaLocal = new Date(fecha.getTime() + fecha.getTimezoneOffset() * 60000);
-            setSelectedDateTime(fechaLocal);
+            // Ajustar para zona horaria Argentina
+            const fechaArgentina = new Date(fecha.getTime() - (3 * 60 * 60 * 1000));
+            setSelectedDateTime(fechaArgentina);
         }
     }, [editingTurno]);
 
@@ -35,28 +58,16 @@ const Reserva = () => {
             setLoadingServices(true);
             try {
                 const token = localStorage.getItem("authToken");
-                console.log('Intentando cargar servicios desde:', `${API_BASE_URL}/api/servicios/listar`);
-                console.log('Token disponible:', !!token);
 
                 const [serviciosRes, categoriasRes] = await Promise.all([
                     axios.get(`${API_BASE_URL}/api/servicios/listar`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        }
+                        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
                     }),
                     axios.get(`${API_BASE_URL}/api/categorias/listar`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        }
+                        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
                     })
                 ]);
 
-                console.log('Servicios obtenidos:', serviciosRes.data);
-                console.log('Categorías obtenidas:', categoriasRes.data);
-
-                // Normalizar datos de servicios y categorías
                 const serviciosData = Array.isArray(serviciosRes.data)
                     ? serviciosRes.data
                     : serviciosRes.data.data || serviciosRes.data.servicios || [];
@@ -65,32 +76,15 @@ const Reserva = () => {
                     ? categoriasRes.data
                     : categoriasRes.data.data || categoriasRes.data.categorias || [];
 
-                console.log('Servicios procesados:', serviciosData);
-                console.log('Categorías procesadas:', categoriasData);
-
-                // Mostrar estructura detallada de los primeros elementos para debug
-                if (serviciosData.length > 0) {
-                    console.log('Estructura del primer servicio:', serviciosData[0]);
-                    console.log('Claves disponibles en el primer servicio:', Object.keys(serviciosData[0]));
-                }
-                if (categoriasData.length > 0) {
-                    console.log('Estructura de la primera categoría:', categoriasData[0]);
-                    console.log('Claves disponibles en la primera categoría:', Object.keys(categoriasData[0]));
-                }
-
                 setAllServices(serviciosData);
                 setAllCategories(categoriasData);
             } catch (error) {
-                console.error("Error cargando servicios o categorías:", error);
-                console.error("Detalles del error:", error.response?.data || error.message);
-                console.error("Status del error:", error.response?.status);
+                console.error("Error cargando servicios:", error);
 
-                if (error.response?.status === 403) {
+                if (error.response?.status === 403 || error.response?.status === 401) {
                     toast.error("Tu sesión ha expirado. Redirigiendo al login...");
                     localStorage.removeItem("authToken");
-                    setTimeout(() => {
-                        navigate("/login");
-                    }, 2000);
+                    setTimeout(() => navigate("/login"), 2000);
                 } else {
                     toast.error("Error cargando servicios: " + (error.response?.data?.message || error.message));
                 }
@@ -102,37 +96,22 @@ const Reserva = () => {
         fetchServiciosYCategorias();
     }, [navigate]);
 
-    const openModal = () => {
-        console.log('Abriendo modal. Servicios disponibles:', allServices.length);
-        console.log('Categorías disponibles:', allCategories.length);
-        setModalIsOpen(true);
-    };
-
-    const closeModal = () => setModalIsOpen(false);
-
-    // Función para obtener el ID del servicio de manera robusta
-    const getServiceId = (servicio) => {
-        return servicio._id || servicio.id || servicio.serviceId;
-    };
+    const getServiceId = (servicio) => servicio._id || servicio.id || servicio.serviceId;
 
     const addService = (servicio) => {
         const servicioId = getServiceId(servicio);
-
         if (!servicioId) {
-            console.error('No se pudo obtener el ID del servicio:', servicio);
             toast.error("Error: No se pudo identificar el servicio.");
             return;
         }
 
-        // Verificar si el servicio ya está agregado usando el ID obtenido
         const yaAgregado = services.some(s => getServiceId(s) === servicioId);
-
         if (yaAgregado) {
             toast.info("Este servicio ya fue agregado.");
             return;
         }
 
-        setServices(prevServices => [...prevServices, servicio]);
+        setServices(prev => [...prev, servicio]);
         toast.success(`${servicio.nombre} agregado correctamente`);
         closeModal();
     };
@@ -145,54 +124,31 @@ const Reserva = () => {
         }
     };
 
-    // Función mejorada para obtener servicios por categoría
     const getServicesByCategory = (categoria) => {
-        if (!allServices || !Array.isArray(allServices)) {
-            console.log('allServices no es un array válido:', allServices);
-            return [];
-        }
+        if (!allServices || !Array.isArray(allServices)) return [];
 
-        // Obtener el ID de la categoría
         const categoriaId = categoria?._id || categoria?.id || categoria;
 
-        console.log(`Buscando servicios para categoría:`, categoria);
-        console.log(`ID de categoría extraído:`, categoriaId);
-
-        const serviciosFiltrados = allServices.filter(servicio => {
+        return allServices.filter(servicio => {
             if (!servicio) return false;
-
-            console.log(`Analizando servicio ${servicio.nombre}:`, {
-                categoria: servicio.categoria,
-                categoriaId: servicio.categoriaId,
-                category: servicio.category
-            });
-
-            // Diferentes formas de comparar la categoría según la estructura de datos
             const categoriaDelServicio = servicio.categoria || servicio.categoriaId || servicio.category;
 
-            // Si la categoría es un objeto, comparar por _id
             if (typeof categoriaDelServicio === 'object' && categoriaDelServicio !== null) {
                 const serviceCatId = categoriaDelServicio._id || categoriaDelServicio.id;
                 return serviceCatId === categoriaId;
             }
 
-            // Si la categoría es un string, comparar directamente
             return categoriaDelServicio === categoriaId;
         });
-
-        console.log(`Servicios filtrados para categoría ${categoriaId}:`, serviciosFiltrados);
-        return serviciosFiltrados;
     };
 
-    // Función para verificar si un servicio ya está agregado (corregida)
     const isServiceSelected = (servicio) => {
         const servicioId = getServiceId(servicio);
         if (!servicioId) return false;
-
         return services.some(s => getServiceId(s) === servicioId);
     };
 
-    // Función para calcular los límites según el día y duración del servicio
+    // Función corregida para calcular límites de horario
     const getTimeLimits = () => {
         if (!services.length) return null;
 
@@ -200,31 +156,29 @@ const Reserva = () => {
         const isSaturday = day === 6;
 
         const config = {
-            weekday: {
-                open: 9,
-                close: 21,
-                displayClose: "21:00"
-            },
-            saturday: {
-                open: 10,
-                close: 19,
-                displayClose: "19:00"
-            }
+            weekday: { open: 9, close: 20, closingMinute: 30 }, // 9:00 - 20:30
+            saturday: { open: 10, close: 19, closingMinute: 0 }  // 10:00 - 19:00
         };
 
-        const { open, close } = isSaturday ? config.saturday : config.weekday;
+        const { open, close, closingMinute } = isSaturday ? config.saturday : config.weekday;
 
-        const lastAvailableTime = new Date();
-        lastAvailableTime.setHours(close, 1, 0, 0);
+        // Calcular duración total de servicios
         const totalDuracion = services.reduce((total, servicio) => total + servicio.duracion, 0);
-        const lastBookableTime = new Date(lastAvailableTime.getTime() - totalDuracion * 60000);
+
+        // Hora de cierre real
+        const realClosingTime = new Date();
+        realClosingTime.setHours(close, closingMinute, 0, 0);
+
+        // Último horario disponible considerando la duración de los servicios
+        const lastBookableTime = new Date(realClosingTime.getTime() - totalDuracion * 60000);
 
         return {
             openingHour: open,
             closingHour: close,
+            closingMinute: closingMinute,
             lastBookableHour: lastBookableTime.getHours(),
             lastBookableMinute: lastBookableTime.getMinutes(),
-            displayClose: isSaturday ? config.saturday.displayClose : config.weekday.displayClose,
+            displayClose: isSaturday ? "19:00" : "20:30",
             dayName: isSaturday ? 'sábados' : 'de lunes a viernes'
         };
     };
@@ -235,22 +189,21 @@ const Reserva = () => {
             return;
         }
 
-        if (date.getDay() === 6) {
-            const hours = date.getHours();
-            if (!selectedDateTime || hours < 10) {
-                const newDate = new Date(date);
-                newDate.setHours(10, 0, 0, 0);
-                setSelectedDateTime(newDate);
-                return;
-            }
+        // Si es sábado y la hora es menor a 10, ajustar a 10:00
+        if (date.getDay() === 6 && date.getHours() < 10) {
+            const newDate = new Date(date);
+            newDate.setHours(10, 0, 0, 0);
+            setSelectedDateTime(newDate);
+            return;
         }
 
         setSelectedDateTime(date);
     };
 
+    // Solo permitir días de lunes a sábado
     const isWeekday = (date) => {
         const day = date.getDay();
-        return day !== 0;
+        return day !== 0; // Excluir domingos
     };
 
     const filterPassedTime = (time) => {
@@ -260,47 +213,24 @@ const Reserva = () => {
         const minutes = time.getMinutes();
         const day = time.getDay();
 
+        // Solo permitir intervalos de 30 minutos
         if (minutes !== 0 && minutes !== 30) return false;
 
         const timeLimits = getTimeLimits();
         if (!timeLimits) return false;
 
-        if (day === 6) {
+        // Validar horarios según el día
+        if (day === 6) { // Sábado
+            return hour >= timeLimits.openingHour &&
+                   (hour < timeLimits.lastBookableHour ||
+                   (hour === timeLimits.lastBookableHour && minutes <= timeLimits.lastBookableMinute));
+        } else if (day >= 1 && day <= 5) { // Lunes a Viernes
             return hour >= timeLimits.openingHour &&
                    (hour < timeLimits.lastBookableHour ||
                    (hour === timeLimits.lastBookableHour && minutes <= timeLimits.lastBookableMinute));
         }
-        else if (day >= 1 && day <= 5) {
-            return hour >= timeLimits.openingHour &&
-                   (hour < timeLimits.lastBookableHour ||
-                   (hour === timeLimits.lastBookableHour && minutes <= timeLimits.lastBookableMinute));
-        }
+
         return false;
-    };
-
-    const getTimeConstraints = () => {
-        if (!selectedDateTime || !services.length) return { minTime: null, maxTime: null };
-
-        const timeLimits = getTimeLimits();
-        if (!timeLimits) return { minTime: null, maxTime: null };
-
-        const isToday = selectedDateTime.toDateString() === new Date().toDateString();
-
-        const minTime = new Date(selectedDateTime);
-        minTime.setHours(timeLimits.openingHour, 0, 0, 0);
-
-        const maxTime = new Date(selectedDateTime);
-        maxTime.setHours(timeLimits.closingHour, 1, 0, 0);
-
-        if (isToday) {
-            const now = new Date();
-            if (now.getHours() >= timeLimits.openingHour) {
-                minTime.setHours(now.getHours());
-                minTime.setMinutes(Math.ceil(now.getMinutes() / 30) * 30);
-            }
-        }
-
-        return { minTime, maxTime };
     };
 
     const handleSubmit = async (e) => {
@@ -311,27 +241,27 @@ const Reserva = () => {
             return;
         }
 
+        // Validar que la fecha sea al menos 48 horas en el futuro
+        if (!isAtLeast48HoursFromNow(selectedDateTime)) {
+            toast.error("Debes reservar tu turno con al menos 48 horas de anticipación.");
+            return;
+        }
+
         const timeLimits = getTimeLimits();
         if (!timeLimits) return;
 
         const hora = selectedDateTime.getHours();
         const minutos = selectedDateTime.getMinutes();
-        const now = new Date();
 
+        // Validar horarios de atención
         if (hora > timeLimits.lastBookableHour ||
             (hora === timeLimits.lastBookableHour && minutos > timeLimits.lastBookableMinute)) {
-            toast.error(`El último turno ${timeLimits.dayName} es a ${timeLimits.lastBookableHour}:${timeLimits.lastBookableMinute < 10 ? '0' : ''}${timeLimits.lastBookableMinute}`);
-            return;
-        }
-
-        if (selectedDateTime < now) {
-            toast.error("No puedes seleccionar una fecha/hora pasada.");
+            const lastHourFormatted = `${timeLimits.lastBookableHour}:${timeLimits.lastBookableMinute < 10 ? '0' : ''}${timeLimits.lastBookableMinute}`;
+            toast.error(`El último turno ${timeLimits.dayName} es a las ${lastHourFormatted}`);
             return;
         }
 
         const token = localStorage.getItem("authToken");
-
-        // Validar que el token existe
         if (!token) {
             toast.error("No se encontró token de autenticación. Redirigiendo al login...");
             navigate("/login");
@@ -339,14 +269,12 @@ const Reserva = () => {
         }
 
         try {
-            const fechaParaBackend = new Date(selectedDateTime);
+            // Convertir la fecha seleccionada a UTC para enviar al backend
+            const fechaParaBackend = new Date(selectedDateTime.getTime() + (3 * 60 * 60 * 1000));
 
-            // Obtener los IDs de los servicios de manera robusta
             const servicioIds = services.map(servicio => getServiceId(servicio)).filter(id => id);
 
-            // Validar que tenemos IDs válidos
             if (servicioIds.length !== services.length) {
-                console.error('Algunos servicios no tienen ID válido:', services);
                 toast.error("Error: Algunos servicios no tienen ID válido.");
                 return;
             }
@@ -356,43 +284,28 @@ const Reserva = () => {
                 servicioIds: servicioIds
             };
 
-            console.log("Turno data:", turnoData);
-            console.log("Servicios seleccionados:", services);
-            console.log("IDs extraídos:", servicioIds);
-
             const endpoint = editingTurno
                 ? `${API_BASE_URL}/api/turnos/editar/${editingTurno.id}`
                 : `${API_BASE_URL}/api/turnos/crear`;
 
             const method = editingTurno ? 'put' : 'post';
 
-            const response = await axios[method](endpoint, turnoData, {
+            await axios[method](endpoint, turnoData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
 
-            console.log('Respuesta del servidor:', response.data);
-
             toast.success(editingTurno ? "Turno editado exitosamente." : "Turno reservado exitosamente.");
             navigate("/turnos");
         } catch (error) {
             console.error("Error al reservar/editar el turno:", error);
-            console.error("Token usado:", token ? "Presente" : "Ausente");
 
-            if (error.response?.status === 403) {
-                toast.error("Tu sesión ha expirado o no tienes permisos. Redirigiendo al login...");
+            if (error.response?.status === 403 || error.response?.status === 401) {
+                toast.error("Tu sesión ha expirado. Redirigiendo al login...");
                 localStorage.removeItem("authToken");
-                setTimeout(() => {
-                    navigate("/login");
-                }, 2000);
-            } else if (error.response?.status === 401) {
-                toast.error("Token inválido. Redirigiendo al login...");
-                localStorage.removeItem("authToken");
-                setTimeout(() => {
-                    navigate("/login");
-                }, 2000);
+                setTimeout(() => navigate("/login"), 2000);
             } else {
                 const errorMessage = error.response?.data?.message ||
                                    error.response?.data?.error ||
@@ -403,7 +316,8 @@ const Reserva = () => {
         }
     };
 
-    const { minTime, maxTime } = getTimeConstraints();
+    const openModal = () => setModalIsOpen(true);
+    const closeModal = () => setModalIsOpen(false);
 
     return (
         <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
@@ -473,7 +387,7 @@ const Reserva = () => {
                         marginBottom: '0.5rem',
                         fontWeight: '500'
                     }}>
-                        Selecciona fecha y hora:
+                        Selecciona fecha y hora (mínimo 48hs de anticipación):
                     </label>
                     <DatePicker
                         selected={selectedDateTime}
@@ -481,23 +395,20 @@ const Reserva = () => {
                         showTimeSelect
                         timeFormat="HH:mm"
                         timeIntervals={30}
-                        minDate={new Date()}
-                        minTime={minTime}
-                        maxTime={maxTime}
+                        minDate={getMinDate()}
                         filterTime={filterPassedTime}
                         filterDate={isWeekday}
-                        dateFormat="dd/MM/yyyy h:mm aa"
+                        dateFormat="dd/MM/yyyy HH:mm"
                         placeholderText="Selecciona fecha y hora"
                         className="datetime-picker"
                         required
                     />
+                    <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem' }}>
+                        Horarios de atención: Lunes a Viernes 9:00-20:30 | Sábados 10:00-19:00
+                    </div>
                 </div>
 
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                    marginTop: '1rem'
-                }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
                     <button
                         type="submit"
                         style={{
@@ -559,11 +470,7 @@ const Reserva = () => {
                     <>
                         {allCategories.map((categoria) => {
                             const serviciosDeCategoria = getServicesByCategory(categoria);
-
-                            // Solo mostrar la categoría si tiene servicios
-                            if (serviciosDeCategoria.length === 0) {
-                                return null;
-                            }
+                            if (serviciosDeCategoria.length === 0) return null;
 
                             return (
                                 <div key={categoria._id || categoria.id} style={{ marginBottom: '1.5rem' }}>
@@ -615,11 +522,7 @@ const Reserva = () => {
                                                             )}
                                                         </div>
                                                         {yaSeleccionado && (
-                                                            <div style={{
-                                                                color: '#28a745',
-                                                                fontSize: '1.2rem',
-                                                                marginLeft: '0.5rem'
-                                                            }}>
+                                                            <div style={{ color: '#28a745', fontSize: '1.2rem', marginLeft: '0.5rem' }}>
                                                                 ✓
                                                             </div>
                                                         )}
@@ -642,7 +545,6 @@ const Reserva = () => {
                             );
                         })}
 
-                        {/* Información de servicios seleccionados */}
                         {services.length > 0 && (
                             <div style={{
                                 marginTop: '1.5rem',
@@ -661,33 +563,6 @@ const Reserva = () => {
                             </div>
                         )}
                     </>
-                )}
-
-                {/* Debug info mejorada */}
-                {process.env.NODE_ENV === 'development' && (
-                    <div style={{
-                        marginTop: '2rem',
-                        padding: '1rem',
-                        backgroundColor: '#fff3cd',
-                        borderRadius: '4px',
-                        border: '1px solid #ffeaa7'
-                    }}>
-                        <h5 style={{ color: '#856404', marginBottom: '0.5rem' }}>Debug Info:</h5>
-                        <div style={{ fontSize: '0.8rem', color: '#856404' }}>
-                            <p>Total categorías: {allCategories.length}</p>
-                            <p>Total servicios: {allServices.length}</p>
-                            <p>Servicios seleccionados: {services.length}</p>
-                            <p>Estructura de primer servicio: {allServices.length > 0 ? JSON.stringify(Object.keys(allServices[0])) : 'N/A'}</p>
-                            {allCategories.map(cat => {
-                                const serviciosCount = getServicesByCategory(cat).length;
-                                return (
-                                    <p key={cat._id || cat.id}>
-                                        {cat.nombre}: {serviciosCount} servicio{serviciosCount !== 1 ? 's' : ''}
-                                    </p>
-                                );
-                            })}
-                        </div>
-                    </div>
                 )}
             </Modal>
 
