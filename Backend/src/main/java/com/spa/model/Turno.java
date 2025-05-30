@@ -40,6 +40,12 @@ public class Turno {
     @JsonIgnoreProperties({"telefono", "contrasena", "hibernateLazyInitializer", "handler"})
     private Set<Cliente> profesionales = new HashSet<>();
 
+    @Column(nullable = false)
+    private String metodoPago; // "tarjeta", "efectivo", etc.
+
+    @Column(nullable = false)
+    private boolean pagado;
+
     // Getters y Setters
 
     public Long getId() { return id; }
@@ -57,4 +63,9 @@ public class Turno {
     public Set<Cliente> getProfesionales() { return profesionales; }
     public void setProfesionales(Set<Cliente> profesionales) { this.profesionales = profesionales; }
 
+    public String getMetodoPago() { return metodoPago; }
+    public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
+
+    public boolean isPagado() { return pagado; }
+    public void setPagado(boolean pagado) { this.pagado = pagado; }
 }

@@ -60,6 +60,8 @@ public class TurnoService {
         turno.setFechaHora(turnoRequest.getFechaHora());
         turno.setServicios(new HashSet<>(servicios));
         turno.setProfesionales(profesionalesAsignados);
+        turno.setPagado(turnoRequest.isPagado());
+        turno.setMetodoPago(turnoRequest.getMetodoPago());
 
         return turnoRepository.save(turno);
     }

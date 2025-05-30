@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import DatePicker from 'react-datepicker';
 import Modal from 'react-modal';
 import 'react-datepicker/dist/react-datepicker.css';
+import MetodoPago from '../components/MetodoPago';
 
 Modal.setAppElement('#root');
 
@@ -20,6 +21,9 @@ const Reserva = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [allServices, setAllServices] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
+    const [metodoPago, setMetodoPago] = useState('');
+    const [pagarAhora, setPagarAhora] = useState(false);
+    const [cardDetails, setCardDetails] = useState({ numero: '', vencimiento: '', cvv: '' });
     const [loadingServices, setLoadingServices] = useState(false);
 
     // Función para obtener la fecha/hora actual en zona horaria Argentina (UTC-3)
@@ -43,6 +47,54 @@ const Reserva = () => {
         const minDate = new Date(now.getTime() + (48 * 60 * 60 * 1000));
         return minDate;
     };
+
+    const validarDatosTarjeta = () => {
+        if (metodoPago !== 'tarjeta' || !pagarAhora) return true;
+        const { numero, vencimiento, cvv } = cardDetails;
+
+        if (!numero.trim() || !vencimiento.trim() || !cvv.trim()) {
+            toast.error("Por favor completá todos los campos de la tarjeta.");
+            return false;
+        }
+
+        if (!/^[0-9]{16}$/.test(numero)) {
+            toast.error("El número de tarjeta debe tener 16 dígitos.");
+            return false;
+        }
+
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(vencimiento)) {
+            toast.error("El vencimiento debe tener el formato MM/AA.");
+            return false;
+        }
+
+        if (!/^[0-9]{3}$/.test(cvv)) {
+            toast.error("El CVV debe tener 3 dígitos.");
+            return false;
+        }
+
+        return true;
+    };
+
+    const calcularPrecioTotal = () => services.reduce((total, s) => total + s.precio, 0);
+
+    const aplicarDescuento = (total) => {
+        const ahora = new Date();
+        if (!selectedDateTime) return { aplicado: false, totalConDescuento: total };
+        const diferenciaHoras = (selectedDateTime - ahora) / (1000 * 60 * 60);
+        if (pagarAhora && metodoPago === 'tarjeta' && diferenciaHoras >= 48) {
+            return {
+                aplicado: true,
+                totalConDescuento: total * 0.85
+            };
+        }
+        return {
+            aplicado: false,
+            totalConDescuento: total
+        };
+    };
+
+    const total = calcularPrecioTotal();
+    const { aplicado, totalConDescuento } = aplicarDescuento(total);
 
     useEffect(() => {
         if (editingTurno) {
@@ -233,6 +285,30 @@ const Reserva = () => {
         return false;
     };
 
+    const handleReserva = async (e) => {
+        e.preventDefault();
+        if (!validarDatosTarjeta()) return;
+
+        try {
+            const token = localStorage.getItem("authToken");
+            await axios.post(`${API_BASE_URL}/api/turnos/crear`, {
+                fechaHora: selectedDateTime,
+                metodoPago,
+                pagado: pagarAhora,
+                servicioIds: services.map(s => s.id)
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            toast.success("Turno reservado correctamente");
+            navigate("/turnos");
+        } catch {
+            toast.error("Error al reservar turno");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -406,8 +482,42 @@ const Reserva = () => {
                     <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.5rem' }}>
                         Horarios de atención: Lunes a Viernes 9:00-20:30 | Sábados 10:00-19:00
                     </div>
+                    <div style={{ marginBottom: '1rem' }}>
+                        <h3>Resumen de pago</h3>
+                        <p>Total sin descuento: ${total.toFixed(2)}</p>
+                        {aplicado && (
+                            <p style={{ color: 'green' }}>Descuento aplicado: 15% por pago anticipado</p>
+                        )}
+                        <p><strong>Total a pagar: ${totalConDescuento.toFixed(2)}</strong></p>
+                    </div>
                 </div>
-
+                    <MetodoPago
+                        metodoPago={metodoPago}
+                        setMetodoPago={setMetodoPago}
+                        pagarAhora={pagarAhora}
+                        setPagarAhora={setPagarAhora}
+                        cardDetails={cardDetails}
+                        setCardDetails={setCardDetails}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                        <button
+                            type="submit"
+                            style={{
+                                backgroundColor: 'var(--rosa-medio)',
+                                color: 'white',
+                                padding: '0.8rem 2rem',
+                                border: 'none',
+                                borderRadius: '25px',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                fontWeight: '500',
+                                transition: 'all 0.3s ease'
+                            }}
+                            onClick={handleReserva}
+                        >
+                            {editingTurno ? 'Guardar Cambios' : 'Confirmar Reserva'}
+                        </button>
+                    </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
                     <button
                         type="submit"
@@ -565,7 +675,6 @@ const Reserva = () => {
                     </>
                 )}
             </Modal>
-
             <style>
                 {`
                     .datetime-picker {
