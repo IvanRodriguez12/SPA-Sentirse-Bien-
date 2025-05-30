@@ -1,5 +1,24 @@
 package com.spa.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.spa.util.AppConfig;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.print.PrinterJob;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -8,38 +27,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.spa.util.AppConfig;
-
-import javafx.fxml.FXML;
-import javafx.print.PrinterJob;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
-
 public class ProfesionalDashboardController {
 
     @FXML private Label labelProfesional;
     @FXML private ListView<String> turnosList;
 
     private String authToken;
-    private String nombreProfesional;
 
     public void setAuthToken(String token) {
         this.authToken = token;
-        cargarTurnos("ambos"); // por defecto al entrar carga hoy y mañana
+        cargarTurnos("ambos");
     }
 
     public void setNombreProfesional(String nombre) {
-        this.nombreProfesional = nombre;
-        labelProfesional.setText("Bienvenido, " + nombre);
+        this.labelProfesional.setText("Bienvenido, " + nombre);
     }
 
     private void cargarTurnos(String filtroFecha) {
@@ -50,6 +51,7 @@ public class ProfesionalDashboardController {
 
             ClassicHttpResponse response = (ClassicHttpResponse) client.execute(request);
             int statusCode = response.getCode();
+
             if (statusCode == 200) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
                 Type listType = new TypeToken<List<TurnoDTO>>() {}.getType();
@@ -67,25 +69,22 @@ public class ProfesionalDashboardController {
 
                 turnosList.getItems().setAll(formateados);
             } else {
-                turnosList.getItems().add("Error al cargar turnos (" + statusCode + ")");
+                turnosList.getItems().add("Error al cargar turnos (código " + statusCode + ")");
             }
         } catch (Exception e) {
             turnosList.getItems().add("Error al conectar con el servidor: " + e.getMessage());
         }
     }
 
-    @FXML
-    private void handleVerTurnosHoy() {
+    @FXML private void handleVerTurnosHoy() {
         cargarTurnos("hoy");
     }
 
-    @FXML
-    private void handleVerTurnosManana() {
+    @FXML private void handleVerTurnosManana() {
         cargarTurnos("mañana");
     }
 
-    @FXML
-    private void handleVerTurnosHoyYManana() {
+    @FXML private void handleVerTurnosHoyYManana() {
         cargarTurnos("ambos");
     }
 
@@ -105,7 +104,23 @@ public class ProfesionalDashboardController {
         }
     }
 
-    // Clases auxiliares para deserializar JSON correctamente
+    @FXML
+    private void handleLogout() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/spa/view/LoginView.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) turnosList.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Iniciar sesión");
+            stage.show();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No se pudo cerrar sesión");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+    }
 
     private static class TurnoDTO {
         String fechaHora;

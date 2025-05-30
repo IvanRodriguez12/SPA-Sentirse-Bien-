@@ -4,6 +4,8 @@
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.spa.controller.AdminDashboardController" stylesheets="@../css/spa-style.css">
     <children>
+        <Button layoutX="400" layoutY="20" text="Cerrar sesión" onAction="#handleLogout"/>
+
         <Label layoutX="20" layoutY="20" text="Bienvenida Dra. Felicidad" />
 
         <ListView fx:id="turnosListAdmin" layoutX="20" layoutY="60" prefWidth="500" prefHeight="260" />

@@ -54,7 +54,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> loginProfesional(@RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
 
-        if (response.getToken() == null || response.getProfesion() == null) {
+        if (response.getToken() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
