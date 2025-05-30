@@ -19,6 +19,7 @@ const Reserva = () => {
     const [selectedDateTime, setSelectedDateTime] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [allServices, setAllServices] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
     const [loadingServices, setLoadingServices] = useState(false);
 
     useEffect(() => {
@@ -30,23 +31,35 @@ const Reserva = () => {
     }, [editingTurno]);
 
     useEffect(() => {
-        const fetchServicios = async () => {
+        const fetchServiciosYCategorias = async () => {
             setLoadingServices(true);
             try {
                 const token = localStorage.getItem("authToken");
                 console.log('Intentando cargar servicios desde:', `${API_URL}/servicios/listar`);
                 console.log('Token disponible:', !!token);
 
-                const response = await axios.get(`${API_URL}/servicios/listar`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                console.log('Servicios obtenidos:', response.data);
-                setAllServices(response.data);
+                const [serviciosRes, categoriasRes] = await Promise.all([
+                    axios.get(`${API_URL}/servicios/listar`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    }),
+                    axios.get(`${API_URL}/categorias/listar`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    })
+                ]);
+
+                console.log('Servicios obtenidos:', serviciosRes.data);
+                console.log('Categorías obtenidas:', categoriasRes.data);
+
+                setAllServices(serviciosRes.data);
+                setAllCategories(categoriasRes.data);
             } catch (error) {
-                console.error("Error cargando servicios:", error);
+                console.error("Error cargando servicios o categorías:", error);
                 console.error("Detalles del error:", error.response?.data || error.message);
                 console.error("Status del error:", error.response?.status);
 
@@ -63,7 +76,8 @@ const Reserva = () => {
                 setLoadingServices(false);
             }
         };
-        fetchServicios();
+
+        fetchServiciosYCategorias();
     }, [navigate]);
 
     const openModal = () => {
@@ -74,16 +88,17 @@ const Reserva = () => {
     const closeModal = () => setModalIsOpen(false);
 
     const addService = (servicio) => {
-        if (services.some(s => s.id === servicio.id)) {
+        if (services.some(s => s._id === servicio._id)) {
             toast("Este servicio ya fue agregado.");
             return;
         }
         setServices([...services, servicio]);
         toast.success("Servicio agregado");
+        closeModal();
     };
 
     const removeService = (id) => {
-        setServices(services.filter(s => s.id !== id));
+        setServices(services.filter(s => s._id !== id));
     };
 
     // Función para calcular los límites según el día y duración del servicio
@@ -177,7 +192,7 @@ const Reserva = () => {
     };
 
     const getTimeConstraints = () => {
-       if (!selectedDateTime || !services.length) return { minTime: null, maxTime: null };
+        if (!selectedDateTime || !services.length) return { minTime: null, maxTime: null };
 
         const timeLimits = getTimeLimits();
         if (!timeLimits) return { minTime: null, maxTime: null };
@@ -235,19 +250,25 @@ const Reserva = () => {
 
             const turnoData = {
                 fechaHora: fechaParaBackend.toISOString(),
-                servicioIds: services.map(servicio => servicio.id)
+                servicioIds: services.map(servicio => servicio._id)
             };
             console.log("Turno data:", turnoData);
             console.log("Token:", token);
 
-            await axios.post(`${API_URL}/turnos/crear`, turnoData, {
+            const endpoint = editingTurno
+                ? `${API_URL}/turnos/editar/${editingTurno.id}`
+                : `${API_URL}/turnos/crear`;
+
+            const method = editingTurno ? 'put' : 'post';
+
+            await axios[method](endpoint, turnoData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
-            toast.success("Turno reservado exitosamente.");
 
+            toast.success(editingTurno ? "Turno editado exitosamente." : "Turno reservado exitosamente.");
             navigate("/turnos");
         } catch (error) {
             console.error("Error al reservar/editar el turno:", error.response?.data || error.message);
@@ -279,36 +300,35 @@ const Reserva = () => {
                     <p><strong>Duración total:</strong> {services.reduce((total, servicio) => total + servicio.duracion, 0)} minutos</p>
                     <ul>
                         {services.map(servicio => (
-                            <li key={servicio.id}>
-                                {servicio.nombre} <button onClick={() => removeService(servicio.id)}>❌</button>
+                            <li key={servicio._id}>
+                                {servicio.nombre}
+                                <button
+                                    onClick={() => removeService(servicio._id)}
+                                    style={{ marginLeft: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}
+                                >
+                                    ❌
+                                </button>
                             </li>
                         ))}
                     </ul>
                 </div>
             )}
 
-            <button onClick={openModal} style={{ marginBottom: '1rem' }}>
+            <button
+                onClick={openModal}
+                style={{
+                    marginBottom: '1rem',
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                }}
+                disabled={loadingServices}
+            >
                 {loadingServices ? 'Cargando servicios...' : 'Añadir Servicio'}
             </button>
-
-            <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Seleccionar Servicios">
-                <h3>Selecciona un servicio</h3>
-                {loadingServices ? (
-                    <p>Cargando servicios...</p>
-                ) : allServices.length === 0 ? (
-                    <p>No hay servicios disponibles o no se pudieron cargar.</p>
-                ) : (
-                    <ul>
-                        {allServices.map(servicio => (
-                            <li key={servicio.id}>
-                                {servicio.nombre} - ${servicio.precio} - {servicio.duracion} min
-                                <button onClick={() => addService(servicio)} style={{ marginLeft: '1rem' }}>Agregar</button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-                <button onClick={closeModal}>Cerrar</button>
-            </Modal>
 
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: '1.5rem' }}>
@@ -353,17 +373,80 @@ const Reserva = () => {
                             cursor: 'pointer',
                             fontSize: '1rem',
                             fontWeight: '500',
-                            transition: 'all 0.3s ease',
-                            ':hover': {
-                                transform: 'scale(1.03)',
-                                backgroundColor: 'var(--rosa-oscuro)'
-                            }
+                            transition: 'all 0.3s ease'
                         }}
                     >
                         {editingTurno ? 'Guardar Cambios' : 'Confirmar Reserva'}
                     </button>
                 </div>
             </form>
+
+            {/* Modal para seleccionar servicios */}
+            <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                contentLabel="Seleccionar Servicios"
+                style={{
+                    content: {
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        marginRight: '-50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '500px',
+                        width: '90%',
+                        maxHeight: '80vh',
+                        overflow: 'auto'
+                    }
+                }}
+            >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3>Seleccionar Servicios</h3>
+                    <button
+                        onClick={closeModal}
+                        style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
+                    >
+                        ×
+                    </button>
+                </div>
+
+                {loadingServices ? (
+                    <p>Cargando servicios...</p>
+                ) : (
+                    allCategories.map((categoria) => (
+                        <div key={categoria._id} style={{ marginBottom: '1.5rem' }}>
+                            <h4 style={{ marginBottom: '0.5rem', color: '#333' }}>{categoria.nombre}</h4>
+                            <ul style={{ listStyle: 'none', padding: 0 }}>
+                                {allServices
+                                    .filter(servicio => servicio.categoria === categoria._id)
+                                    .map(servicio => (
+                                        <li key={servicio._id} style={{ marginBottom: '0.5rem' }}>
+                                            <button
+                                                onClick={() => addService(servicio)}
+                                                style={{
+                                                    width: '100%',
+                                                    textAlign: 'left',
+                                                    padding: '0.5rem',
+                                                    border: '1px solid #ddd',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: services.some(s => s._id === servicio._id) ? '#e6f3ff' : 'white',
+                                                    cursor: 'pointer'
+                                                }}
+                                                disabled={services.some(s => s._id === servicio._id)}
+                                            >
+                                                <strong>{servicio.nombre}</strong><br />
+                                                ${servicio.precio} - {servicio.duracion} min
+                                                {servicio.descripcion && <br />}
+                                                <small>{servicio.descripcion}</small>
+                                            </button>
+                                        </li>
+                                    ))}
+                            </ul>
+                        </div>
+                    ))
+                )}
+            </Modal>
 
             <style>
                 {`
