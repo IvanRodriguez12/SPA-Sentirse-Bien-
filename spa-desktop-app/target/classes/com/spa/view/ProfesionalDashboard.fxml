@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.spa.controller.ProfesionalDashboardController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.spa.controller.ProfesionalDashboardController" stylesheets="@../css/spa-style.css">
     <children>
         <Label fx:id="labelProfesional" layoutX="20" layoutY="20" text="Panel del Profesional" />
 

@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.spa.controller.AdminDashboardController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.spa.controller.AdminDashboardController" stylesheets="@../css/spa-style.css">
     <children>
         <Label layoutX="20" layoutY="20" text="Bienvenida Dra. Felicidad" />
 
