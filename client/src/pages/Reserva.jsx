@@ -68,6 +68,14 @@ const Reserva = () => {
                 console.log('Servicios procesados:', serviciosData);
                 console.log('Categorías procesadas:', categoriasData);
 
+                // Mostrar estructura detallada de los primeros elementos para debug
+                if (serviciosData.length > 0) {
+                    console.log('Estructura del primer servicio:', serviciosData[0]);
+                }
+                if (categoriasData.length > 0) {
+                    console.log('Estructura de la primera categoría:', categoriasData[0]);
+                }
+
                 setAllServices(serviciosData);
                 setAllCategories(categoriasData);
             } catch (error) {
@@ -123,28 +131,41 @@ const Reserva = () => {
     };
 
     // Función mejorada para obtener servicios por categoría
-    const getServicesByCategory = (categoriaId) => {
+    const getServicesByCategory = (categoria) => {
         if (!allServices || !Array.isArray(allServices)) {
             console.log('allServices no es un array válido:', allServices);
             return [];
         }
 
+        // Obtener el ID de la categoría
+        const categoriaId = categoria?._id || categoria?.id || categoria;
+
+        console.log(`Buscando servicios para categoría:`, categoria);
+        console.log(`ID de categoría extraído:`, categoriaId);
+
         const serviciosFiltrados = allServices.filter(servicio => {
             if (!servicio) return false;
+
+            console.log(`Analizando servicio ${servicio.nombre}:`, {
+                categoria: servicio.categoria,
+                categoriaId: servicio.categoriaId,
+                category: servicio.category
+            });
 
             // Diferentes formas de comparar la categoría según la estructura de datos
             const categoriaDelServicio = servicio.categoria || servicio.categoriaId || servicio.category;
 
             // Si la categoría es un objeto, comparar por _id
             if (typeof categoriaDelServicio === 'object' && categoriaDelServicio !== null) {
-                return categoriaDelServicio._id === categoriaId || categoriaDelServicio.id === categoriaId;
+                const serviceCatId = categoriaDelServicio._id || categoriaDelServicio.id;
+                return serviceCatId === categoriaId;
             }
 
             // Si la categoría es un string, comparar directamente
             return categoriaDelServicio === categoriaId;
         });
 
-        console.log(`Servicios para categoría ${categoriaId}:`, serviciosFiltrados);
+        console.log(`Servicios filtrados para categoría ${categoriaId}:`, serviciosFiltrados);
         return serviciosFiltrados;
     };
 
@@ -489,7 +510,7 @@ const Reserva = () => {
                 ) : (
                     <>
                         {allCategories.map((categoria) => {
-                            const serviciosDeCategoria = getServicesByCategory(categoria._id);
+                            const serviciosDeCategoria = getServicesByCategory(categoria);
 
                             // Solo mostrar la categoría si tiene servicios
                             if (serviciosDeCategoria.length === 0) {
@@ -497,7 +518,7 @@ const Reserva = () => {
                             }
 
                             return (
-                                <div key={categoria._id} style={{ marginBottom: '1.5rem' }}>
+                                <div key={categoria._id || categoria.id} style={{ marginBottom: '1.5rem' }}>
                                     <h4 style={{
                                         marginBottom: '0.5rem',
                                         color: '#333',
@@ -608,9 +629,9 @@ const Reserva = () => {
                             <p>Total servicios: {allServices.length}</p>
                             <p>Servicios seleccionados: {services.length}</p>
                             {allCategories.map(cat => {
-                                const serviciosCount = getServicesByCategory(cat._id).length;
+                                const serviciosCount = getServicesByCategory(cat).length;
                                 return (
-                                    <p key={cat._id}>
+                                    <p key={cat._id || cat.id}>
                                         {cat.nombre}: {serviciosCount} servicio{serviciosCount !== 1 ? 's' : ''}
                                     </p>
                                 );
