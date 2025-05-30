@@ -11,6 +11,36 @@ const Turnos = () => {
     const [turnos, setTurnos] = useState([]);
     const [showContactModal, setShowContactModal] = useState(false);
 
+    // Función para convertir UTC a hora local de Argentina
+    const convertirAHoraArgentina = (fechaUTC) => {
+        const fecha = new Date(fechaUTC);
+        // Convertir a zona horaria de Argentina (UTC-3)
+        const fechaArgentina = new Date(fecha.getTime() - (3 * 60 * 60 * 1000));
+        return fechaArgentina;
+    };
+
+    // Función para formatear fecha en zona horaria argentina
+    const formatearFechaArgentina = (fechaUTC) => {
+        const fecha = convertirAHoraArgentina(fechaUTC);
+        return fecha.toLocaleDateString('es-AR', {
+            timeZone: 'America/Argentina/Buenos_Aires',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+    };
+
+    // Función para formatear hora en zona horaria argentina
+    const formatearHoraArgentina = (fechaUTC) => {
+        const fecha = convertirAHoraArgentina(fechaUTC);
+        return fecha.toLocaleTimeString('es-AR', {
+            timeZone: 'America/Argentina/Buenos_Aires',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    };
+
     useEffect(() => {
         const fetchTurnos = async () => {
             const token = localStorage.getItem("authToken");
@@ -131,9 +161,9 @@ const Turnos = () => {
                         >
                             <div>
                                 <p><strong>Servicios:</strong> {turno.servicios.map(servicio => servicio.nombre).join(", ")}</p>
-                                <p><strong>Fecha:</strong> {fechaInicio.toLocaleDateString()}</p>
-                                <p><strong>Hora inicio:</strong> {fechaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                <p><strong>Hora fin:</strong> {fechaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                <p><strong>Fecha:</strong> {formatearFechaArgentina(turno.fechaHora)}</p>
+                                <p><strong>Hora inicio:</strong> {formatearHoraArgentina(turno.fechaHora)}</p>
+                                <p><strong>Hora fin:</strong> {formatearHoraArgentina(fechaFin)}</p>
                                 <p><strong>Duración total:</strong> {duracionTotal} minutos</p>
                             </div>
                         </li>
