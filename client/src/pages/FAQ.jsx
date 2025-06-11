@@ -8,7 +8,7 @@ import {
   FaChevronDown,
   FaChevronUp
 } from 'react-icons/fa';
-import styles from "./FAQ.module.css";
+import styles from "../styles/FAQ.module.css";
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);

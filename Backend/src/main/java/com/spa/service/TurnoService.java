@@ -7,6 +7,8 @@ import com.spa.model.Turno;
 import com.spa.repository.ClienteRepository;
 import com.spa.repository.ServicioRepository;
 import com.spa.repository.TurnoRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.spa.dto.ReporteServicioDTO;
+import com.spa.dto.ReporteProfesionalDTO;
 
 @Service
 public class TurnoService {
@@ -24,6 +28,8 @@ public class TurnoService {
     private final TurnoRepository turnoRepository;
     private final ClienteRepository clienteRepository;
     private final ServicioRepository servicioRepository;
+    @Autowired
+    private EmailService emailService;
 
     // Zona horaria de Argentina
     private static final ZoneId ZONA_ARGENTINA = ZoneId.of("America/Argentina/Buenos_Aires");
@@ -79,7 +85,11 @@ public class TurnoService {
         turno.setPagado(turnoRequest.isPagado());
         turno.setMetodoPago(turnoRequest.getMetodoPago());
 
-        return turnoRepository.save(turno);
+        Turno turnoGuardado = turnoRepository.save(turno);
+
+        emailService.enviarComprobanteAutomatico(clienteOptional.get(), turnoGuardado, servicios);
+
+        return turnoGuardado;
     }
 
     @Transactional
@@ -202,4 +212,55 @@ public class TurnoService {
             };
         }).collect(Collectors.toList());
     }
+
+    public List<ReporteServicioDTO> calcularTotalesPorServicio(LocalDate desde, LocalDate hasta) {
+        List<Turno> turnos = listarTurnos().stream()
+            .filter(t -> {
+                LocalDate fecha = t.getFechaHora().toLocalDate();
+                return (fecha.isEqual(desde) || fecha.isAfter(desde)) &&
+                    (fecha.isEqual(hasta) || fecha.isBefore(hasta));
+            })
+            .collect(Collectors.toList());
+
+        Map<String, Double> totales = new HashMap<>();
+
+        for (Turno turno : turnos) {
+            for (Servicio servicio : turno.getServicios()) {
+                totales.put(servicio.getNombre(),
+                    totales.getOrDefault(servicio.getNombre(), 0.0) + servicio.getPrecio());
+            }
+        }
+
+        return totales.entrySet().stream()
+            .map(e -> new ReporteServicioDTO(e.getKey(), e.getValue()))
+            .collect(Collectors.toList());
+    }
+
+    public List<ReporteProfesionalDTO> calcularTotalesPorProfesional(LocalDate desde, LocalDate hasta) {
+        List<Turno> turnos = listarTurnos().stream()
+            .filter(t -> {
+                LocalDate fecha = t.getFechaHora().toLocalDate();
+                return (fecha.isEqual(desde) || fecha.isAfter(desde)) &&
+                    (fecha.isEqual(hasta) || fecha.isBefore(hasta));
+            })
+            .collect(Collectors.toList());
+
+        Map<String, Double> totales = new HashMap<>();
+
+        for (Turno turno : turnos) {
+            double subtotal = turno.getServicios().stream()
+                .mapToDouble(Servicio::getPrecio)
+                .sum();
+
+            for (Cliente prof : turno.getProfesionales()) {
+                totales.put(prof.getNombre(),
+                    totales.getOrDefault(prof.getNombre(), 0.0) + subtotal);
+            }
+        }
+
+        return totales.entrySet().stream()
+            .map(e -> new ReporteProfesionalDTO(e.getKey(), e.getValue()))
+            .collect(Collectors.toList());
+    }
+
 }

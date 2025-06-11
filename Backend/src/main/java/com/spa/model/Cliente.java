@@ -26,6 +26,11 @@ public class Cliente {
     @Column(nullable = true)
     private String profesion;
 
+    @Column(nullable = false)
+    private boolean emailVerificado = false;
+
+    private String verificacionToken;
+
     // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -42,7 +47,13 @@ public class Cliente {
     public String getContrasena() { return contrasena; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
-    public String getProfesion() {return profesion;}
-    public void setProfesion(String profesion) {this.profesion = profesion;}
+    public String getProfesion() { return profesion;}
+    public void setProfesion(String profesion) { this.profesion = profesion; }
+
+    public boolean isEmailVerificado() { return emailVerificado; }
+    public void setEmailVerificado(boolean emailVerificado) { this.emailVerificado = emailVerificado; }
+
+    public String getVerificacionToken() { return verificacionToken; }
+    public void setVerificacionToken(String verificacionToken) { this.verificacionToken = verificacionToken; }
 }
 

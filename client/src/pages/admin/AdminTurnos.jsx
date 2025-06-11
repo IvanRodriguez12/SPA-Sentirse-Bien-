@@ -320,6 +320,9 @@ const AdminTurnos = () => {
                 })}
               </tbody>
             </table>
+
+      <h3 style={{ marginTop: '2rem' }}>Crear nuevo turno</h3>
+      <CrearTurno />
           </div>
         )}
       </div>

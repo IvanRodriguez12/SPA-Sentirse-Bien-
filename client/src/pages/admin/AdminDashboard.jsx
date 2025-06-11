@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import '../../styles/admin.css';
 import AdminHeader from './AdminHeader';
+import ReportesPagos from '../../components/ReportesPagos';
 
 const AdminDashboard = () => {
   const { logout } = useAdminAuth();

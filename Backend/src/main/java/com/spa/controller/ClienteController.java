@@ -6,15 +6,20 @@ import com.spa.dto.LoginRequest;
 import com.spa.dto.RegisterRequest;
 import com.spa.model.Administrador;
 import com.spa.model.Cliente;
+import com.spa.repository.ClienteRepository;
 import com.spa.service.AdministradorService;
 import com.spa.service.AuthService;
 import com.spa.service.ClienteService;
+import com.spa.service.EmailService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -34,6 +39,12 @@ public class ClienteController {
         this.administradorService = administradorService;
         this.passwordEncoder = passwordEncoder;
     }
+
+    @Autowired
+    private ClienteRepository clienteRepo;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/registro")
     public ResponseEntity<AuthResponse> registrar(@RequestBody RegisterRequest request) {
@@ -113,5 +124,36 @@ public class ClienteController {
             return ResponseEntity.ok(cliente);
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/enviar-verificacion/{id}")
+    public ResponseEntity<?> enviarVerificacion(@PathVariable Long id) {
+        Optional<Cliente> opt = clienteRepo.findById(id);
+        if (!opt.isPresent()) return ResponseEntity.notFound().build();
+
+        Cliente cliente = opt.get();
+        String token = UUID.randomUUID().toString();
+
+        cliente.setVerificacionToken(token);
+        clienteRepo.save(cliente);
+
+        emailService.enviarVerificacionEmail(cliente.getEmail(), cliente.getNombre(), token);
+
+        return ResponseEntity.ok("Correo de verificación enviado.");
+    }
+
+    @GetMapping("/verificar-email")
+    public ResponseEntity<?> verificarEmail(@RequestParam("token") String token) {
+        Optional<Cliente> opt = clienteRepo.findByVerificacionToken(token);
+        if (!opt.isPresent()) {
+            return ResponseEntity.status(404).body("Token inválido o expirado.");
+        }
+
+        Cliente cliente = opt.get();
+        cliente.setEmailVerificado(true);
+        cliente.setVerificacionToken(null); // Limpia el token
+        clienteRepo.save(cliente);
+
+        return ResponseEntity.ok("Correo verificado correctamente.");
     }
 }

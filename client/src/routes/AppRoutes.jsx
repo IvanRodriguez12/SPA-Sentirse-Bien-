@@ -19,6 +19,9 @@ const AdminTurnos = lazy(() => import('../pages/admin/AdminTurnos'));
 const AdminCuentas = lazy(() => import('../pages/admin/AdminCuentas'));
 const AdminRegistrar = lazy(() => import('../pages/admin/AdminRegistrar'));
 const ContactoModal = lazy(() => import('../components/ContactoModal'));
+const ProfesionalDashboard = lazy(() => import('../pages/admin/ProfesionalDashboard'));
+const CrearAdmin = lazy(() => import('../pages/admin/CrearAdmin'));
+const VerificarEmail = lazy(() => import('../pages/VerificarEmail.jsx'));
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -39,6 +42,7 @@ const AppRoutes = () => {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/sobre-nosotros" element={<SobreNosotros />} />
           <Route path="/SobreNosotros" element={<Navigate to="/sobre-nosotros" replace />} />
+          <Route path="/verificar-email" element={<VerificarEmail />} />
         </Route>
 
         <Route path="/admin">
@@ -48,6 +52,8 @@ const AppRoutes = () => {
           <Route path="turnos" element={<AdminTurnos />} />
           <Route path="cuentas" element={<AdminCuentas />} />
           <Route path="registrar" element={<AdminRegistrar />} />
+          <Route path="crear-admin" element={<CrearAdmin />} />
+          <Route path="profesional/dashboard" element={<ProfesionalDashboard />} />
         </Route>
 
         {/* Redirección para rutas no reconocidas */}

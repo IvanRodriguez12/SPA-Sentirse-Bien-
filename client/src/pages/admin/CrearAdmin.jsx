@@ -1,3 +1,4 @@
+
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -7,20 +8,17 @@ import toast from 'react-hot-toast';
 const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 const schema = yup.object().shape({
-  nombre: yup.string().required('El nombre es requerido'),
-  email: yup.string().email('Email inválido').required('El email es requerido'),
-  dni: yup.string().required('El DNI es requerido'),
-  telefono: yup.string().required('El teléfono es requerido'),
-  profesion: yup.string().notRequired(),
-  contrasena: yup.string().min(6, 'Mínimo 6 caracteres').required('La contraseña es requerida'),
+  nombre: yup.string().required('Nombre requerido'),
+  email: yup.string().email('Email inválido').required('Email requerido'),
+  contrasena: yup.string().min(6, 'Mínimo 6 caracteres').required('Contraseña requerida'),
   confirmarContrasena: yup.string()
     .oneOf([yup.ref('contrasena'), null], 'Las contraseñas no coinciden')
-    .required('Confirma tu contraseña'),
+    .required('Confirmar contraseña'),
 });
 
-const AdminRegistrar = () => {
+const CrearAdmin = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
   });
 
   const onSubmit = async (data) => {
@@ -28,25 +26,21 @@ const AdminRegistrar = () => {
       const body = {
         nombre: data.nombre,
         email: data.email,
-        dni: data.dni,
-        telefono: data.telefono,
-        profesion: data.profesion || null,
-        contrasena: data.contrasena,
+        contrasena: data.contrasena
       };
 
-      await axios.post(`${API_URL}/clientes`, body);
-
-      toast.success("Usuario registrado exitosamente");
+      await axios.post(`${API_URL}/administradores`, body);
+      toast.success("Administradora creada correctamente");
       reset();
     } catch (error) {
       console.error(error);
-      toast.error("Error al registrar usuario");
+      toast.error("Error al crear la administradora");
     }
   };
 
   return (
     <div className="form-container">
-      <h2>Registrar nuevo usuario o profesional</h2>
+      <h2>Crear administradora</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
 
         <label>Nombre</label>
@@ -57,18 +51,6 @@ const AdminRegistrar = () => {
         <input {...register("email")} type="email" />
         <p>{errors.email?.message}</p>
 
-        <label>DNI</label>
-        <input {...register("dni")} />
-        <p>{errors.dni?.message}</p>
-
-        <label>Teléfono</label>
-        <input {...register("telefono")} />
-        <p>{errors.telefono?.message}</p>
-
-        <label>Profesión (opcional, si es profesional)</label>
-        <input {...register("profesion")} />
-        <p>{errors.profesion?.message}</p>
-
         <label>Contraseña</label>
         <input {...register("contrasena")} type="password" />
         <p>{errors.contrasena?.message}</p>
@@ -77,10 +59,10 @@ const AdminRegistrar = () => {
         <input {...register("confirmarContrasena")} type="password" />
         <p>{errors.confirmarContrasena?.message}</p>
 
-        <button type="submit" disabled={isSubmitting}>Registrar</button>
+        <button type="submit" disabled={isSubmitting}>Crear administradora</button>
       </form>
     </div>
   );
 };
 
-export default AdminRegistrar;
+export default CrearAdmin;

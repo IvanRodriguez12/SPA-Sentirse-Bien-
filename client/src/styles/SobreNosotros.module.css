@@ -1,0 +1,232 @@
+.container {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+              url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');
+  background-size: cover;
+  background-position: center;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+.heroContent h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroContent h1 svg {
+  margin-right: 15px;
+}
+
+.heroContent p {
+  font-size: 1.5rem;
+}
+
+/* Secciones generales */
+.section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.section h2 {
+  width: 100%;
+  text-align: center;
+  color: #2e7d32;
+  font-size: 2.2rem;
+  margin-bottom: 40px;
+}
+
+.textContent {
+  flex: 1;
+  min-width: 300px;
+}
+
+.imageContent {
+  flex: 1;
+  min-width: 300px;
+}
+
+.imageContent img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.statItem {
+  text-align: center;
+  min-width: 120px;
+}
+
+.statItem span {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2e7d32;
+  display: block;
+}
+
+.statIcon {
+  font-size: 2.5rem;
+  color: #81c784;
+  margin-bottom: 10px;
+}
+
+/* Filosofía */
+.philosophy {
+  background: #f9f9f9;
+}
+
+.philosophyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  width: 100%;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h3 {
+  color: #2e7d32;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.card h3 svg {
+  margin-right: 10px;
+}
+
+/* Equipo */
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  width: 100%;
+}
+
+.teamMember {
+  text-align: center;
+}
+
+.teamMember img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.teamMember h3 {
+  color: #2e7d32;
+  margin-bottom: 5px;
+}
+
+/* CTA */
+.cta {
+  background: #2e7d32;
+  color: white;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.cta h2 {
+  color: white;
+  margin-bottom: 30px;
+}
+
+.button {
+  background: white;
+  color: #2e7d32;
+  padding: 15px 40px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  transition: all 0.3s;
+}
+
+.button:hover {
+  background: #e8f5e9;
+  transform: scale(1.05);
+}
+
+/* Contacto */
+.contactInfo {
+  padding: 60px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.infoGrid div {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.infoGrid p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoGrid svg {
+  margin-right: 10px;
+  color: #2e7d32;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .heroContent h1 {
+    font-size: 2.2rem;
+  }
+
+  .heroContent p {
+    font-size: 1.2rem;
+  }
+
+  .section {
+    padding: 40px 20px;
+  }
+}

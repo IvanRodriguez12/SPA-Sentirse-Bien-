@@ -10,7 +10,7 @@ import {
   FaEnvelope,
   FaClock
 } from 'react-icons/fa';
-import styles from '../components/SobreNosotros/SobreNosotros.module.css';
+import styles from '../styles/SobreNosotros.module.css';
 
 const SobreNosotros = () => {
   return (
