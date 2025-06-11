@@ -16,7 +16,7 @@ const VerificarEmail = () => {
     }
 
     fetch(
-      `https://spa-sentirse-bien-backend.up.railway.app/api/clientes/verificar-email?token=${token}`,
+      `https://spa-sentirse-bien-production.up.railway.app/api/clientes/verificar-email?token=${token}`,
       {
         method: "GET",
       }
