@@ -22,6 +22,9 @@ public class AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private EmailService emailService;
+
     public AuthResponse register(RegisterRequest request) {
         try {
             if (request.getNombre() == null || request.getEmail() == null || 
@@ -42,6 +45,11 @@ public class AuthService {
             System.out.println("Profesión recibida: " + request.getProfesion());
 
             clienteRepository.save(cliente);
+            emailService.enviarVerificacionEmail(
+                cliente.getEmail(),
+                cliente.getNombre(),
+                cliente.getVerificacionToken()
+            );
 
             // Generate token with CLIENT role
             String token = jwtUtil.generarToken(cliente.getEmail(), "CLIENTE");

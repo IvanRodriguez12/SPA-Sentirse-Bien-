@@ -22,7 +22,7 @@ public class EmailService {
         String asunto = "Verificación de correo electrónico";
         String mensaje = "Hola " + nombreCliente + ",\n\n" +
                 "Por favor verifica tu correo haciendo clic en el siguiente enlace:\n\n" +
-                "https://tusitio.com/verificar-email?token=" + token + "\n\n" +
+                "https://spa-sentirse-bien-green.vercel.app/verificar-email?token=" + token + "\n\n" +
                 "Gracias.";
 
         SimpleMailMessage email = new SimpleMailMessage();
