@@ -1,21 +1,27 @@
 package com.spa;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.event.EventListener;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 
 @SpringBootApplication
-public class SpaBackendApplication {
+public class SpaBackendApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(SpaBackendApplication.class, args);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void init() {
-        // Aquí puedes agregar lógica de inicialización liviana
-        // Evitamos usar hilos bloqueantes o sleeps largos innecesarios
-        System.out.println("✅ SpaBackendApplication está listo y levantado correctamente.");
+    @Override
+    public void run(String... args) {
+        String smtpUser = System.getenv("SMTP_USER");
+        String smtpPass = System.getenv("SMTP_PASS");
+
+        if (smtpUser == null || smtpPass == null) {
+            System.out.println("❌ [ERROR] Las variables de entorno SMTP_USER o SMTP_PASS no están disponibles.");
+        } else {
+            System.out.println("✅ [INFO] Variables de entorno cargadas correctamente.");
+            System.out.println("SMTP_USER: " + smtpUser);
+            System.out.println("SMTP_PASS: [OCULTO]");
+        }
     }
 }
