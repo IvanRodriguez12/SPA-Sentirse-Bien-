@@ -29,6 +29,7 @@ public class Cliente {
     @Column(nullable = false)
     private boolean emailVerificado = false;
 
+    @Column(nullable = true, length = 64)
     private String verificacionToken;
 
     // Getters y setters

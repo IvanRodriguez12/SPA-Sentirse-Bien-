@@ -6,6 +6,9 @@ import com.spa.dto.LoginRequest;
 import com.spa.dto.RegisterRequest;
 import com.spa.model.Cliente;
 import com.spa.repository.ClienteRepository;
+
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,7 +47,12 @@ public class AuthService {
             cliente.setProfesion(request.getProfesion());
             System.out.println("Profesión recibida: " + request.getProfesion());
 
+            String vtoken = UUID.randomUUID().toString();
+            cliente.setVerificacionToken(vtoken);
+            cliente.setEmailVerificado(false);
+
             clienteRepository.save(cliente);
+
             emailService.enviarVerificacionEmail(
                 cliente.getEmail(),
                 cliente.getNombre(),
