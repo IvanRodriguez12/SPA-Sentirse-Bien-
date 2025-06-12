@@ -2,13 +2,15 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import AuthContext from '../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext';
+import { AdminAuthContext } from '../../context/AdminAuthContext';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
+  const adminAuthContext = useContext(AdminAuthContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,16 +21,7 @@ const AdminLogin = () => {
     try {
       if (email === "dranafelicidad@gmail.com") {
         // LOGIN ADMIN
-        const response = await axios.post(`${API_URL}/admin/login`, {
-          email,
-          contrasenia: password,
-        });
-
-        const token = response.data.token;
-        localStorage.setItem("token", token);
-        toast.success("Bienvenida Dra. Ana Felicidad");
-        navigate("/admin/dashboard");
-
+        await adminAuthContext.login(email, password);
       } else {
         // LOGIN PROFESIONAL
         const response = await axios.post(`${API_URL}/clientes/login`, {
