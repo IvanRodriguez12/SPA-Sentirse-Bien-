@@ -131,7 +131,6 @@ public class AdminController {
     }
 
     @PostMapping("/registrar")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthResponse> registrarAdmin(@RequestBody RegisterRequest request) {
         AuthResponse response = administradorService.registrarAdmin(request);
         return ResponseEntity.ok(response);
@@ -158,11 +157,5 @@ public class AdminController {
         Administrador admin = administradorService.buscarPorEmail(email)
                 .orElseThrow(() -> new RuntimeException("Admin no encontrado"));
         return ResponseEntity.ok(admin);
-    }
-
-    @GetMapping("/existeAdmin")
-    public ResponseEntity<Boolean> existeAdmin() {
-        boolean existe = !administradorService.listarTodos().isEmpty();
-        return ResponseEntity.ok(existe);
     }
 }

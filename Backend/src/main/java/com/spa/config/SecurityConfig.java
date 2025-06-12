@@ -52,7 +52,6 @@ public class SecurityConfig {
                                 "/api/categorias/**",
                                 "/api/admin/registrar",
                                 "/api/admin/login",
-                                "/api/admin/existeAdmin",
                                 "/api/clientes/verificar-email"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/turnos/listar").hasAnyRole("CLIENTE", "ADMIN")

@@ -114,8 +114,4 @@ public class AdministradorService implements UserDetailsService {
     public void eliminarAdmin(Long id) {
         administradorRepository.deleteById(id);
     }
-
-    public boolean existePorEmail(String email) {
-        return administradorRepository.existsByEmail(email);
-    }
 }
