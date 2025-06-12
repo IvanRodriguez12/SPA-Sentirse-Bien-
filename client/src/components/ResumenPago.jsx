@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/resumenPago.css'; // Asegúrate de tener este archivo CSS
 
 const ResumenPago = ({ total = 0, aplicado = false, totalConDescuento = 0 }) => (
     <div className="resumen-pago">

@@ -1,35 +1,28 @@
 :root {
-  --verde-oscuro: #2a7d62;
   --verde-claro: #a8dbc5;
+  --verde-oscuro: #2a7d62;
   --rosa-acento: #ff9eb0;
 }
 
-/* contenedor principal */
 .reserva-container {
   max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
-  background: #fff;
+  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0 0 0 / 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* botón añadir servicio */
 .btn-agregar {
-  margin: 1rem 0 2rem;
+  margin: 1rem 0;
   padding: 0.6rem 1.4rem;
+  background-color: var(--verde-oscuro);
+  color: white;
   border: none;
   border-radius: 8px;
-  background: var(--verde-oscuro);
-  color: #fff;
-  font-weight: 600;
+  font-weight: bold;
   cursor: pointer;
-  transition: transform 0.15s;
 }
 .btn-agregar:hover {
-  transform: translateY(-2px);
-}
-.btn-agregar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  background-color: var(--verde-claro);
 }

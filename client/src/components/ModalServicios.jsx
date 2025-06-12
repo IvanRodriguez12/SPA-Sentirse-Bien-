@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
+import '../styles/modalServicios.css'; // Asegúrate de tener este archivo CSS
 
 const ModalServicios = ({
     modalIsOpen,
@@ -34,36 +35,23 @@ const ModalServicios = ({
             <>
                 {allCategories.map((categoria) => {
                     const serviciosDeCategoria = getServicesByCategory(categoria);
-                    if (serviciosDeCategoria.length === 0) return null;
-
                     return (
-                        <div key={categoria._id || categoria.id} className="categoria">
-                            <h4>
-                                {categoria.nombre}
-                                <span>({serviciosDeCategoria.length} servicio{serviciosDeCategoria.length !== 1 ? 's' : ''})</span>
-                            </h4>
-                            <div className="servicios-grid">
-                                {serviciosDeCategoria.map(servicio => {
-                                    const yaSeleccionado = isServiceSelected(servicio);
-                                    const servicioId = getServiceId(servicio);
-
-                                    return (
-                                        <button
-                                            key={servicioId}
-                                            onClick={() => addService(servicio)}
-                                            disabled={yaSeleccionado}
-                                            className={yaSeleccionado ? 'seleccionado' : ''}
-                                        >
-                                            <div>
-                                                <strong>{servicio.nombre}</strong>
-                                                <div>${servicio.precio} • {servicio.duracion} min</div>
-                                                {servicio.descripcion && <div>{servicio.descripcion}</div>}
-                                            </div>
-                                            {yaSeleccionado && <div>✓ Ya agregado</div>}
-                                        </button>
-                                    );
-                                })}
-                            </div>
+                        <div key={categoria.id || categoria._id} className="categoria-block">
+                            <h4>{categoria.nombre}</h4>
+                            {serviciosDeCategoria.length > 0 ? (
+                                <ul>
+                                    {serviciosDeCategoria.map((servicio) => (
+                                        <li key={getServiceId(servicio)}>
+                                            {servicio.nombre} - ${servicio.precio}
+                                            {!isServiceSelected(servicio) && (
+                                                <button onClick={() => addService(servicio)}>Añadir</button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>No hay servicios en esta categoría.</p>
+                            )}
                         </div>
                     );
                 })}

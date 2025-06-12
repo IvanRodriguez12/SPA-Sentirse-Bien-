@@ -1,0 +1,18 @@
+
+.metodo-pago {
+  margin: 1.5rem 0;
+}
+
+.metodo-pago label {
+  margin-right: 1.2rem;
+  font-weight: 500;
+}
+
+.metodo-pago input[type="text"] {
+  display: block;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+}

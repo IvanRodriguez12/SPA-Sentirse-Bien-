@@ -1,0 +1,51 @@
+
+.modal-servicios {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header button {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.categoria-block {
+  margin-bottom: 1.5rem;
+}
+
+.categoria-block h4 {
+  color: var(--verde-oscuro);
+  margin-bottom: 0.5rem;
+}
+
+.categoria-block ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.categoria-block li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+}
+
+.categoria-block button {
+  background-color: var(--rosa-acento);
+  color: white;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}

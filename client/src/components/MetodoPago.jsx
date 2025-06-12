@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/metodoPago.css'; // Asegúrate de tener este archivo CSS
 
 const MetodoPago = ({
     metodoPago,

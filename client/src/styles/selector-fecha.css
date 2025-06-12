@@ -1,0 +1,18 @@
+
+.selector-fecha {
+  margin: 1.5rem 0;
+}
+
+.datetime-picker {
+  padding: 0.5rem;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 0.5rem;
+}
+
+.horarios-info {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
+}

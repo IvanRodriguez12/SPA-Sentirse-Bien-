@@ -1,0 +1,15 @@
+
+.boton-confirmar {
+  padding: 0.8rem 1.5rem;
+  background-color: var(--verde-oscuro);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.boton-confirmar:hover {
+  background-color: var(--verde-claro);
+}

@@ -1,0 +1,17 @@
+
+.resumen-pago {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  border-left: 6px solid var(--verde-oscuro);
+}
+
+.resumen-pago p {
+  margin: 0.3rem 0;
+}
+
+.resumen-pago .descuento {
+  color: var(--rosa-acento);
+  font-weight: bold;
+}
