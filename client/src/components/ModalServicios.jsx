@@ -9,12 +9,13 @@ const ModalServicios = ({
     loadingServices,
     allCategories,
     getServicesByCategory,
-    addService,
+        addService,
     getServiceId,
 }) => {
     const renderCategorias = () => {
         const isServiceSelected = (servicio) => {
-            return services.some(s => s.id === servicio.id || s._id === servicio._id);
+        if (!services) return false;
+        return services.some(s => s.id === servicio.id || s._id === servicio._id);
         };
         return allCategories.map((categoria) => {
             const serviciosDeCategoria = getServicesByCategory(categoria);

@@ -45,7 +45,11 @@ const Reserva = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/servicios`);
+                const response = await axios.get(`${API_BASE_URL}/servicios`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+    });
                 setAllServices(response.data);
             } catch (error) {
                 console.error("Error cargando servicios:", error);
@@ -223,8 +227,9 @@ const Reserva = () => {
                     setCardDetails={setCardDetails}
                 />
                 <BotonConfirmar handleClick={handleReserva} editingTurno={editingTurno} />
-            </form>  
-            <ModalServicios
+            </form>
+            
+            <ModalServicioss
                 modalIsOpen={modalIsOpen}
                 closeModal={() => setModalIsOpen(false)}
                 loadingServices={loadingServices}
