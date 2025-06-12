@@ -23,11 +23,13 @@ const Reserva = () => {
 
     
     
+
 const getServicesByCategory = (categoria) => {
     return allServices.filter(serv =>
-        serv.categoria === categoria._id || serv.categoria === categoria.id
+        serv.categoria?.toString() === categoria._id?.toString()
     );
 };
+
 
     
 
