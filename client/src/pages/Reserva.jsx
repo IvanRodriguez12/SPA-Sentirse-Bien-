@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { getCategories, getServicesByCategory } from '../api/ListServicios';
+
 import toast from 'react-hot-toast';
 import DatePicker from 'react-datepicker';
 import Modal from 'react-modal';
@@ -22,6 +22,15 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-b
 
 const Reserva = () => {
  
+    const getServicesByCategory = (categoria) => {
+        return allServices.filter(serv =>
+            serv.categoria?.id === categoria.id ||
+            serv.categoria?.id === categoria._id ||
+            serv.categoria?._id === categoria.id ||
+            serv.categoria?._id === categoria._id
+        );
+    };
+
     const isServiceSelected = (servicio) => {
         return services.some(s => s.id === servicio.id || s._id === servicio._id);
     };
@@ -34,20 +43,13 @@ const Reserva = () => {
 useEffect(() => {
     const fetchData = async () => {
         try {
-            const categorias = await getCategories();
-            setAllCategories(categorias);
+            const categoriasResponse = await axios.get(`${API_BASE_URL}/api/categorias/listar`);
+            setAllCategories(categoriasResponse.data);
 
-            const serviciosPorCategoria = await Promise.all(
-                categorias.map(async (cat) => {
-                    const servicios = await getServicesByCategory(cat._id);
-                    return { categoriaId: cat._id, servicios };
-                })
-            );
-
-            const servicios = serviciosPorCategoria.flatMap(entry => entry.servicios);
-            setAllServices(servicios);
+            const serviciosResponse = await axios.get(`${API_BASE_URL}/api/servicios/listar`);
+            setAllServices(serviciosResponse.data);
         } catch {
-            toast.error("Error al cargar servicios y categorías");
+            toast.error("Error al cargar servicios o categorías");
         }
     };
 
@@ -58,29 +60,22 @@ useEffect(() => {
 
     const [selectedDateTime, setSelectedDateTime] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [setAllServices] = useState([]);
+    const [allServices, setAllServices] = useState([]);
 
     useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/servicios`, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+    const fetchData = async () => {
+        try {
+            const categoriasResponse = await axios.get(`${API_BASE_URL}/api/categorias/listar`);
+            setAllCategories(categoriasResponse.data);
+
+            const serviciosResponse = await axios.get(`${API_BASE_URL}/api/servicios/listar`);
+            setAllServices(serviciosResponse.data);
+        } catch {
+            toast.error("Error al cargar servicios o categorías");
         }
-    });
-                setAllServices(response.data);
-            } catch (error) {
-                console.error("Error cargando servicios:", error);
-                toast.error("Error al cargar los servicios.");
-            }
-        };
-        fetchServices();
-
-    document.body.classList.add("reserva-bg");
-
-    return () => {
-        document.body.classList.remove("reserva-bg");
     };
+
+    fetchData();
 }, []);
     
     const [allCategories, setAllCategories] = useState([]);
