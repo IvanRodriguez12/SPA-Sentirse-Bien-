@@ -1,75 +1,78 @@
-import { useForm } from 'react-hook-form';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import toast from 'react-hot-toast';
+import AuthContext from '../../context/AuthContext';
+
+const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 const AdminLogin = () => {
-  const { login } = useAuth();
   const navigate = useNavigate();
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting }
-  } = useForm();
+  const authContext = useContext(AuthContext);
 
-  const onSubmit = async (data) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
     try {
-      const usuario = await login(data.email, data.contrasena);
-      if (!usuario) return;
+      if (email === "dranafelicidad@gmail.com") {
+        // LOGIN ADMIN
+        const response = await axios.post(`${API_URL}/admin/login`, {
+          email,
+          contrasenia: password,
+        });
 
-      if (usuario.email === "dranafelicidad@gmail.com") {
+        const token = response.data.token;
+        localStorage.setItem("token", token);
+        toast.success("Bienvenida Dra. Ana Felicidad");
         navigate("/admin/dashboard");
-      } else if (usuario.profesion) {
-        navigate("/profesional/dashboard");
+
       } else {
-        toast.error("Este acceso es solo para profesionales o administradores.");
+        // LOGIN PROFESIONAL
+        const response = await axios.post(`${API_URL}/clientes/login`, {
+          email,
+          contrasenia: password,
+        });
+
+        const cliente = response.data.cliente;
+
+        if (!cliente.profesion) {
+          toast.error("Este usuario no es un profesional.");
+          return;
+        }
+
+        authContext.login(response.data);
+        toast.success(`Bienvenido/a profesional ${cliente.nombreCompleto}`);
+        navigate("/profesional/dashboard");
       }
-    } catch {
-      toast.error('Error al iniciar sesión');
+    } catch (error) {
+      console.error("Error en login:", error);
+      toast.error("Credenciales incorrectas o error de conexión.");
     }
   };
 
   return (
-    <div style={{
-      background: '#f0f4f8',
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <div style={{ width: '100%', maxWidth: '400px' }}>
-        <form onSubmit={handleSubmit(onSubmit)} style={{
-          background: 'white',
-          padding: '2rem',
-          borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-          width: '100%'
-        }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Ingreso Profesional/Admin</h2>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Email</label>
-            <input {...register("email")} type="email" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px' }} />
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>Contraseña</label>
-            <input {...register("contrasena")} type="password" style={{ width: '100%', padding: '0.5rem', borderRadius: '6px' }} />
-          </div>
-          <button type="submit" disabled={isSubmitting} style={{
-            width: '100%',
-            background: '#5cb85c',
-            color: 'white',
-            padding: '0.75rem',
-            border: 'none',
-            borderRadius: '6px'
-          }}>
-            Ingresar
-          </button>
-          <p style={{ marginTop: 20, textAlign: 'center' }}>
-            ¿Sos la Dra. Felicidad y aún no tenés cuenta?
-            <a href="/admin/crear-admin" style={{ color: 'blue', marginLeft: 5 }}>Crear cuenta</a>
-          </p>
-        </form>
-      </div>
+    <div className="login-container">
+      <h2>Login Profesional / Admin</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Iniciar sesión</button>
+      </form>
     </div>
   );
 };
