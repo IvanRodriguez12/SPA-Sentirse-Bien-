@@ -1,6 +1,6 @@
 import React from 'react';
 import DatePicker from 'react-datepicker';
-import "../styles/selectorFecha.css"; // Asegúrate de tener este archivo CSS
+import "../styles/selector-fecha.css"; // Asegúrate de tener este archivo CSS
 
 const SelectorFecha = ({ selectedDateTime, handleDateChange, getMinDate }) => {
     const filtrarFecha = (date) => {

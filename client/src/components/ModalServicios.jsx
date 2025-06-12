@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import '../styles/modalServicios.css'; // Asegúrate de tener este archivo CSS
+import '../styles/modal-servicios.css'; // Asegúrate de tener este archivo CSS
 
 const ModalServicios = ({
     modalIsOpen,
