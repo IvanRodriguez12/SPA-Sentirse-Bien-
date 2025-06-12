@@ -3,16 +3,19 @@ import Modal from 'react-modal';
 import '../styles/modal-servicios.css'; // Asegúrate de tener este archivo CSS
 
 const ModalServicios = ({
+    services,
     modalIsOpen,
     closeModal,
     loadingServices,
     allCategories,
     getServicesByCategory,
-    isServiceSelected,
     addService,
     getServiceId,
 }) => {
     const renderCategorias = () => {
+        const isServiceSelected = (servicio) => {
+            return services.some(s => s.id === servicio.id || s._id === servicio._id);
+        };
         return allCategories.map((categoria) => {
             const serviciosDeCategoria = getServicesByCategory(categoria);
             return (

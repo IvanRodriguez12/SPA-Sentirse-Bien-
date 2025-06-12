@@ -27,6 +27,11 @@ const Reserva = () => {
             serv.categoria?._id === categoria._id
         );
     };
+
+    const isServiceSelected = (servicio) => {
+        return services.some(s => s.id === servicio.id || s._id === servicio._id);
+    };
+    
     
     const location = useLocation();
     const navigate = useNavigate();
@@ -152,10 +157,6 @@ const Reserva = () => {
         closeModal();
     };
 
-    const isServiceSelected = (servicio) => {
-        return services.some(s => s.id === servicio.id || s._id === servicio._id);
-    };
-
     const removeService = (id) => {
         const servicioRemovido = services.find(s => getServiceId(s) === id);
         setServices(services.filter(s => getServiceId(s) !== id));
@@ -222,7 +223,7 @@ const Reserva = () => {
                     setCardDetails={setCardDetails}
                 />
                 <BotonConfirmar handleClick={handleReserva} editingTurno={editingTurno} />
-            </form>
+            </form>  
             <ModalServicios
                 modalIsOpen={modalIsOpen}
                 closeModal={() => setModalIsOpen(false)}

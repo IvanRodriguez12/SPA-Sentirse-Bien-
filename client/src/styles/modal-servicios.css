@@ -49,3 +49,9 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
+.modal-servicios {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px;
+}
