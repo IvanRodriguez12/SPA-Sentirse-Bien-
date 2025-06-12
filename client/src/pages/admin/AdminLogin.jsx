@@ -66,7 +66,7 @@ const AdminLogin = () => {
           </button>
           <p style={{ marginTop: 20, textAlign: 'center' }}>
             ¿Sos la Dra. Felicidad y aún no tenés cuenta?
-            <a href="/crearadmin" style={{ color: 'blue', marginLeft: 5 }}>Crear cuenta</a>
+            <a href="/admin/crear-admin" style={{ color: 'blue', marginLeft: 5 }}>Crear cuenta</a>
           </p>
         </form>
       </div>

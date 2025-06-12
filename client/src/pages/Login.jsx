@@ -66,7 +66,7 @@ const Login = () => {
           </a>
         </p>
         <p className="auth-link" style={{ marginTop: '0.5rem' }}>
-          ¿Eres administrador?{' '}
+          ¿Eres un profesional?{' '}
           <Link to="/admin/login" className="link">
             Accede aquí
           </Link>

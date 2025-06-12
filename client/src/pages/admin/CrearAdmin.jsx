@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 const schema = yup.object().shape({
-  nombre: yup.string().required('Nombre requerido'),
   email: yup.string().email('Email inválido').required('Email requerido'),
   contrasena: yup.string().min(6, 'Mínimo 6 caracteres').required('Contraseña requerida'),
   confirmarContrasena: yup.string()
@@ -28,12 +27,11 @@ const CrearAdmin = () => {
 
     try {
       const body = {
-        nombre: data.nombre,
         email: data.email,
         contrasena: data.contrasena
       };
 
-      await axios.post(`${API_URL}/administradores`, body);
+      await axios.post(`${API_URL}/admin/registrar`, body);
       toast.success("Administradora creada correctamente");
       reset();
     } catch (error) {
@@ -46,10 +44,6 @@ const CrearAdmin = () => {
     <div className="form-container">
       <h2>Crear administradora</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
-
-        <label>Nombre</label>
-        <input {...register("nombre")} />
-        <p>{errors.nombre?.message}</p>
 
         <label>Email</label>
         <input {...register("email")} type="email" />
