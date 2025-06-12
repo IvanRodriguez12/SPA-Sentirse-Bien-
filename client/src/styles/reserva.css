@@ -1,20 +1,35 @@
-.datetime-picker {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
+:root {
+  --verde-oscuro: #2a7d62;
+  --verde-claro: #a8dbc5;
+  --rosa-acento: #ff9eb0;
 }
-.react-datepicker__header {
-    background-color: #f8f9fa;
+
+/* contenedor principal */
+.reserva-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0 0 0 / 0.08);
 }
-.react-datepicker__day--selected {
-    background-color: var(--verde-oscuro);
+
+/* botón añadir servicio */
+.btn-agregar {
+  margin: 1rem 0 2rem;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--verde-oscuro);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s;
 }
-.react-datepicker__time-container
-.react-datepicker__time
-.react-datepicker__time-box
-ul.react-datepicker__time-list
-li.react-datepicker__time-list-item--selected {
-    background-color: var(--verde-oscuro);
+.btn-agregar:hover {
+  transform: translateY(-2px);
+}
+.btn-agregar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
