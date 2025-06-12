@@ -21,54 +21,57 @@ Modal.setAppElement('#root');
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app";
 
 const Reserva = () => {
- 
+
     const location = useLocation();
     const navigate = useNavigate();
     const [services, setServices] = useState(location.state?.services || []);
-
-useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const categoriasResponse = await axios.get(`${API_BASE_URL}/api/categorias/listar`);
-            setAllCategories(categoriasResponse.data);
-
-            const serviciosResponse = await axios.get(`${API_BASE_URL}/api/servicios/listar`);
-            setAllServices(serviciosResponse.data);
-        } catch {
-            toast.error("Error al cargar servicios o categorías");
-        }
-    };
-
-    fetchData();
-}, []);
-
     const editingTurno = location.state?.editingTurno;
 
     const [selectedDateTime, setSelectedDateTime] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [allServices, setAllServices] = useState([]);
-
-    useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const categoriasResponse = await axios.get(`${API_BASE_URL}/api/categorias/listar`);
-            setAllCategories(categoriasResponse.data);
-
-            const serviciosResponse = await axios.get(`${API_BASE_URL}/api/servicios/listar`);
-            setAllServices(serviciosResponse.data);
-        } catch {
-            toast.error("Error al cargar servicios o categorías");
-        }
-    };
-
-    fetchData();
-}, []);
-    
     const [allCategories, setAllCategories] = useState([]);
     const [metodoPago, setMetodoPago] = useState('');
     const [pagarAhora, setPagarAhora] = useState(false);
     const [cardDetails, setCardDetails] = useState({ numero: '', vencimiento: '', cvv: '' });
     const [loadingServices, setLoadingServices] = useState(false);
+
+    useEffect(() => {
+        const fetchServiciosYCategorias = async () => {
+            setLoadingServices(true);
+            try {
+                const token = localStorage.getItem("authToken");
+                const [serviciosRes, categoriasRes] = await Promise.all([
+                    axios.get(`${API_BASE_URL}/api/servicios/listar`, {
+                        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+                    }),
+                    axios.get(`${API_BASE_URL}/api/categorias/listar`, {
+                        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+                    })
+                ]);
+                setAllServices(serviciosRes.data || []);
+                setAllCategories(categoriasRes.data || []);
+            } catch (error) {
+                console.error("Error cargando servicios:", error);
+                if (error.response?.status === 403 || error.response?.status === 401) {
+                    toast.error("Tu sesión ha expirado.");
+                    localStorage.removeItem("authToken");
+                    setTimeout(() => navigate("/login"), 2000);
+                }
+            } finally {
+                setLoadingServices(false);
+            }
+        };
+        fetchServiciosYCategorias();
+    }, [navigate]);
+
+    useEffect(() => {
+        if (editingTurno) {
+            const fecha = new Date(editingTurno.fechaHora);
+            const fechaArgentina = new Date(fecha.getTime() - (3 * 60 * 60 * 1000));
+            setSelectedDateTime(fechaArgentina);
+        }
+    }, [editingTurno]);
 
     const getArgentinaDateTime = () => {
         const now = new Date();
@@ -116,43 +119,6 @@ useEffect(() => {
 
     const total = calcularPrecioTotal();
     const { aplicado, totalConDescuento } = aplicarDescuento(total);
-
-    useEffect(() => {
-        if (editingTurno) {
-            const fecha = new Date(editingTurno.fechaHora);
-            const fechaArgentina = new Date(fecha.getTime() - (3 * 60 * 60 * 1000));
-            setSelectedDateTime(fechaArgentina);
-        }
-    }, [editingTurno]);
-
-    useEffect(() => {
-        const fetchServiciosYCategorias = async () => {
-            setLoadingServices(true);
-            try {
-                const token = localStorage.getItem("authToken");
-                const [serviciosRes, categoriasRes] = await Promise.all([
-                    axios.get(`${API_BASE_URL}/api/servicios/listar`, {
-                        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
-                    }),
-                    axios.get(`${API_BASE_URL}/api/categorias/listar`, {
-                        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
-                    })
-                ]);
-                setAllServices(serviciosRes.data || []);
-                setAllCategories(categoriasRes.data || []);
-            } catch (error) {
-                console.error("Error cargando servicios:", error);
-                if (error.response?.status === 403 || error.response?.status === 401) {
-                    toast.error("Tu sesión ha expirado.");
-                    localStorage.removeItem("authToken");
-                    setTimeout(() => navigate("/login"), 2000);
-                }
-            } finally {
-                setLoadingServices(false);
-            }
-        };
-        fetchServiciosYCategorias();
-    }, [navigate]);
 
     const getServiceId = (servicio) => servicio._id || servicio.id || servicio.serviceId;
 
@@ -233,13 +199,13 @@ useEffect(() => {
                 />
                 <BotonConfirmar handleClick={handleReserva} editingTurno={editingTurno} />
             </form>
-            
+
             <ModalServicios
                 modalIsOpen={modalIsOpen}
-                closeModal={() => setModalIsOpen(false)}
+                closeModal={closeModal}
                 loadingServices={loadingServices}
                 allCategories={allCategories}
-                allServices={allServices} // ✅ añadir esta línea
+                allServices={allServices}
                 services={services}
                 addService={addService}
                 getServiceId={getServiceId}

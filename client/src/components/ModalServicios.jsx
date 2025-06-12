@@ -8,20 +8,26 @@ const ModalServicios = ({
     closeModal,
     loadingServices,
     allCategories,
-    allServices, // ✅ necesario
+    allServices,
     addService,
     getServiceId,
 }) => {
     const renderCategorias = () => {
         const isServiceSelected = (servicio) => {
             if (!services) return false;
-            return services.some(s => s.id === servicio.id || s._id === servicio._id);
+            return services.some(s => {
+                const sId = s._id || s.id;
+                const servicioId = servicio._id || servicio.id;
+                return sId === servicioId;
+            });
         };
 
         return allCategories.map((categoria) => {
             const serviciosDeCategoria = allServices.filter(serv => {
-                const catId = typeof serv.categoria === 'string' ? serv.categoria : serv.categoria?._id;
-                return catId === categoria._id;
+                const catId = typeof serv.categoria === 'object' && serv.categoria !== null
+                    ? serv.categoria.id || serv.categoria._id
+                    : serv.categoria;
+                return catId === categoria.id || catId === categoria._id;
             });
 
             return (
