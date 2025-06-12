@@ -20,6 +20,14 @@ Modal.setAppElement('#root');
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app";
 
 const Reserva = () => {
+
+    const getServicesByCategory = (categoria) => {
+        return allServices.filter(serv => 
+            serv.categoria?.id === categoria.id || 
+            serv.categoria?._id === categoria._id
+        );
+    };
+    
     const location = useLocation();
     const navigate = useNavigate();
     const [services, setServices] = useState(location.state?.services || []);
@@ -27,7 +35,21 @@ const Reserva = () => {
 
     const [selectedDateTime, setSelectedDateTime] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [setAllServices] = useState([]);
+    const [allServices, setAllServices] = useState([]);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/servicios`);
+                setAllServices(response.data);
+            } catch (error) {
+                console.error("Error cargando servicios:", error);
+                toast.error("Error al cargar los servicios.");
+            }
+        };
+        fetchServices();
+    }, []);
+    
     const [allCategories, setAllCategories] = useState([]);
     const [metodoPago, setMetodoPago] = useState('');
     const [pagarAhora, setPagarAhora] = useState(false);
@@ -130,6 +152,10 @@ const Reserva = () => {
         closeModal();
     };
 
+    const isServiceSelected = (servicio) => {
+        return services.some(s => s.id === servicio.id || s._id === servicio._id);
+    };
+
     const removeService = (id) => {
         const servicioRemovido = services.find(s => getServiceId(s) === id);
         setServices(services.filter(s => getServiceId(s) !== id));
@@ -198,14 +224,13 @@ const Reserva = () => {
                 <BotonConfirmar handleClick={handleReserva} editingTurno={editingTurno} />
             </form>
             <ModalServicios
-                isOpen={modalIsOpen}
-                closeModal={closeModal}
+                modalIsOpen={modalIsOpen}
+                closeModal={() => setModalIsOpen(false)}
                 loadingServices={loadingServices}
                 allCategories={allCategories}
-                getServicesByCategory={() => []}
+                getServicesByCategory={getServicesByCategory}
+                isServiceSelected={isServiceSelected}
                 addService={addService}
-                isServiceSelected={() => false}
-                services={services}
                 getServiceId={getServiceId}
             />
         </div>
