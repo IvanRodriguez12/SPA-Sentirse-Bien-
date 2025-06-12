@@ -21,12 +21,16 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-b
 
 const Reserva = () => {
 
+    
     const getServicesByCategory = (categoria) => {
-        return allServices.filter(serv => 
-            serv.categoria?.id === categoria.id || 
+        return allServices.filter(serv =>
+            serv.categoria?.id === categoria.id ||
+            serv.categoria?.id === categoria._id ||
+            serv.categoria?._id === categoria.id ||
             serv.categoria?._id === categoria._id
         );
     };
+    
 
     const isServiceSelected = (servicio) => {
         return services.some(s => s.id === servicio.id || s._id === servicio._id);
@@ -57,7 +61,13 @@ const Reserva = () => {
             }
         };
         fetchServices();
-    }, []);
+
+    document.body.classList.add("reserva-bg");
+
+    return () => {
+        document.body.classList.remove("reserva-bg");
+    };
+}, []);
     
     const [allCategories, setAllCategories] = useState([]);
     const [metodoPago, setMetodoPago] = useState('');
@@ -175,8 +185,17 @@ const Reserva = () => {
         return minutes === 0 || minutes === 30;
     };
 
+
     const handleReserva = async (e) => {
         e.preventDefault();
+
+        // Validar que se haya elegido un método de pago
+        if (!metodoPago) {
+            toast.error("Por favor seleccioná un método de pago.");
+            return;
+        }
+
+        // Validar datos de tarjeta si corresponde
         if (!validarDatosTarjeta()) return;
 
         try {
@@ -184,7 +203,6 @@ const Reserva = () => {
             await axios.post(`${API_BASE_URL}/api/turnos/crear`, {
                 fechaHora: selectedDateTime,
                 metodoPago,
-                pagado: true,
                 servicioIds: services.map(s => s.id)
             }, {
                 headers: {
@@ -198,6 +216,7 @@ const Reserva = () => {
             toast.error("Error al reservar turno");
         }
     };
+
 
     const openModal = () => setModalIsOpen(true);
     const closeModal = () => setModalIsOpen(false);
