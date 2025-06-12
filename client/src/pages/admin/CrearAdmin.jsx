@@ -1,4 +1,3 @@
-
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -22,6 +21,11 @@ const CrearAdmin = () => {
   });
 
   const onSubmit = async (data) => {
+    if (data.email !== "dranafelicidad@gmail.com") {
+      toast.error("Solo la Dra. Felicidad puede registrarse como administradora.");
+      return;
+    }
+
     try {
       const body = {
         nombre: data.nombre,
