@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import DatePicker from 'react-datepicker';
 import Modal from 'react-modal';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -16,230 +17,199 @@ import '../styles/reserva.css';
 
 Modal.setAppElement('#root');
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 
-  'https://spa-sentirse-bien-production.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app";
 
 const Reserva = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [services, setServices] = useState(location.state?.services || []);
+    const editingTurno = location.state?.editingTurno;
 
-  /* ---------- Estados ---------- */
-  const [services, setServices] = useState(location.state?.services || []);
-  const editingTurno = location.state?.editingTurno ?? null;
+    const [selectedDateTime, setSelectedDateTime] = useState(null);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [setAllServices] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
+    const [metodoPago, setMetodoPago] = useState('');
+    const [pagarAhora, setPagarAhora] = useState(false);
+    const [cardDetails, setCardDetails] = useState({ numero: '', vencimiento: '', cvv: '' });
+    const [loadingServices, setLoadingServices] = useState(false);
 
-  const [selectedDateTime, setSelectedDateTime] = useState(null);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-
-  const [allServices, setAllServices] = useState([]);
-  const [allCategories, setAllCategories] = useState([]);
-
-  const [metodoPago, setMetodoPago] = useState('efectivo');
-  const [cardDetails, setCardDetails] = useState({
-    numero: '',
-    vencimiento: '',
-    cvv: ''
-  });
-
-  const [loadingServices, setLoadingServices] = useState(false);
-
-  /* ---------- Helpers ---------- */
-  const getServiceId = s => s._id || s.id || s.serviceId;
-
-  const getServicesByCategory = categoria => {
-    if (!categoria) return [];
-    const catId = categoria._id || categoria.id || categoria.categoriaId;
-    return allServices.filter(s => {
-      const catSrv = s.categoria?._id || s.categoria?.id || s.categoria;
-      return catSrv === catId;
-    });
-  };
-
-  const isServiceSelected = servicio =>
-    services.some(s => getServiceId(s) === getServiceId(servicio));
-
-  const addService = servicio => {
-    if (isServiceSelected(servicio)) {
-      toast.info('Este servicio ya fue agregado.');
-      return;
-    }
-    setServices(prev => [...prev, servicio]);
-    toast.success(`${servicio.nombre} agregado correctamente`);
-    closeModal();
-  };
-
-  const removeService = id => {
-    const eliminado = services.find(s => getServiceId(s) === id);
-    setServices(prev => prev.filter(s => getServiceId(s) !== id));
-    if (eliminado) toast.success(`${eliminado.nombre} eliminado`);
-  };
-
-  /* ---------- Lógica de fecha ---------- */
-  const handleDateChange = date => setSelectedDateTime(date);
-
-  const isWeekday = date => date.getDay() !== 0; // sin domingos
-
-  const filterPassedTime = time => {
-    const minutes = time.getMinutes();
-    return minutes === 0 || minutes === 30;
-  };
-
-  const getMinDate = () => {
-    const now = new Date();
-    now.setHours(now.getHours() + 48);
-    return now;
-  };
-
-  /* ---------- Carga de servicios / categorías ---------- */
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoadingServices(true);
-      try {
-        const token = localStorage.getItem('authToken');
-        const [servRes, catRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/servicios/listar`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          axios.get(`${API_BASE_URL}/api/categorias/listar`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-        ]);
-        setAllServices(servRes.data || []);
-        setAllCategories(catRes.data || []);
-      } catch {
-        toast.error('Error cargando servicios / categorías');
-      } finally {
-        setLoadingServices(false);
-      }
+    const getArgentinaDateTime = () => {
+        const now = new Date();
+        return new Date(now.getTime() - (3 * 60 * 60 * 1000));
     };
 
-    fetchData();
-  }, []);
+    const getMinDate = () => {
+        const now = getArgentinaDateTime();
+        return new Date(now.getTime() + (48 * 60 * 60 * 1000));
+    };
 
-  /* ---------- Validaciones ---------- */
-  const validarDatosTarjeta = () => {
-    if (metodoPago !== 'tarjeta') return true;
-    const { numero, vencimiento, cvv } = cardDetails;
-    if (!numero || !vencimiento || !cvv) {
-      toast.error('Completa los datos de la tarjeta');
-      return false;
-    }
-    if (!/^[0-9]{16}$/.test(numero)) {
-      toast.error('Número de tarjeta inválido (16 dígitos)');
-      return false;
-    }
-    if (!/^[0-9]{2}\/[0-9]{2}$/.test(vencimiento)) {
-      toast.error('Vencimiento inválido (MM/AA)');
-      return false;
-    }
-    if (!/^[0-9]{3}$/.test(cvv)) {
-      toast.error('CVV inválido (3 dígitos)');
-      return false;
-    }
-    return true;
-  };
+    const validarDatosTarjeta = () => {
+        if (metodoPago !== 'tarjeta') return true;
+        const { numero, vencimiento, cvv } = cardDetails;
 
-  /* ---------- Pago y descuento ---------- */
-  const calcularPrecioTotal = () =>
-    services.reduce((acc, s) => acc + (s.precio ?? 0), 0);
+        if (!numero.trim() || !vencimiento.trim() || !cvv.trim()) {
+            toast.error("Por favor completá todos los campos de la tarjeta.");
+            return false;
+        }
+        if (!/^[0-9]{16}$/.test(numero)) {
+            toast.error("El número de tarjeta debe tener 16 dígitos.");
+            return false;
+        }
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(vencimiento)) {
+            toast.error("El vencimiento debe tener el formato MM/AA.");
+            return false;
+        }
+        if (!/^[0-9]{3}$/.test(cvv)) {
+            toast.error("El CVV debe tener 3 dígitos.");
+            return false;
+        }
+        return true;
+    };
 
-  const aplicarDescuento = total => {
-    const ahora = new Date();
-    if (!selectedDateTime) return { aplicado: false, totalConDescuento: total };
+    const calcularPrecioTotal = () => services.reduce((total, s) => total + s.precio, 0);
+    const aplicarDescuento = (total) => {
+        const ahora = new Date();
+        if (!selectedDateTime) return { aplicado: false, totalConDescuento: total };
+        const diferenciaHoras = (selectedDateTime - ahora) / (1000 * 60 * 60);
+        if (pagarAhora && metodoPago === 'tarjeta' && diferenciaHoras >= 48) {
+            return { aplicado: true, totalConDescuento: total * 0.85 };
+        }
+        return { aplicado: false, totalConDescuento: total };
+    };
 
-    const diferenciaHoras = (selectedDateTime - ahora) / (1000 * 60 * 60);
-    // Aplica 15% de descuento si paga con tarjeta y reserva con >= 48h de anticipación
-    if (metodoPago === 'tarjeta' && diferenciaHoras >= 48) {
-      return { aplicado: true, totalConDescuento: total * 0.85 };
-    }
-    return { aplicado: false, totalConDescuento: total };
-  };
+    const total = calcularPrecioTotal();
+    const { aplicado, totalConDescuento } = aplicarDescuento(total);
 
-  const total = calcularPrecioTotal();
-  const { aplicado, totalConDescuento } = aplicarDescuento(total);
+    useEffect(() => {
+        if (editingTurno) {
+            const fecha = new Date(editingTurno.fechaHora);
+            const fechaArgentina = new Date(fecha.getTime() - (3 * 60 * 60 * 1000));
+            setSelectedDateTime(fechaArgentina);
+        }
+    }, [editingTurno]);
 
-  /* ---------- Crear / editar turno ---------- */
-  const handleReserva = async e => {
-    e.preventDefault();
-    if (!validarDatosTarjeta()) return;
+    useEffect(() => {
+        const fetchServiciosYCategorias = async () => {
+            setLoadingServices(true);
+            try {
+                const token = localStorage.getItem("authToken");
+                const [serviciosRes, categoriasRes] = await Promise.all([
+                    axios.get(`${API_BASE_URL}/api/servicios/listar`, {
+                        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+                    }),
+                    axios.get(`${API_BASE_URL}/api/categorias/listar`, {
+                        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+                    })
+                ]);
+                setAllServices(serviciosRes.data || []);
+                setAllCategories(categoriasRes.data || []);
+            } catch (error) {
+                console.error("Error cargando servicios:", error);
+                if (error.response?.status === 403 || error.response?.status === 401) {
+                    toast.error("Tu sesión ha expirado.");
+                    localStorage.removeItem("authToken");
+                    setTimeout(() => navigate("/login"), 2000);
+                }
+            } finally {
+                setLoadingServices(false);
+            }
+        };
+        fetchServiciosYCategorias();
+    }, [navigate]);
 
-    try {
-      const token = localStorage.getItem('authToken');
-      await axios.post(
-        `${API_BASE_URL}/api/turnos/${editingTurno ? 'editar' : 'crear'}`,
-        {
-          fechaHora: selectedDateTime,
-          servicios: services.map(getServiceId),
-          metodoPago,
-          total: totalConDescuento
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success('Turno reservado correctamente');
-      navigate('/turnos');
-    } catch {
-      toast.error('Error al reservar turno');
-    }
-  };
+    const getServiceId = (servicio) => servicio._id || servicio.id || servicio.serviceId;
 
-  const openModal = () => setModalIsOpen(true);
-  const closeModal = () => setModalIsOpen(false);
+    const addService = (servicio) => {
+        const servicioId = getServiceId(servicio);
+        if (!servicioId) return toast.error("No se pudo identificar el servicio.");
+        const yaAgregado = services.some(s => getServiceId(s) === servicioId);
+        if (yaAgregado) return toast.info("Este servicio ya fue agregado.");
+        setServices(prev => [...prev, servicio]);
+        toast.success(`${servicio.nombre} agregado correctamente`);
+        closeModal();
+    };
 
-  /* ---------- Render ---------- */
-  return (
-    <div className="reserva-container">
-      <h2>{editingTurno ? 'Editar Turno' : 'Reservar Servicio'}</h2>
+    const removeService = (id) => {
+        const servicioRemovido = services.find(s => getServiceId(s) === id);
+        setServices(services.filter(s => getServiceId(s) !== id));
+        if (servicioRemovido) toast.success(`${servicioRemovido.nombre} eliminado`);
+    };
 
-      <ServiciosSeleccionados
-        services={services}
-        removeService={removeService}
-        getServiceId={getServiceId}
-      />
+    const handleDateChange = (date) => setSelectedDateTime(date);
+    const isWeekday = (date) => date.getDay() !== 0;
 
-      <button
-        onClick={openModal}
-        className="btn-agregar"
-        disabled={loadingServices}
-      >
-        {loadingServices ? 'Cargando…' : 'Añadir Servicio'}
-      </button>
+    const filterPassedTime = (time) => {
+        const minutes = time.getMinutes();
+        return minutes === 0 || minutes === 30;
+    };
 
-      <form onSubmit={handleReserva}>
-        <SelectorFecha
-          selectedDateTime={selectedDateTime}
-          handleDateChange={handleDateChange}
-          getMinDate={getMinDate}
-          filterPassedTime={filterPassedTime}
-          isWeekday={isWeekday}
-        />
+    const handleReserva = async (e) => {
+        e.preventDefault();
+        if (!validarDatosTarjeta()) return;
 
-        <ResumenPago
-          total={total}
-          totalConDescuento={totalConDescuento}
-          aplicado={aplicado}
-        />
+        try {
+            const token = localStorage.getItem("authToken");
+            await axios.post(`${API_BASE_URL}/api/turnos/crear`, {
+                fechaHora: selectedDateTime,
+                metodoPago,
+                pagado: true,
+                servicioIds: services.map(s => s.id)
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            toast.success("Turno reservado correctamente");
+            navigate("/turnos");
+        } catch {
+            toast.error("Error al reservar turno");
+        }
+    };
 
-        <MetodoPago
-          metodoPago={metodoPago}
-          setMetodoPago={setMetodoPago}
-          cardDetails={cardDetails}
-          setCardDetails={setCardDetails}
-        />
+    const openModal = () => setModalIsOpen(true);
+    const closeModal = () => setModalIsOpen(false);
 
-        <BotonConfirmar editingTurno={!!editingTurno} handleReserva={handleReserva} />
-      </form>
-
-      <ModalServicios
-        modalIsOpen={modalIsOpen}
-        closeModal={closeModal}
-        loadingServices={loadingServices}
-        allCategories={allCategories}
-        getServicesByCategory={getServicesByCategory}
-        addService={addService}
-        isServiceSelected={isServiceSelected}
-        getServiceId={getServiceId}
-      />
-    </div>
-  );
+    return (
+        <div className="reserva-container">
+            <h2>{editingTurno ? 'Editar Turno' : 'Reservar Servicio'}</h2>
+            <ServiciosSeleccionados services={services} removeService={removeService} getServiceId={getServiceId} />
+            <button onClick={openModal} className="btn-agregar" disabled={loadingServices}>
+                {loadingServices ? 'Cargando servicios...' : 'Añadir Servicio'}
+            </button>
+            <form onSubmit={handleReserva}>
+                <SelectorFecha
+                    selectedDateTime={selectedDateTime}
+                    handleDateChange={handleDateChange}
+                    getMinDate={getMinDate}
+                    filterPassedTime={filterPassedTime}
+                    isWeekday={isWeekday}
+                />
+                <ResumenPago total={total} aplicado={aplicado} totalConDescuento={totalConDescuento} />
+                <MetodoPago
+                    metodoPago={metodoPago}
+                    setMetodoPago={setMetodoPago}
+                    pagarAhora={pagarAhora}
+                    setPagarAhora={setPagarAhora}
+                    cardDetails={cardDetails}
+                    setCardDetails={setCardDetails}
+                />
+                <BotonConfirmar handleClick={handleReserva} editingTurno={editingTurno} />
+            </form>
+            <ModalServicios
+                isOpen={modalIsOpen}
+                closeModal={closeModal}
+                loadingServices={loadingServices}
+                allCategories={allCategories}
+                getServicesByCategory={() => []}
+                addService={addService}
+                isServiceSelected={() => false}
+                services={services}
+                getServiceId={getServiceId}
+            />
+        </div>
+    );
 };
 
 export default Reserva;
