@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { getCategories } from '../api/ListServicios';
+import { getCategories, getServicesByCategory } from '../api/ListServicios';
 import toast from 'react-hot-toast';
 import DatePicker from 'react-datepicker';
 import Modal from 'react-modal';
@@ -22,15 +22,6 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-b
 
 const Reserva = () => {
  
-    const getServicesByCategory = (categoria) => {
-        return allServices.filter(serv =>
-            serv.categoria?.id === categoria.id ||
-            serv.categoria?.id === categoria._id ||
-            serv.categoria?._id === categoria.id ||
-            serv.categoria?._id === categoria._id
-        );
-    };
-
     const isServiceSelected = (servicio) => {
         return services.some(s => s.id === servicio.id || s._id === servicio._id);
     };
@@ -67,7 +58,7 @@ useEffect(() => {
 
     const [selectedDateTime, setSelectedDateTime] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [allServices, setAllServices] = useState([]);
+    const [setAllServices] = useState([]);
 
     useEffect(() => {
         const fetchServices = async () => {
