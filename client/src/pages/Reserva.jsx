@@ -229,7 +229,7 @@ const Reserva = () => {
                 <BotonConfirmar handleClick={handleReserva} editingTurno={editingTurno} />
             </form>
             
-            <ModalServicioss
+            <ModalServicios
                 modalIsOpen={modalIsOpen}
                 closeModal={() => setModalIsOpen(false)}
                 loadingServices={loadingServices}
