@@ -8,17 +8,22 @@ const ModalServicios = ({
     closeModal,
     loadingServices,
     allCategories,
-    getServicesByCategory,
-        addService,
+    allServices, // ✅ necesario
+    addService,
     getServiceId,
 }) => {
     const renderCategorias = () => {
         const isServiceSelected = (servicio) => {
-        if (!services) return false;
-        return services.some(s => s.id === servicio.id || s._id === servicio._id);
+            if (!services) return false;
+            return services.some(s => s.id === servicio.id || s._id === servicio._id);
         };
+
         return allCategories.map((categoria) => {
-            const serviciosDeCategoria = getServicesByCategory(categoria);
+            const serviciosDeCategoria = allServices.filter(serv => {
+                const catId = typeof serv.categoria === 'string' ? serv.categoria : serv.categoria?._id;
+                return catId === categoria._id;
+            });
+
             return (
                 <div key={categoria.id || categoria._id} className="categoria-block">
                     <h4>{categoria.nombre}</h4>

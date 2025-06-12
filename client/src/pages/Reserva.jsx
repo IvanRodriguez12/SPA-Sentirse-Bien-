@@ -22,18 +22,6 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-b
 
 const Reserva = () => {
  
-    const getServicesByCategory = (categoria) => {
-    return allServices.filter(serv => {
-        const catId = typeof serv.categoria === 'string' ? serv.categoria : serv.categoria?._id;
-        return catId === categoria._id;
-    });
-};
-
-    const isServiceSelected = (servicio) => {
-        return services.some(s => s.id === servicio.id || s._id === servicio._id);
-    };
-    
-    
     const location = useLocation();
     const navigate = useNavigate();
     const [services, setServices] = useState(location.state?.services || []);
@@ -251,8 +239,8 @@ useEffect(() => {
                 closeModal={() => setModalIsOpen(false)}
                 loadingServices={loadingServices}
                 allCategories={allCategories}
-                getServicesByCategory={getServicesByCategory}
-                isServiceSelected={isServiceSelected}
+                allServices={allServices} // ✅ añadir esta línea
+                services={services}
                 addService={addService}
                 getServiceId={getServiceId}
             />
