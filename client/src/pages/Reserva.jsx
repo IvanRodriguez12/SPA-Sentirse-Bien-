@@ -22,14 +22,13 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-b
 const Reserva = () => {
 
     
-    const getServicesByCategory = (categoria) => {
-        return allServices.filter(serv =>
-            serv.categoria?.id === categoria.id ||
-            serv.categoria?.id === categoria._id ||
-            serv.categoria?._id === categoria.id ||
-            serv.categoria?._id === categoria._id
-        );
-    };
+    
+const getServicesByCategory = (categoria) => {
+    return allServices.filter(serv =>
+        serv.categoria === categoria._id || serv.categoria === categoria.id
+    );
+};
+
     
 
     const isServiceSelected = (servicio) => {
