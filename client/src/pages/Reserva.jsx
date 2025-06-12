@@ -12,7 +12,7 @@ import SelectorFecha from '../components/SelectorFecha';
 import BotonConfirmar from '../components/BotonConfirmar';
 import ModalServicios from '../components/ModalServicios';
 
-import '../styles/Reserva.css';
+import '../styles/reserva.css';
 
 Modal.setAppElement('#root');
 
