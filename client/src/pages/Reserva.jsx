@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getCategories } from '../api/ListServicios';
 import toast from 'react-hot-toast';
 import DatePicker from 'react-datepicker';
 import Modal from 'react-modal';
@@ -38,6 +39,30 @@ const Reserva = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [services, setServices] = useState(location.state?.services || []);
+
+useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const categorias = await getCategories();
+            setAllCategories(categorias);
+
+            const serviciosPorCategoria = await Promise.all(
+                categorias.map(async (cat) => {
+                    const servicios = await getServicesByCategory(cat._id);
+                    return { categoriaId: cat._id, servicios };
+                })
+            );
+
+            const servicios = serviciosPorCategoria.flatMap(entry => entry.servicios);
+            setAllServices(servicios);
+        } catch {
+            toast.error("Error al cargar servicios y categorías");
+        }
+    };
+
+    fetchData();
+}, []);
+
     const editingTurno = location.state?.editingTurno;
 
     const [selectedDateTime, setSelectedDateTime] = useState(null);
