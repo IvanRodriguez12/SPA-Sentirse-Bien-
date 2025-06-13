@@ -15,7 +15,7 @@ const AdminTurnos = () => {
   const [clientes, setClientes] = useState([]);
   const [selectedCliente, setSelectedCliente] = useState('');
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [setServicios] = useState([]);
+  
   const [loading, setLoading] = useState({
     turnos: false,
     clientes: false,
@@ -93,12 +93,9 @@ const AdminTurnos = () => {
     'clientes'
   );
 
-  const fetchServicios = () => fetchData(
-    `https://spa-sentirse-bien-production.up.railway.app/api/servicios/listar`,
-    setServicios,
-    'servicios',
-    false
-  );
+  const fetchServicios = async () => {
+    await fetchData(`https://spa-sentirse-bien-production.up.railway.app/api/servicios/listar`, () => {}, 'servicios', false);
+  };
 
   const handleDelete = async (id) => {
     if (window.confirm("¿Eliminar este turno permanentemente?")) {
