@@ -52,7 +52,9 @@ public class SecurityConfig {
                                 "/api/categorias/**",
                                 "/api/admin/registrar",
                                 "/api/admin/login",
-                                "/api/clientes/verificar-email"
+                                "/api/clientes/verificar-email",
+                                "/api/auth/registrar-profesional",
+                                "/api/auth/login-profesional"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/turnos/listar").hasAnyRole("CLIENTE", "ADMIN")
                         .requestMatchers(
@@ -65,8 +67,7 @@ public class SecurityConfig {
                                 "/api/turnos/editar/**",
                                 "/api/servicios/crear",
                                 "/api/servicios/editar/**",
-                                "/api/servicios/eliminar/**",
-                                "/api/auth/registrar-profesional"
+                                "/api/servicios/eliminar/**"
                         ).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )

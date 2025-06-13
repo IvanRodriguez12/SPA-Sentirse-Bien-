@@ -22,6 +22,7 @@ const ContactoModal = lazy(() => import('../components/ContactoModal'));
 const ProfesionalDashboard = lazy(() => import('../pages/admin/ProfesionalDashboard'));
 const CrearAdmin = lazy(() => import('../pages/admin/CrearAdmin'));
 const VerificarEmail = lazy(() => import('../pages/VerificarEmail.jsx'));
+const RegistroProfesional = lazy(() => import('../pages/admin/RegistroProfesional.jsx'));
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -53,6 +54,7 @@ const AppRoutes = () => {
           <Route path="cuentas" element={<AdminCuentas />} />
           <Route path="registrar" element={<AdminRegistrar />} />
           <Route path="crear-admin" element={<CrearAdmin />} />
+          <Route path="registro-profesional" element={<RegistroProfesional />} />
           <Route path="profesional/dashboard" element={<ProfesionalDashboard />} />
         </Route>
 

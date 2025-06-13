@@ -1,15 +1,15 @@
+import "./AdminLogin.css";
+import '../styles/AdminLogin.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const authContext = useAuth();
   const adminAuthContext = useAdminAuth();
 
   const [email, setEmail] = useState('');
@@ -24,9 +24,9 @@ const AdminLogin = () => {
         await adminAuthContext.login(email, password);
       } else {
         // LOGIN PROFESIONAL
-        const response = await axios.post(`${API_URL}/clientes/login`, {
+        const response = await axios.post(`${API_URL}/auth/login-profesional`, {
           email,
-          contrasenia: password,
+          contrasena: password,
         });
 
         const cliente = response.data.cliente;
@@ -36,7 +36,6 @@ const AdminLogin = () => {
           return;
         }
 
-        authContext.login(response.data);
         toast.success(`Bienvenido/a profesional ${cliente.nombreCompleto}`);
         navigate("/profesional/dashboard");
       }
@@ -66,7 +65,12 @@ const AdminLogin = () => {
         />
         <button type="submit">Iniciar sesión</button>
       </form>
-    </div>
+    
+      <div className="registro-link">
+        <a href="/registro-profesional">¿Sos profesional? Registrate</a>
+      </div>
+    
+</div>
   );
 };
 
