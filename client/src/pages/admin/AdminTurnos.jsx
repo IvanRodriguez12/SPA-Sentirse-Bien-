@@ -180,7 +180,8 @@ const AdminTurnos = () => {
               </thead>
               <tbody>
                 {turnos.map(turno => {
-                  const fechaFin = new Date(new Date(turno.fechaHora).getTime() + turno.servicio.duracion * 60000);
+                  const duracionTotal = turno.servicios?.reduce((acc, s) => acc + (s.duracion || 0), 0) || 0;
+const fechaFin = new Date(new Date(turno.fechaHora).getTime() + duracionTotal * 60000);
                   return (
                     <tr key={turno.id}>
                       <td>
@@ -189,7 +190,15 @@ const AdminTurnos = () => {
                       </td>
                       <td>{turno.cliente.nombre}</td>
                       <td>{turno.servicio.nombre}</td>
-                      <td>{turno.servicio.duracion} min</td>
+                      <td>{
+  turno.servicios?.length > 0 ? (
+    turno.servicios.map((servicio, idx) => (
+      <div key={idx}>{servicio.nombre} ({servicio.duracion} min)</div>
+    ))
+  ) : (
+    "Sin servicios"
+  )
+}</td>
                       <td>{turno.estado || 'Pendiente'}</td>
                       <td>
                         <div className="action-buttons">
