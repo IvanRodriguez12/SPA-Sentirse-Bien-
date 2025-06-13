@@ -12,9 +12,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: nowrap;
   position: relative;
   z-index: 1000;
+  flex-wrap: wrap; /* importante para mobile */
 }
 
 /* LOGO */
@@ -37,7 +37,7 @@
   margin: 0;
 }
 
-/* BOTÓN HAMBURGUESA (oculto en escritorio) */
+/* BOTÓN HAMBURGUESA (solo visible en mobile) */
 .hamburger {
   display: none;
   font-size: 2rem;
@@ -117,7 +117,14 @@
 
   .navbar-right a,
   .logout-button {
-    margin: 0.25rem auto;
+    margin: 0.5rem auto;
     width: 80%;
+  }
+
+  .navbar-left {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
