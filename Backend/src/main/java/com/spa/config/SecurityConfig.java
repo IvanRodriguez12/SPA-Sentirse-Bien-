@@ -65,7 +65,8 @@ public class SecurityConfig {
                                 "/api/turnos/editar/**",
                                 "/api/servicios/crear",
                                 "/api/servicios/editar/**",
-                                "/api/servicios/eliminar/**"
+                                "/api/servicios/eliminar/**",
+                                "/api/auth/registrar-profesional"
                         ).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
