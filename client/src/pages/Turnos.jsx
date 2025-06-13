@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import ContactoModal from '../components/ContactoModal';
-import '../styles/Turnos.css'; // Asegúrate de tener un archivo CSS para estilos personalizados
+import '../styles/Turno.css'; // Asegúrate de tener un archivo CSS para estilos personalizados
 
 const Turnos = () => {
     const { user } = useAuth();
