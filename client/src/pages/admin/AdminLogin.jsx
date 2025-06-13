@@ -1,5 +1,4 @@
-import "./AdminLogin.css";
-import '../styles/AdminLogin.css';
+import '../../styles/AdminLogin.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
