@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext';
 import Icon from '../assets/Spa-icon.png'; // Asegúrate de que la ruta sea correcta
 import { useLocation } from 'react-router-dom';
 
-
 const Navbar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -13,6 +12,7 @@ const Navbar = () => {
       backgroundColor: 'var(--verde-medio)',
       padding: '1rem 5%',
       display: 'flex',
+      flexWrap: 'wrap',
       justifyContent: 'space-between',
       alignItems: 'center',
     }}>
@@ -28,10 +28,10 @@ const Navbar = () => {
         </Link>
         <Link to="/" style={linkStyle}>Inicio</Link>
         <Link to="/categorias" style={linkStyle}>Servicios</Link>
-        <Link 
-          to="/contacto" 
+        <Link
+          to="/contacto"
           style={linkStyle}
-          state={{ backgroundLocation: location }} // <-- Esto es clave
+          state={{ backgroundLocation: location }}
         >
           Contacto
         </Link>
@@ -42,7 +42,7 @@ const Navbar = () => {
         {user && (
           <>
             <Link to="/turnos" style={linkStyle}>Turnos</Link>
-            <span style={userNameStyle}>{user.nombre}</span> {/* Mostrar el nombre del usuario */}
+            <span style={userNameStyle}>{user.nombre}</span>
             <button onClick={logout} style={logoutButtonStyle}>
               Cerrar Sesión
             </button>
@@ -89,7 +89,21 @@ const logoStyle = {
   alignItems: 'center',
 };
 
-// Estilo botón Iniciar Sesión
+// Estilos responsive con `@media`
+const responsiveStyles = {
+  '@media (max-width: 768px)': {
+    nav: {
+      flexDirection: 'column',
+      textAlign: 'center',
+    },
+    '.menu': {
+      flexDirection: 'column',
+      gap: '10px',
+    },
+  }
+};
+
+// Estilos botones
 const loginButtonStyle = {
   ...baseButtonStyle,
   backgroundColor: 'transparent',
@@ -97,7 +111,6 @@ const loginButtonStyle = {
   color: 'var(--verde-oscuro)',
 };
 
-// Estilo botón Registrarse
 const registerButtonStyle = {
   ...baseButtonStyle,
   backgroundColor: 'var(--rosa-medio)',
@@ -107,14 +120,12 @@ const registerButtonStyle = {
   alignItems: 'center',
 };
 
-// Estilo botón Cerrar Sesión
 const logoutButtonStyle = {
   ...baseButtonStyle,
   backgroundColor: 'var(--verde-oscuro)',
   color: 'white',
 };
 
-// Estilo para el nombre del usuario
 const userNameStyle = {
   fontWeight: 'bold',
   color: 'var(--texto-oscuro)',
