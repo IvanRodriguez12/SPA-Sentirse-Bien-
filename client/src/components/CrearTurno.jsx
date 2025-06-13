@@ -26,13 +26,13 @@ const CrearTurno = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('adminToken');
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
       try {
         const [clientesRes, serviciosRes] = await Promise.all([
-          axios.get(`${API_URL}/clientes`, config),
-          axios.get(`${API_URL}/servicios`, config),
+          axios.get(`${API_URL}/admin/clientes`, config),
+          axios.get(`${API_URL}/servicios/listar`, config),
         ]);
 
         const clientesData = clientesRes.data;
@@ -52,7 +52,7 @@ const CrearTurno = () => {
 
   const onSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('adminToken');
       await axios.post(`${API_URL}/turnos`, data, {
         headers: {
           Authorization: `Bearer ${token}`,

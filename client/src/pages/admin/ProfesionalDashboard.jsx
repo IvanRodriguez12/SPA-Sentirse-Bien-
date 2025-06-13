@@ -47,7 +47,16 @@ const ProfesionalDashboard = () => {
         Mostrar solo mis turnos
       </label>
 
-      {turnos.length === 0 ? (
+      <div className="turno-card">
+        <div className="turno-grid">
+          <div><span className="turno-label">Servicio:</span></div>
+          <div><span className="turno-label">Hora:</span></div>
+          <div><span className="turno-label">Precio:</span></div>
+          <div><span className="turno-label">Profesional:</span></div>
+          <div><span className="turno-label">Cliente:</span></div>
+        </div>
+    </div>
+    {turnos.length === 0 ? (
         <p>No hay turnos para mostrar.</p>
       ) : (
         turnos.map((turno, idx) => (
