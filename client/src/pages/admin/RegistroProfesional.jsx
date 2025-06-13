@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/AdminLogin.css';
+import '../../styles/AdminLogin.css';
 
 const RegistroProfesional = () => {
   const [formData, setFormData] = useState({
