@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
 
       if (cliente.profesion) {
-        navigate('/profesional/dashboard');
+        navigate('/admin/profesional/dashboard');
       } else {
         navigate('/');
       }
