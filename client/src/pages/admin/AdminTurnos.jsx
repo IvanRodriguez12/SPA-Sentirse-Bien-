@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import Modal from 'react-modal';
 import '../../styles/admin.css';
+import CrearTurno from '../../components/CrearTurno';
 import AdminHeader from './AdminHeader';
 
 Modal.setAppElement('#root');
