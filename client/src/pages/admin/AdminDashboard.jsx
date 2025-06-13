@@ -39,8 +39,8 @@ const AdminDashboard = () => {
       }}>
         {/* Nuevo card para registro de administradores */}
         <Link to="/admin/registrar" className="admin-card">
-          <h3>Registrar Administradores</h3>
-          <p>Crear nuevas cuentas de administradores</p>
+          <h3>Registrar Cuentas</h3>
+          <p>Crear nuevas cuentas de Clientes o Profesionales</p>
         </Link>
 
         <Link to="/admin/servicios" className="admin-card">
@@ -55,7 +55,7 @@ const AdminDashboard = () => {
         
         <Link to="/admin/cuentas" className="admin-card">
           <h3>Gestionar Cuentas</h3>
-          <p>Administra clientes y otros administradores</p>
+          <p>Administra clientes y Profesionales</p>
         </Link>
       </div>
     </div>

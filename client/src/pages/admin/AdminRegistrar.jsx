@@ -1,83 +1,50 @@
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
-const schema = yup.object().shape({
-  nombre: yup.string().required('El nombre es requerido'),
-  email: yup.string().email('Email inválido').required('El email es requerido'),
-  dni: yup.string().required('El DNI es requerido'),
-  telefono: yup.string().required('El teléfono es requerido'),
-  profesion: yup.string().notRequired(),
-  contrasena: yup.string().min(6, 'Mínimo 6 caracteres').required('La contraseña es requerida'),
-  confirmarContrasena: yup.string()
-    .oneOf([yup.ref('contrasena'), null], 'Las contraseñas no coinciden')
-    .required('Confirma tu contraseña'),
-});
-
 const AdminRegistrar = () => {
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
-    resolver: yupResolver(schema)
+  const [formData, setFormData] = useState({
+    nombre: '',
+    email: '',
+    telefono: '',
+    contrasena: '',
+    profesion: '',
   });
 
-  const onSubmit = async (data) => {
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const body = {
-        nombre: data.nombre,
-        email: data.email,
-        dni: data.dni,
-        telefono: data.telefono,
-        profesion: data.profesion || null,
-        contrasena: data.contrasena,
-      };
-
-      await axios.post(`${API_URL}/clientes`, body);
-
-      toast.success("Usuario registrado exitosamente");
-      reset();
+      await axios.post(`${API_URL}/clientes/registrar`, formData);
+      if (formData.profesion?.trim()) {
+        toast.success("Profesional registrado exitosamente");
+      } else {
+        toast.success("Cliente registrado exitosamente");
+      }
     } catch (error) {
-      console.error(error);
-      toast.error("Error al registrar usuario");
+      console.error("Error al registrar:", error);
+      toast.error("Error al registrar al cliente o profesional");
     }
   };
 
   return (
-    <div className="form-container">
-      <h2>Registrar nuevo usuario o profesional</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-
-        <label>Nombre</label>
-        <input {...register("nombre")} />
-        <p>{errors.nombre?.message}</p>
-
-        <label>Email</label>
-        <input {...register("email")} type="email" />
-        <p>{errors.email?.message}</p>
-
-        <label>DNI</label>
-        <input {...register("dni")} />
-        <p>{errors.dni?.message}</p>
-
-        <label>Teléfono</label>
-        <input {...register("telefono")} />
-        <p>{errors.telefono?.message}</p>
-
-        <label>Profesión (opcional, si es profesional)</label>
-        <input {...register("profesion")} />
-        <p>{errors.profesion?.message}</p>
-
-        <label>Contraseña</label>
-        <input {...register("contrasena")} type="password" />
-        <p>{errors.contrasena?.message}</p>
-
-        <label>Confirmar Contraseña</label>
-        <input {...register("confirmarContrasena")} type="password" />
-        <p>{errors.confirmarContrasena?.message}</p>
-
-        <button type="submit" disabled={isSubmitting}>Registrar</button>
+    <div className="registro-container">
+      <h2>Registrar Cliente o Profesional</h2>
+      <form onSubmit={handleSubmit}>
+        <input name="nombre" placeholder="Nombre completo" value={formData.nombre} onChange={handleChange} required />
+        <input name="email" type="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+        <input name="telefono" placeholder="Teléfono" value={formData.telefono} onChange={handleChange} required />
+        <input name="contrasena" type="password" placeholder="Contraseña" value={formData.contrasena} onChange={handleChange} required />
+        <input name="profesion" placeholder="Profesión (vacío si es cliente)" value={formData.profesion} onChange={handleChange} />
+        <button type="submit">Registrar</button>
       </form>
     </div>
   );
