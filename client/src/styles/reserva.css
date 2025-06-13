@@ -1,7 +1,8 @@
 :root {
-  --verde-claro: #a8dbc5;
-  --verde-oscuro: #2a7d62;
-  --rosa-acento: #ff9eb0;
+  --verde-medio: #a5d6a7;
+  --verde-oscuro: #388e3c;
+  --rosa-medio: #f48fb1;
+  --texto-oscuro: #333333;
 }
 
 .reserva-container {
@@ -13,6 +14,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Botón "Añadir Servicio" */
 .btn-agregar {
   margin: 1rem 0;
   padding: 0.6rem 1.4rem;
@@ -23,6 +25,34 @@
   font-weight: bold;
   cursor: pointer;
 }
+
 .btn-agregar:hover {
-  background-color: var(--verde-claro);
+  background-color: var(--verde-medio);
+}
+
+/* Botón de eliminar servicio (la "X") */
+.btn-eliminar {
+  background-color: var(--rosa-medio);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+
+.btn-eliminar:hover {
+  background-color: #ec407a; /* un tono más fuerte del rosa */
+}
+
+/* Resumen de pago */
+.resumen-pago {
+  background-color: var(--verde-medio);
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border-radius: 12px;
+  color: var(--texto-oscuro);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-weight: 500;
 }
