@@ -24,7 +24,11 @@ const AdminRegistrar = () => {
     e.preventDefault();
     try {
       const adminToken = localStorage.getItem("adminToken");
-      await axios.post(`${API_URL}/clientes/registrar`, formData, {
+      const endpoint = formData.profesion?.trim()
+        ? `${API_URL}/auth/registrar-profesional`
+        : `${API_URL}/auth/register`;
+
+      await axios.post(endpoint, formData, {
         headers: {
           Authorization: `Bearer ${adminToken}`
         }
