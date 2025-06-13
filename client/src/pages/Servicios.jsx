@@ -32,14 +32,15 @@ const Servicio = () => {
   }
 
   const handleReserve = () => {
-    console.log("Servicios seleccionados para reservar:", selectedServices);
-    if (!user) {
-      navigate('/login');
-    } else if (!user.emailVerificado) {
-    alert("Debes verificar tu correo antes de poder reservar un turno.");
-    } else {
-      navigate('/reservas', { state: { services: selectedServices } });
-    }
+      console.log("Servicios seleccionados para reservar:", selectedServices);
+      if (!user) {
+        alert("Debes iniciar sesión antes de poder reservar un turno.");
+        navigate('/login');
+      } else if (!user.emailVerificado) {
+        alert("Debes verificar tu correo antes de poder reservar un turno.");
+      } else {
+        navigate('/reservas', { state: { services: selectedServices } });
+      }
   };
 
   return (
