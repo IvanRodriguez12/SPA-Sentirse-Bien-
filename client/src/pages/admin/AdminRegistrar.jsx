@@ -23,7 +23,13 @@ const AdminRegistrar = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/clientes/registrar`, formData);
+      const adminToken = localStorage.getItem("adminToken");
+      await axios.post(`${API_URL}/clientes/registrar`, formData, {
+        headers: {
+          Authorization: `Bearer ${adminToken}`
+        }
+      });
+
       if (formData.profesion?.trim()) {
         toast.success("Profesional registrado exitosamente");
       } else {
