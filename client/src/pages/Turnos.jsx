@@ -11,10 +11,9 @@ const Turnos = () => {
     const [turnos, setTurnos] = useState([]);
     const [showContactModal, setShowContactModal] = useState(false);
 
-    // Función para formatear fecha y hora en zona horaria argentina
-    const formatearFechaArgentina = (fechaISO) => {
-        const fecha = new Date(fechaISO);
-        return fecha.toLocaleDateString('es-AR', {
+    const formatearFecha = (iso) => {
+        const date = new Date(iso);
+        return date.toLocaleDateString('es-AR', {
             timeZone: 'America/Argentina/Buenos_Aires',
             year: 'numeric',
             month: '2-digit',
@@ -22,9 +21,9 @@ const Turnos = () => {
         });
     };
 
-    const formatearHoraArgentina = (fechaISO) => {
-        const fecha = new Date(fechaISO);
-        return fecha.toLocaleTimeString('es-AR', {
+    const formatearHora = (iso) => {
+        const date = new Date(iso);
+        return date.toLocaleTimeString('es-AR', {
             timeZone: 'America/Argentina/Buenos_Aires',
             hour: '2-digit',
             minute: '2-digit',
@@ -35,18 +34,21 @@ const Turnos = () => {
     useEffect(() => {
         const fetchTurnos = async () => {
             const token = localStorage.getItem("authToken");
-            if (!user || !user.id || !token) return;
+            if (!user || !token) return;
 
             try {
-                const response = await axios.get(`https://spa-sentirse-bien-production.up.railway.app/api/turnos/listar`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
+                const response = await axios.get(
+                    `https://spa-sentirse-bien-production.up.railway.app/api/turnos/listar`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
                     }
-                });
+                );
 
-                const userTurnos = response.data.filter((turno) => turno.cliente.id === user.id);
-                setTurnos(userTurnos);
+                // ❗ No filtramos por cliente porque ya estamos usando un DTO (strings)
+                setTurnos(response.data);
             } catch (error) {
                 console.error("Error al cargar los turnos:", error.response?.data || error.message);
                 toast.error("Hubo un problema al cargar tus turnos.");
@@ -93,12 +95,7 @@ const Turnos = () => {
 
     return (
         <div style={{ padding: '2rem' }}>
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '1.5rem'
-            }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                 <button
                     onClick={handleNewReservation}
                     style={{
@@ -121,12 +118,7 @@ const Turnos = () => {
                         color: 'var(--verde-oscuro)',
                         border: '1px solid var(--verde-oscuro)',
                         borderRadius: '25px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        ':hover': {
-                            backgroundColor: 'var(--verde-oscuro)',
-                            color: 'white'
-                        }
+                        cursor: 'pointer'
                     }}
                 >
                     Arrepentirse del turno
@@ -135,10 +127,7 @@ const Turnos = () => {
 
             <ul style={{ listStyle: 'none', padding: 0 }}>
                 {turnos.map((turno) => {
-                    const fechaInicio = new Date(turno.fechaHora);
-                    const duracionTotal = turno.servicios.reduce((total, servicio) => total + servicio.duracion, 0);
-                    const fechaFin = new Date(fechaInicio.getTime() + duracionTotal * 60000);
-
+                    const fecha = new Date(turno.horaInicio);
                     return (
                         <li
                             key={turno.id}
@@ -151,11 +140,10 @@ const Turnos = () => {
                             }}
                         >
                             <div>
-                                <p><strong>Servicios:</strong> {turno.servicios.map(servicio => servicio.nombre).join(", ")}</p>
-                                <p><strong>Fecha:</strong> {formatearFechaArgentina(turno.fechaHora)}</p>
-                                <p><strong>Hora inicio:</strong> {formatearHoraArgentina(turno.fechaHora)}</p>
-                                <p><strong>Hora fin:</strong> {formatearHoraArgentina(fechaFin.toISOString())}</p>
-                                <p><strong>Duración total:</strong> {duracionTotal} minutos</p>
+                                <p><strong>Servicios:</strong> {turno.servicios.join(", ")}</p>
+                                <p><strong>Fecha:</strong> {formatearFecha(fecha)}</p>
+                                <p><strong>Hora:</strong> {formatearHora(fecha)}</p>
+                                <p><strong>Profesional:</strong> {turno.profesionalNombre}</p>
                             </div>
                         </li>
                     );
