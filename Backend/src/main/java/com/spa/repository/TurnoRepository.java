@@ -15,6 +15,9 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
     @Query("SELECT DISTINCT t FROM Turno t JOIN FETCH t.cliente LEFT JOIN FETCH t.servicios WHERE t.id = :id")
     Optional<Turno> findByIdWithDetails(@Param("id") Long id);
 
+    @Query("SELECT t FROM Turno t JOIN FETCH t.profesionales p WHERE p = :profesional")
+    List<Turno> buscarTurnosPorProfesional(@Param("profesional") Cliente profesional);
+
     @Transactional
     @Modifying
     @Query("DELETE FROM Turno t WHERE t.cliente.id = :clienteId")

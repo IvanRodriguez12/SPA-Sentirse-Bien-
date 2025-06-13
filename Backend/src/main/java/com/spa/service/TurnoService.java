@@ -195,7 +195,7 @@ public class TurnoService {
             throw new RuntimeException("Este usuario no tiene una profesión asignada.");
         }
 
-        List<Turno> turnosAsignados = turnoRepository.findByProfesionalesContaining(profesional);
+        List<Turno> turnosAsignados = turnoRepository.buscarTurnosPorProfesional(profesional);
 
         ZonedDateTime ahoraArgentina = ZonedDateTime.now(ZONA_ARGENTINA);
         LocalDate hoyInicio = ahoraArgentina.toLocalDate();
