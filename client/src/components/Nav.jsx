@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Icon from '../assets/Spa-icon.png'; // Asegúrate de que la ruta sea correcta
+import Icon from '../assets/Spa-icon.png';
 import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
@@ -8,54 +8,34 @@ const Navbar = () => {
   const location = useLocation();
 
   return (
-    <nav style={{
-      backgroundColor: 'var(--verde-medio)',
-      padding: '1rem 5%',
-      display: 'flex',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    }}>
+    <nav style={navStyle}>
       {/* Sección izquierda */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={menuContainerStyle}>
         <Link to="/" style={logoStyle}>
-          <img
-            src={Icon}
-            alt="Spa Icon"
-            style={{ width: '40px', height: '40px', marginRight: '0.5rem' }}
-          />
-          <h1 style={{ margin: 0, display: 'inline-block' }}>SPA “Sentirse bien” </h1>
+          <img src={Icon} alt="Spa Icon" style={iconStyle} />
+          <h1 style={titleStyle}>SPA “Sentirse bien”</h1>
         </Link>
-        <Link to="/" style={linkStyle}>Inicio</Link>
-        <Link to="/categorias" style={linkStyle}>Servicios</Link>
-        <Link
-          to="/contacto"
-          style={linkStyle}
-          state={{ backgroundLocation: location }}
-        >
-          Contacto
-        </Link>
+        <div style={menuLinksStyle}>
+          <Link to="/" style={linkStyle}>Inicio</Link>
+          <Link to="/categorias" style={linkStyle}>Servicios</Link>
+          <Link to="/contacto" style={linkStyle} state={{ backgroundLocation: location }}>
+            Contacto
+          </Link>
+        </div>
       </div>
 
       {/* Sección derecha */}
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        {user && (
+      <div style={menuContainerStyle}>
+        {user ? (
           <>
             <Link to="/turnos" style={linkStyle}>Turnos</Link>
             <span style={userNameStyle}>{user.nombre}</span>
-            <button onClick={logout} style={logoutButtonStyle}>
-              Cerrar Sesión
-            </button>
+            <button onClick={logout} style={logoutButtonStyle}>Cerrar Sesión</button>
           </>
-        )}
-        {!user && (
+        ) : (
           <>
-            <Link to="/login" style={loginButtonStyle}>
-              Iniciar Sesión
-            </Link>
-            <Link to="/registro" style={registerButtonStyle}>
-              Registrarse
-            </Link>
+            <Link to="/login" style={loginButtonStyle}>Iniciar Sesión</Link>
+            <Link to="/registro" style={registerButtonStyle}>Registrarse</Link>
           </>
         )}
       </div>
@@ -63,23 +43,32 @@ const Navbar = () => {
   );
 };
 
-// Estilos base
-const baseButtonStyle = {
-  padding: '0.5rem 1.5rem',
-  borderRadius: '25px',
-  textDecoration: 'none',
-  textAlign: 'center',
-  transition: 'all 0.3s ease',
-  fontWeight: '500',
+// Estilos adaptativos para centrar en cualquier dispositivo
+const navStyle = {
+  backgroundColor: 'var(--verde-medio)',
+  padding: '1rem 5%',
+  maxWidth: '1200px', // Limita el ancho en pantallas grandes
+  margin: '0 auto', // Centra el navbar en cualquier tamaño de pantalla
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  textAlign: 'center', // Centrado en móviles
 };
 
-// Estilo para los links principales
-const linkStyle = {
-  ...baseButtonStyle,
-  color: 'var(--texto-oscuro)',
+const menuContainerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '1rem',
+  width: '100%',
+  justifyContent: 'center', // Centra los elementos horizontalmente
 };
 
-// Estilo del logo
+const menuLinksStyle = {
+  display: 'flex',
+  gap: '1rem',
+};
+
 const logoStyle = {
   textDecoration: 'none',
   color: 'var(--texto-oscuro)',
@@ -89,21 +78,31 @@ const logoStyle = {
   alignItems: 'center',
 };
 
-// Estilos responsive con `@media`
-const responsiveStyles = {
-  '@media (max-width: 768px)': {
-    nav: {
-      flexDirection: 'column',
-      textAlign: 'center',
-    },
-    '.menu': {
-      flexDirection: 'column',
-      gap: '10px',
-    },
-  }
+const iconStyle = {
+  width: '40px',
+  height: '40px',
+  marginRight: '0.5rem',
 };
 
-// Estilos botones
+const titleStyle = {
+  margin: 0,
+  display: 'inline-block',
+};
+
+const baseButtonStyle = {
+  padding: '0.5rem 1.5rem',
+  borderRadius: '25px',
+  textDecoration: 'none',
+  textAlign: 'center',
+  transition: 'all 0.3s ease',
+  fontWeight: '500',
+};
+
+const linkStyle = {
+  ...baseButtonStyle,
+  color: 'var(--texto-oscuro)',
+};
+
 const loginButtonStyle = {
   ...baseButtonStyle,
   backgroundColor: 'transparent',
