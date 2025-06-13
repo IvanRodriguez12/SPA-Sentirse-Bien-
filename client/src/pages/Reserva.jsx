@@ -35,6 +35,7 @@ const Reserva = () => {
     const [pagarAhora, setPagarAhora] = useState(false);
     const [cardDetails, setCardDetails] = useState({ numero: '', vencimiento: '', cvv: '' });
     const [loadingServices, setLoadingServices] = useState(false);
+    const [showMetodoPagoError, setShowMetodoPagoError] = useState(false);
 
     useEffect(() => {
         const fetchServiciosYCategorias = async () => {
@@ -148,6 +149,14 @@ const Reserva = () => {
 
     const handleReserva = async (e) => {
         e.preventDefault();
+
+        if (!metodoPago) {
+            setShowMetodoPagoError(true);
+            toast.error("Por favor seleccioná un método de pago.");
+            return;
+        }
+        setShowMetodoPagoError(false);
+
         if (!validarDatosTarjeta()) return;
 
         try {
@@ -196,6 +205,7 @@ const Reserva = () => {
                     setPagarAhora={setPagarAhora}
                     cardDetails={cardDetails}
                     setCardDetails={setCardDetails}
+                    showError={showMetodoPagoError}
                 />
                 <BotonConfirmar handleClick={handleReserva} editingTurno={editingTurno} />
             </form>
