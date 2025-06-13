@@ -37,11 +37,6 @@ const AdminDashboard = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
         gap: '1.5rem' 
       }}>
-        {/* Nuevo card para registro de administradores */}
-        <Link to="/admin/registrar" className="admin-card">
-          <h3>Registrar Cuentas</h3>
-          <p>Crear nuevas cuentas de Clientes o Profesionales</p>
-        </Link>
 
         <Link to="/admin/servicios" className="admin-card">
           <h3>Gestionar Servicios</h3>

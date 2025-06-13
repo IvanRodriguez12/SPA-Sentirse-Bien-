@@ -15,8 +15,7 @@ const AdminTurnos = () => {
   const [clientes, setClientes] = useState([]);
   const [selectedCliente, setSelectedCliente] = useState('');
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [currentTurno, setCurrentTurno] = useState(null);
-  const [servicios, setServicios] = useState([]);
+  const [setServicios] = useState([]);
   const [loading, setLoading] = useState({
     turnos: false,
     clientes: false,
@@ -25,7 +24,6 @@ const AdminTurnos = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Verificar token al montar el componente
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
     if (!token) {
@@ -130,112 +128,6 @@ const AdminTurnos = () => {
     }
   };
 
-  const handleEdit = (turno) => {
-    setCurrentTurno({
-      ...turno,
-      fechaHora: new Date(turno.fechaHora).toISOString().slice(0, 16),
-      estado: turno.estado || 'PENDIENTE' // Asegurar valor por defecto
-    });
-    setEditModalOpen(true);
-  };
-
-  const handleSubmitEdit = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem('adminToken');
-      if (!token) {
-        toast.error('Sesión expirada. Por favor inicie sesión nuevamente');
-        navigate('/admin/login');
-        return;
-      }
-
-      // 1. Validación extendida del token
-      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-      const now = Math.floor(Date.now() / 1000);
-      if (tokenPayload.exp < now) {
-        toast.error('Tu sesión ha expirado');
-        localStorage.removeItem('adminToken');
-        navigate('/admin/login');
-        return;
-      }
-
-      // 2. Preparar datos con validación estricta
-      const turnoData = {
-        fechaHora: new Date(currentTurno.fechaHora).toISOString(),
-        servicioId: Number(currentTurno.servicio.id),
-        clienteId: Number(currentTurno.cliente.id),
-        estado: currentTurno.estado || 'PENDIENTE'
-      };
-
-      // 3. Configuración de axios con credenciales
-      const config = {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        withCredentials: true,
-        timeout: 10000
-      };
-
-      // 4. Interceptor para capturar errores detallados
-      const instance = axios.create();
-      instance.interceptors.response.use(
-        response => response,
-        error => {
-          if (error.response?.status === 403) {
-            const errorMessage = error.response.headers['x-error-message'] ||
-                               error.response.data?.message ||
-                               'Acceso denegado';
-            console.error('Error 403 Detallado:', {
-              status: error.response.status,
-              headers: error.response.headers,
-              data: error.response.data,
-              errorMessage
-            });
-            error.message = errorMessage; // Sobrescribir mensaje genérico
-          }
-          return Promise.reject(error);
-        }
-      );
-
-      // 5. Realizar petición
-      const response = await instance.put(
-        `https://spa-sentirse-bien-production.up.railway.app/api/admin/turnos/${currentTurno.id}`,
-        turnoData,
-        config
-      );
-
-      if (response.status === 200) {
-        toast.success('Turno actualizado correctamente');
-        setEditModalOpen(false);
-        fetchTurnos(selectedCliente);
-      }
-    } catch (error) {
-      console.error('Error completo al actualizar turno:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        headers: error.response?.headers
-      });
-
-      // 6. Manejo específico de error 403
-      if (error.response?.status === 403) {
-        if (error.message.includes('CSRF') || error.message.includes('csrf')) {
-          toast.error('Error de seguridad. Recarga la página e intenta nuevamente');
-        } else if (error.message.includes('role') || error.message.includes('permiso')) {
-          toast.error('No tienes permisos suficientes para esta acción');
-          localStorage.removeItem('adminToken');
-          navigate('/admin/login');
-        } else {
-          toast.error(`Acceso denegado: ${error.message}`);
-        }
-      } else {
-        toast.error(error.message || 'Error al actualizar el turno');
-      }
-    }
-  };
-
   if (loading.clientes || loading.servicios) {
     return <div className="admin-panel">Cargando datos iniciales...</div>;
   }
@@ -302,12 +194,6 @@ const AdminTurnos = () => {
                       <td>
                         <div className="action-buttons">
                           <button
-                            className="admin-button"
-                            onClick={() => handleEdit(turno)}
-                          >
-                            Editar
-                          </button>
-                          <button
                             className="admin-button delete-button"
                             onClick={() => handleDelete(turno.id)}
                           >
@@ -321,8 +207,8 @@ const AdminTurnos = () => {
               </tbody>
             </table>
 
-      <h3 style={{ marginTop: '2rem' }}>Crear nuevo turno</h3>
-      <CrearTurno />
+            <h3 style={{ marginTop: '2rem' }}>Crear nuevo turno</h3>
+            <CrearTurno />
           </div>
         )}
       </div>
@@ -333,78 +219,6 @@ const AdminTurnos = () => {
         className="admin-modal"
         overlayClassName="modal-overlay"
       >
-        <div className="modal-header">
-          <h3>Editar Turno</h3>
-          <button
-            onClick={() => setEditModalOpen(false)}
-            className="admin-button close-button"
-          >
-            ×
-          </button>
-        </div>
-        {currentTurno && (
-          <form onSubmit={handleSubmitEdit}>
-            <div className="form-group">
-              <label>Fecha y Hora:</label>
-              <input
-                type="datetime-local"
-                value={currentTurno.fechaHora}
-                onChange={(e) => setCurrentTurno({...currentTurno, fechaHora: e.target.value})}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Servicio:</label>
-              <select
-                value={currentTurno.servicio?.id || ''}
-                onChange={(e) => setCurrentTurno({
-                  ...currentTurno,
-                  servicio: servicios.find(s => s.id == e.target.value)
-                })}
-                required
-              >
-                {servicios.map(servicio => (
-                  <option key={servicio.id} value={servicio.id}>
-                    {servicio.nombre} ({servicio.duracion} min)
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Duración:</label>
-              <input
-                type="text"
-                value={currentTurno.servicio?.duracion ? `${currentTurno.servicio.duracion} minutos` : 'No definida'}
-                disabled
-                className="disabled-input"
-              />
-            </div>
-            <div className="form-group">
-              <label>Estado:</label>
-              <select
-                value={currentTurno.estado || 'PENDIENTE'}
-                onChange={(e) => setCurrentTurno({...currentTurno, estado: e.target.value})}
-              >
-                <option value="PENDIENTE">Pendiente</option>
-                <option value="CONFIRMADO">Confirmado</option>
-                <option value="CANCELADO">Cancelado</option>
-                <option value="COMPLETADO">Completado</option>
-              </select>
-            </div>
-            <div className="button-group">
-              <button type="submit" className="admin-button">
-                Guardar Cambios
-              </button>
-              <button
-                type="button"
-                className="admin-button cancel-button"
-                onClick={() => setEditModalOpen(false)}
-              >
-                Cancelar
-              </button>
-            </div>
-          </form>
-        )}
       </Modal>
     </div>
   );
