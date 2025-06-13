@@ -66,7 +66,7 @@ const AdminLogin = () => {
       </form>
     
       <div className="registro-link">
-        <a href="/registro-profesional">¿Sos profesional? Registrate</a>
+        <a href="/admin/registro-profesional">¿Sos profesional? Registrate</a>
       </div>
     
 </div>
