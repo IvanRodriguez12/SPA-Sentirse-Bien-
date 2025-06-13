@@ -1,16 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { AuthContext } from '../../context/AuthContext';
-import { AdminAuthContext } from '../../context/AdminAuthContext';
+import { useAuth } from '../../context/AuthContext';
+import { useAdminAuth } from '../../context/AdminAuthContext';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const authContext = useContext(AuthContext);
-  const adminAuthContext = useContext(AdminAuthContext);
+  const authContext = useAuth();
+  const adminAuthContext = useAdminAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
