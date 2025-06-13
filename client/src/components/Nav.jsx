@@ -7,13 +7,12 @@ import './Navbar.css';
 const Navbar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
-    handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -22,32 +21,36 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="navbar-left">
+      <div className="logo-container">
         <Link to="/" className="logo-link" onClick={closeMenu}>
           <img src={Icon} alt="Spa Icon" className="navbar-icon" />
-          <h1 className="navbar-title">SPA “Sentirse bien”</h1>
+          <span className="navbar-title">SPA “Sentirse bien”</span>
         </Link>
       </div>
 
-      <button className="hamburger" onClick={toggleMenu}>
-        ☰
-      </button>
+      {/* Botón hamburguesa visible solo en mobile */}
+      {isMobile && (
+        <button className="hamburger" onClick={toggleMenu}>
+          ☰
+        </button>
+      )}
 
-      <div className={`navbar-right ${menuOpen ? 'open' : ''}`}>
-        <Link to="/" className="nav-link" onClick={closeMenu}>Inicio</Link>
-        <Link to="/categorias" className="nav-link" onClick={closeMenu}>Servicios</Link>
-        <Link to="/contacto" className="nav-link" state={{ backgroundLocation: location }} onClick={closeMenu}>Contacto</Link>
+      {/* Menú principal */}
+      <div className={`navbar-links ${isMobile && menuOpen ? 'mobile-menu open' : isMobile ? 'mobile-menu' : ''}`}>
+        <Link to="/" onClick={closeMenu}>Inicio</Link>
+        <Link to="/categorias" onClick={closeMenu}>Servicios</Link>
+        <Link to="/contacto" state={{ backgroundLocation: location }} onClick={closeMenu}>Contacto</Link>
 
         {user ? (
           <>
-            <Link to="/turnos" className="nav-link" onClick={closeMenu}>Turnos</Link>
+            <Link to="/turnos" onClick={closeMenu}>Turnos</Link>
             <span className="user-name">{user.nombre}</span>
-            <button onClick={() => { logout(); closeMenu(); }} className="logout-button">Cerrar Sesión</button>
+            <button onClick={() => { logout(); closeMenu(); }} className="navbar-button">Cerrar Sesión</button>
           </>
         ) : (
           <>
-            <Link to="/login" className="login-button" onClick={closeMenu}>Iniciar Sesión</Link>
-            <Link to="/registro" className="register-button" onClick={closeMenu}>Registrarse</Link>
+            <Link to="/login" onClick={closeMenu} className="navbar-button">Iniciar Sesión</Link>
+            <Link to="/registro" onClick={closeMenu} className="navbar-button register">Registrarse</Link>
           </>
         )}
       </div>
