@@ -11,7 +11,10 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      if (window.innerWidth > 768) setMenuOpen(false); // cerrar el menú si pasás a desktop
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -21,22 +24,20 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="logo-container">
+      <div className="navbar-left">
         <Link to="/" className="logo-link" onClick={closeMenu}>
           <img src={Icon} alt="Spa Icon" className="navbar-icon" />
-          <span className="navbar-title">SPA “Sentirse bien”</span>
+          <h1 className="navbar-title">SPA “Sentirse bien”</h1>
         </Link>
       </div>
 
-      {/* Botón hamburguesa visible solo en mobile */}
       {isMobile && (
         <button className="hamburger" onClick={toggleMenu}>
           ☰
         </button>
       )}
 
-      {/* Menú principal */}
-      <div className={`navbar-links ${isMobile && menuOpen ? 'mobile-menu open' : isMobile ? 'mobile-menu' : ''}`}>
+      <div className={`navbar-links ${isMobile ? 'mobile' : ''} ${menuOpen ? 'open' : ''}`}>
         <Link to="/" onClick={closeMenu}>Inicio</Link>
         <Link to="/categorias" onClick={closeMenu}>Servicios</Link>
         <Link to="/contacto" state={{ backgroundLocation: location }} onClick={closeMenu}>Contacto</Link>
