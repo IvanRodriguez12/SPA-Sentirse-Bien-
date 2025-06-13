@@ -189,7 +189,19 @@ const fechaFin = new Date(new Date(turno.fechaHora).getTime() + duracionTotal * 
                         <small>Fin: {fechaFin.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
                       </td>
                       <td>{turno.cliente.nombre}</td>
-                      <td>{turno.servicio.nombre}</td>
+                      <td>
+  {Array.isArray(turno.servicios) && turno.servicios.length > 0 ? (
+    turno.servicios.map((servicio, idx) =>
+      servicio ? (
+        <div key={idx}>{servicio.nombre ?? 'Sin nombre'}</div>
+      ) : (
+        <div key={idx}>Servicio inválido</div>
+      )
+    )
+  ) : (
+    "Sin servicios"
+  )}
+</td>
                       <td>{
   turno.servicios?.length > 0 ? (
     turno.servicios.map((servicio, idx) => (
