@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import '../../styles/ProfesionalDashboard.css';
 
-const DashboardProfesional = () => {
+const ProfesionalDashboard = () => {
   const [turnos, setTurnos] = useState([]);
   const [filtrarPropios, setFiltrarPropios] = useState(false);
   const usuario = JSON.parse(localStorage.getItem('authUser'));
@@ -14,14 +14,14 @@ const DashboardProfesional = () => {
   const fetchTurnos = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get(
-        `https://spa-sentirse-bien-production.up.railway.app/api/turnos/profesional/${usuario.id}?fechaInicio=${hoy}&fechaFin=${manana}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const url = filtrarPropios
+        ? `/api/turnos/profesional/${usuario.id}?fechaInicio=${hoy}&fechaFin=${manana}`
+        : `/api/turnos/listar?fechaInicio=${hoy}&fechaFin=${manana}`;
+
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       setTurnos(response.data);
     } catch (error) {
       console.error("Error al obtener turnos", error);
@@ -32,11 +32,7 @@ const DashboardProfesional = () => {
     if (usuario?.profesion) {
       fetchTurnos();
     }
-  }, []);
-
-  const turnosFiltrados = filtrarPropios
-    ? turnos.filter(t => t.profesional?.id === usuario.id)
-    : turnos;
+  }, [filtrarPropios]);
 
   return (
     <div className="dashboard-container">
@@ -50,18 +46,24 @@ const DashboardProfesional = () => {
         />
         Mostrar solo mis turnos
       </label>
-      <ul className="turno-list">
-        {turnosFiltrados.map((turno) => (
-          <li key={turno.id} className="turno-item">
-            <strong>{format(new Date(turno.fecha), 'eeee dd/MM', { locale: es })}</strong><br />
-            {turno.hora} - {turno.servicio?.nombre}<br />
-            Cliente: {turno.cliente?.nombre}<br />
-            Profesional: {turno.profesional?.nombre}
-          </li>
-        ))}
-      </ul>
+
+      {turnos.length === 0 ? (
+        <p>No hay turnos para mostrar.</p>
+      ) : (
+        turnos.map((turno, idx) => (
+          <div className="turno-card" key={idx}>
+            <div className="turno-grid">
+              <div><span className="turno-label">Servicio:</span> {turno.servicio?.nombre}</div>
+              <div><span className="turno-label">Hora:</span> {turno.horaInicio}</div>
+              <div><span className="turno-label">Precio:</span> ${turno.precio}</div>
+              <div><span className="turno-label">Profesional:</span> {turno.profesional?.nombre}</div>
+              <div><span className="turno-label">Cliente:</span> {turno.cliente?.nombre}</div>
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 };
 
-export default DashboardProfesional;
+export default ProfesionalDashboard;
