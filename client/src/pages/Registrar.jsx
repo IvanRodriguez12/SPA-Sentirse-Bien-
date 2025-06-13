@@ -33,9 +33,10 @@ const Register = () => {
         telefono: data.phone.replace(/\s/g, ''),
         contrasena: data.password
       };
-  
+
       await registerUser(formattedData);
       toast.success('¡Registro exitoso!');
+      toast('Revisa tu correo electrónico para verificar tu cuenta 📩', { icon: '📧' });
       navigate('/login');
     } catch (error) {
       toast.error(error.message || 'Error en el registro');
