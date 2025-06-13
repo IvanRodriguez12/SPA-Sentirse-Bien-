@@ -42,15 +42,21 @@ export const AuthProvider = ({ children }) => {
 
       const { token, cliente, mensaje } = response.data;
 
-      if (!token || !cliente) {
-        throw new Error(mensaje || 'Error al iniciar sesión');
+            if (!token || !cliente) {
+        toast.error(mensaje || "Error en el login");
+        return;
       }
 
       localStorage.setItem('authToken', token);
       setUser(cliente);
       setIsAuthenticated(true);
-      toast.success('Inicio de sesión exitoso');
-      navigate('/');
+
+      if (cliente.profesion) {
+        navigate('/profesional/dashboard');
+      } else {
+        navigate('/');
+      }
+
     } catch (error) {
       const errorMessage = error.response?.data?.mensaje || 'Credenciales incorrectas';
       console.error('Error during login:', errorMessage, error);
@@ -81,5 +87,3 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   return useContext(AuthContext);
 };
-
-

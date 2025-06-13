@@ -1,15 +1,14 @@
 import '../../styles/AdminLogin.css';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "https://spa-sentirse-bien-production.up.railway.app/api";
 
 const AdminLogin = () => {
-  const navigate = useNavigate();
   const adminAuthContext = useAdminAuth();
+  const authContext = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,20 +22,7 @@ const AdminLogin = () => {
         await adminAuthContext.login(email, password);
       } else {
         // LOGIN PROFESIONAL
-        const response = await axios.post(`${API_URL}/auth/login-profesional`, {
-          email,
-          contrasena: password,
-        });
-
-        const cliente = response.data.cliente;
-
-        if (!cliente.profesion) {
-          toast.error("Este usuario no es un profesional.");
-          return;
-        }
-
-        toast.success(`Bienvenido/a profesional ${cliente.nombreCompleto}`);
-        navigate("/profesional/dashboard");
+        await authContext.login(email, password);
       }
     } catch (error) {
       console.error("Error en login:", error);
