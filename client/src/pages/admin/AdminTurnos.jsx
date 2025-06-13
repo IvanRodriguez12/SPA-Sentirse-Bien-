@@ -156,6 +156,8 @@ const AdminTurnos = () => {
       </div>
 
       <div className="admin-card">
+        
+
         {loading.turnos ? (
           <div className="loading-message">Cargando turnos...</div>
         ) : turnos.length === 0 ? (
@@ -204,8 +206,10 @@ const AdminTurnos = () => {
               </tbody>
             </table>
 
-            <h3 style={{ marginTop: '2rem' }}>Crear nuevo turno</h3>
-            <CrearTurno />
+            <div className="admin-card">
+  <h3 style={{ marginTop: '2rem' }}>Crear nuevo turno</h3>
+  <CrearTurno />
+</div>
           </div>
         )}
       </div>
