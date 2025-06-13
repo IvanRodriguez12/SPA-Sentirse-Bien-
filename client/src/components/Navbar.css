@@ -1,0 +1,125 @@
+:root {
+  --verde-medio: #a5d6a7;
+  --verde-oscuro: #388e3c;
+  --rosa-medio: #f48fb1;
+  --texto-oscuro: #333333;
+}
+
+/* Navbar base */
+.navbar {
+  background-color: var(--verde-medio);
+  padding: 1rem 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Logo */
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--texto-oscuro);
+}
+
+.navbar-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 0.5rem;
+}
+
+.navbar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Botón hamburguesa */
+.hamburger {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: var(--verde-oscuro);
+  cursor: pointer;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-link,
+.login-button,
+.register-button,
+.logout-button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.nav-link {
+  color: var(--texto-oscuro);
+}
+
+.login-button {
+  background-color: transparent;
+  border: 2px solid var(--verde-oscuro);
+  color: var(--verde-oscuro);
+}
+
+.register-button {
+  background-color: var(--rosa-medio);
+  color: white;
+}
+
+.logout-button {
+  background-color: var(--verde-oscuro);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.user-name {
+  font-weight: bold;
+  color: var(--texto-oscuro);
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .navbar-right {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    display: none;
+    background-color: var(--verde-medio);
+    margin-top: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--verde-oscuro);
+  }
+
+  .navbar-right.open {
+    display: flex;
+  }
+
+  .nav-link,
+  .login-button,
+  .register-button,
+  .logout-button {
+    margin: 0.25rem auto;
+    width: 80%;
+  }
+}
