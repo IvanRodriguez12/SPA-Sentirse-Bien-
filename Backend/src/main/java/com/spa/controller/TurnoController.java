@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.spa.dto.ReporteProfesionalDTO;
 import com.spa.dto.ReporteServicioDTO;
+import com.spa.dto.TurnoDTO;
+
 import java.time.LocalDate;
 
 @RestController
@@ -27,8 +29,11 @@ public class TurnoController {
     }
 
     @GetMapping("/listar")
-    public List<Turno> listarTurnos() {
-        return turnoService.listarTurnos();
+    public List<TurnoDTO> listarTurnos() {
+        return turnoService.listarTurnos()
+                        .stream()
+                        .map(TurnoDTO::new)
+                        .toList();
     }
 
     @GetMapping("/{id}")
