@@ -156,6 +156,8 @@ const AdminTurnos = () => {
       </div>
 
       <div className="admin-card">
+        <h3 style={{ marginTop: '2rem' }}>Crear nuevo turno</h3>
+<CrearTurno />
         {loading.turnos ? (
           <div className="loading-message">Cargando turnos...</div>
         ) : turnos.length === 0 ? (
