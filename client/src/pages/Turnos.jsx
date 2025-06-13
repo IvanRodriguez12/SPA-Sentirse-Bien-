@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import ContactoModal from '../components/ContactoModal';
+import '../styles/Turnos.css'; // Asegúrate de tener un archivo CSS para estilos personalizados
 
 const Turnos = () => {
     const { user } = useAuth();
@@ -108,6 +109,22 @@ const Turnos = () => {
                     }}
                 >
                     Hacer una reserva
+                </button>
+
+                <button
+                onClick={() => window.print()}
+                className="print-button"
+                style={{
+                    backgroundColor: 'transparent',
+                    color: 'var(--verde-oscuro)',
+                    border: '1px solid var(--verde-oscuro)',
+                    borderRadius: '25px',
+                    padding: '0.8rem 1.5rem',
+                    cursor: 'pointer',
+                    marginBottom: '1.5rem'
+                }}
+                >
+                Imprimir turnos
                 </button>
 
                 <button
