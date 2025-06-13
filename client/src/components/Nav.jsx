@@ -33,7 +33,7 @@ const Navbar = () => {
         ☰
       </button>
 
-      <div className={navbar-right ${menuOpen ? 'open' : ''}}>
+      <div className={`navbar-right ${menuOpen ? 'open' : ''}`}>
         <Link to="/" className="nav-link" onClick={closeMenu}>Inicio</Link>
         <Link to="/categorias" className="nav-link" onClick={closeMenu}>Servicios</Link>
         <Link to="/contacto" className="nav-link" state={{ backgroundLocation: location }} onClick={closeMenu}>Contacto</Link>

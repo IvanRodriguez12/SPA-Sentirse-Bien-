@@ -1,132 +1,123 @@
-/* Colores base */
 :root {
-  --verde-suave: #cde8c4;
-  --verde-oscuro: #4CAF50;
-  --rosado: #e91e63;
-  --blanco: #ffffff;
-  --texto: #333333;
+  --verde-medio: #a5d6a7;
+  --verde-oscuro: #388e3c;
+  --rosa-medio: #f48fb1;
+  --texto-oscuro: #333333;
 }
 
-/* NAVBAR GENERAL */
+/* NAVBAR PRINCIPAL */
 .navbar {
+  background-color: var(--verde-medio);
+  padding: 1rem 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--verde-suave);
-  padding: 10px 20px;
-  flex-wrap: wrap;
-  position: sticky;
-  top: 0;
+  flex-wrap: nowrap;
+  position: relative;
   z-index: 1000;
 }
 
+/* LOGO */
 .logo-link {
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: var(--texto);
+  color: var(--texto-oscuro);
 }
 
 .navbar-icon {
   width: 40px;
   height: 40px;
-  margin-right: 10px;
+  margin-right: 0.5rem;
 }
 
 .navbar-title {
   font-size: 1.5rem;
   font-weight: bold;
+  margin: 0;
 }
 
-/* LINKS DESKTOP */
-.navbar-links {
+/* BOTÓN HAMBURGUESA (oculto en escritorio) */
+.hamburger {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: var(--verde-oscuro);
+  cursor: pointer;
+}
+
+/* CONTENEDOR DE LINKS */
+.navbar-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 1rem;
 }
 
-.navbar-links a {
+.navbar-right a,
+.logout-button {
+  padding: 0.5rem 1.2rem;
+  border-radius: 25px;
   text-decoration: none;
-  color: var(--texto);
   font-weight: 500;
-  transition: color 0.3s;
+  transition: all 0.3s ease;
+  text-align: center;
 }
 
-.navbar-links a:hover {
-  color: var(--verde-oscuro);
+/* ENLACES Y BOTONES */
+.nav-link {
+  color: var(--texto-oscuro);
 }
 
-.navbar-button {
+.login-button {
   background-color: transparent;
   border: 2px solid var(--verde-oscuro);
   color: var(--verde-oscuro);
-  padding: 6px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  text-decoration: none;
 }
 
-.navbar-button:hover {
-  background-color: var(--verde-oscuro);
-  color: var(--blanco);
-}
-
-.navbar-button.register {
-  background-color: var(--rosado);
-  color: var(--blanco);
+.register-button {
+  background-color: var(--rosa-medio);
+  color: white;
   border: none;
 }
 
-.navbar-button.register:hover {
-  background-color: #c2185b;
+.logout-button {
+  background-color: var(--verde-oscuro);
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 .user-name {
-  margin: 0 10px;
   font-weight: bold;
+  color: var(--texto-oscuro);
+  margin-right: 0.5rem;
 }
 
-/* HAMBURGER SOLO EN MOBILE */
-.hamburger {
-  display: none;
-  font-size: 28px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* MOBILE */
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
   .hamburger {
     display: block;
   }
 
-  .navbar-links {
-    display: none;
+  .navbar-right {
     flex-direction: column;
+    align-items: stretch;
     width: 100%;
-    background-color: var(--verde-suave);
-    padding: 10px 0;
-    margin-top: 10px;
+    display: none;
+    background-color: var(--verde-medio);
+    margin-top: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--verde-oscuro);
   }
 
-  .navbar-links.mobile.open {
+  .navbar-right.open {
     display: flex;
   }
 
-  .navbar-links a,
-  .navbar-button,
-  .user-name {
-    margin: 8px 0;
-    text-align: center;
-  }
-
-  .navbar-left {
-    width: 100%;
-    justify-content: space-between;
-    display: flex;
-    align-items: center;
+  .navbar-right a,
+  .logout-button {
+    margin: 0.25rem auto;
+    width: 80%;
   }
 }
