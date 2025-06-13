@@ -15,7 +15,7 @@ const ProfesionalDashboard = () => {
     try {
       const token = localStorage.getItem('authToken');
       const url = filtrarPropios
-        ? `/api/turnos/profesional/${usuario.id}?fechaInicio=${hoy}&fechaFin=${manana}`
+        ? `/api/turnos/profesional?fecha=ambos`
         : `/api/turnos/listar?fechaInicio=${hoy}&fechaFin=${manana}`;
 
       const response = await axios.get(url, {
@@ -55,14 +55,22 @@ const ProfesionalDashboard = () => {
           <div><span className="turno-label">Profesional:</span></div>
           <div><span className="turno-label">Cliente:</span></div>
         </div>
-    </div>
-    {turnos.length === 0 ? (
+      </div>
+
+      {turnos.length === 0 ? (
         <p>No hay turnos para mostrar.</p>
       ) : (
         turnos.map((turno, idx) => (
           <div className="turno-card" key={idx}>
             <div className="turno-grid">
-              <div><span className="turno-label">Servicio:</span> {turno.servicio?.nombre}</div>
+              <div>
+                <span className="turno-label">Servicios:</span>{" "}
+                {Array.isArray(turno.servicios)
+                  ? turno.servicios.map((s, i) =>
+                      s ? <span key={i}>{s.nombre}{i < turno.servicios.length - 1 ? ", " : ""}</span> : null
+                    )
+                  : "Sin servicios"}
+              </div>
               <div><span className="turno-label">Hora:</span> {turno.horaInicio}</div>
               <div><span className="turno-label">Precio:</span> ${turno.precio}</div>
               <div><span className="turno-label">Profesional:</span> {turno.profesional?.nombre}</div>

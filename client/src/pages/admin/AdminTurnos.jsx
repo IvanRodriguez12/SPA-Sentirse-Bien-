@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import Modal from 'react-modal';
 import '../../styles/admin.css';
-import CrearTurno from '../../components/CrearTurno';
 import AdminHeader from './AdminHeader';
 
 Modal.setAppElement('#root');
@@ -229,8 +228,6 @@ const fechaFin = new Date(new Date(turno.fechaHora).getTime() + duracionTotal * 
             </table>
 
             <div className="admin-card">
-  <h3 style={{ marginTop: '2rem' }}>Crear nuevo turno</h3>
-  <CrearTurno />
 </div>
           </div>
         )}
