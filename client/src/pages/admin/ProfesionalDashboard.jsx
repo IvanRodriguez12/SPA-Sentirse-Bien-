@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { format } from 'date-fns';
 import '../../styles/ProfesionalDashboard.css';
 
 const ProfesionalDashboard = () => {
@@ -8,15 +7,12 @@ const ProfesionalDashboard = () => {
   const [filtrarPropios, setFiltrarPropios] = useState(false);
   const usuario = JSON.parse(localStorage.getItem('authUser'));
 
-  const hoy = format(new Date(), 'yyyy-MM-dd');
-  const manana = format(new Date(Date.now() + 86400000), 'yyyy-MM-dd');
-
   const fetchTurnos = async () => {
     try {
       const token = localStorage.getItem('authToken');
       const url = filtrarPropios
-        ? `/api/turnos/profesional?fecha=ambos`
-        : `/api/turnos/listar?fechaInicio=${hoy}&fechaFin=${manana}`;
+        ? `/api/turnos/profesional`
+        : `/api/turnos/listar`;
 
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
