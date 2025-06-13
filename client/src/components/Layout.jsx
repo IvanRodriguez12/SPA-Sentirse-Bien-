@@ -12,15 +12,28 @@ const Layout = () => {
   }, [location]);
 
   useEffect(() => {
-  const script1 = document.createElement('script');
-  script1.src = "https://cdn.botpress.cloud/webchat/v3.0/inject.js";
-  script1.async = true;
-  document.body.appendChild(script1);
+  if (window.botpressWebChat) {
+    setTimeout(() => {
+      window.botpressWebChat.sendEvent({ type: 'show' });
+    }, 1000);
+    return;
+  }
 
-  const script2 = document.createElement('script');
-  script2.src = "https://files.bpcontent.cloud/2025/06/12/02/20250612022903-7E8BQV3B.js";
-  script2.async = true;
-  document.body.appendChild(script2);
+  const script1 = document.createElement('script');
+  script1.src = 'https://cdn.botpress.cloud/webchat/v3.0/inject.js';
+  script1.async = true;
+
+  script1.onload = () => {
+    const script2 = document.createElement('script');
+    script2.src = 'https://files.bpcontent.cloud/2025/06/12/02/20250612022903-7E8BQV3B.js';
+    script2.async = true;
+
+    setTimeout(() => {
+      document.body.appendChild(script2);
+    }, 1000); 
+  };
+
+  document.body.appendChild(script1);
 }, []);
 
   return (
