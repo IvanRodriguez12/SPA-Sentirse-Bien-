@@ -5,20 +5,19 @@
   --texto-oscuro: #333333;
 }
 
-/* Navbar base */
+/* NAVBAR PRINCIPAL */
 .navbar {
   background-color: var(--verde-medio);
   padding: 1rem 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  max-width: 1200px;
-  margin: 0 auto;
+  flex-wrap: nowrap;
   position: relative;
+  z-index: 1000;
 }
 
-/* Logo */
+/* LOGO */
 .logo-link {
   display: flex;
   align-items: center;
@@ -38,7 +37,7 @@
   margin: 0;
 }
 
-/* Botón hamburguesa */
+/* BOTÓN HAMBURGUESA (oculto en escritorio) */
 .hamburger {
   display: none;
   font-size: 2rem;
@@ -48,17 +47,16 @@
   cursor: pointer;
 }
 
+/* CONTENEDOR DE LINKS */
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.nav-link,
-.login-button,
-.register-button,
+.navbar-right a,
 .logout-button {
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1.2rem;
   border-radius: 25px;
   text-decoration: none;
   font-weight: 500;
@@ -66,6 +64,7 @@
   text-align: center;
 }
 
+/* ENLACES Y BOTONES */
 .nav-link {
   color: var(--texto-oscuro);
 }
@@ -79,6 +78,7 @@
 .register-button {
   background-color: var(--rosa-medio);
   color: white;
+  border: none;
 }
 
 .logout-button {
@@ -91,10 +91,10 @@
 .user-name {
   font-weight: bold;
   color: var(--texto-oscuro);
-  font-size: 1rem;
+  margin-right: 0.5rem;
 }
 
-/* Responsive */
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
   .hamburger {
     display: block;
@@ -115,9 +115,7 @@
     display: flex;
   }
 
-  .nav-link,
-  .login-button,
-  .register-button,
+  .navbar-right a,
   .logout-button {
     margin: 0.25rem auto;
     width: 80%;
